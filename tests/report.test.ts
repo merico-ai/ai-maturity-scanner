@@ -6,6 +6,12 @@ import { renderTerminal } from "../src/report/terminal.ts";
 import type { MaturityReport } from "../src/report/types.ts";
 import type { FileWithTags } from "../src/types.ts";
 
+const ANSI_ESCAPE_RE = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, "g");
+
+function stripAnsi(value: string): string {
+  return value.replace(ANSI_ESCAPE_RE, "");
+}
+
 function sampleReport(over: Partial<MaturityReport> = {}): MaturityReport {
   return {
     repo: { root: "/repo", headSha: "abc1234567", scannedAt: "2026-07-14T00:00:00Z" },
@@ -145,7 +151,7 @@ describe("renderMarkdown", () => {
 
 describe("renderTerminal", () => {
   it("includes the level, ami, and dimensions", () => {
-    const out = renderTerminal(sampleReport());
+    const out = stripAnsi(renderTerminal(sampleReport()));
     expect(out).toContain("AI Maturity Report");
     expect(out).toContain("Level: L3");
     expect(out).toContain("AMI: 67.5");
@@ -158,12 +164,12 @@ describe("renderTerminal", () => {
     expect(out).toMatch(/░/);
   });
   it("shows the short SHA, not the full SHA", () => {
-    const out = renderTerminal(sampleReport());
+    const out = stripAnsi(renderTerminal(sampleReport()));
     expect(out).toContain("abc12345");
     expect(out).not.toContain("abc1234567");
   });
   it("emits the empty-state message when there are no files", () => {
-    const out = renderTerminal(sampleReport());
+    const out = stripAnsi(renderTerminal(sampleReport()));
     expect(out).toContain("No AI-related files detected.");
   });
 });
