@@ -1,0 +1,360 @@
+{
+  "cases": [
+    {
+      "path": "CLAUDE.md",
+      "tags": [
+        { "kind": "file_type", "value": "instruction" },
+        { "kind": "agent_type", "value": "claude" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": "AGENTS.md",
+      "tags": [
+        { "kind": "file_type", "value": "instruction" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": "GEMINI.md",
+      "tags": [
+        { "kind": "file_type", "value": "instruction" },
+        { "kind": "agent_type", "value": "gemini" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": "copilot-instructions.md",
+      "tags": [
+        { "kind": "file_type", "value": "instruction" },
+        { "kind": "agent_type", "value": "copilot" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": ".cursorrules",
+      "tags": [
+        { "kind": "file_type", "value": "instruction" },
+        { "kind": "agent_type", "value": "cursor" },
+        { "kind": "file_extension", "value": "none" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": ".windsurfrules",
+      "tags": [
+        { "kind": "file_type", "value": "instruction" },
+        { "kind": "agent_type", "value": "windsurf" },
+        { "kind": "file_extension", "value": "none" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": ".clinerules",
+      "tags": [
+        { "kind": "file_type", "value": "instruction" },
+        { "kind": "agent_type", "value": "cline" },
+        { "kind": "file_extension", "value": "none" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": ".clinerules/agent.md",
+      "tags": [
+        { "kind": "file_type", "value": "instruction" },
+        { "kind": "agent_type", "value": "cline" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": "rules/quality.mdc",
+      "tags": [
+        { "kind": "file_type", "value": "instruction" },
+        { "kind": "file_extension", "value": "mdc" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": ".rules",
+      "tags": [
+        { "kind": "file_type", "value": "instruction" },
+        { "kind": "file_extension", "value": "none" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": "rules",
+      "tags": [
+        { "kind": "file_type", "value": "instruction" },
+        { "kind": "file_extension", "value": "none" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": "apps/web/CLAUDE.md",
+      "tags": [
+        { "kind": "file_type", "value": "instruction" },
+        { "kind": "agent_type", "value": "claude" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": "skills/foo/SKILL.md",
+      "tags": [
+        { "kind": "file_type", "value": "skill" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" },
+        { "kind": "skill_level", "value": "advanced_skill" }
+      ]
+    },
+    {
+      "path": "skills/foo/scripts/build.sh",
+      "tags": [
+        { "kind": "file_type", "value": "skill_resource" },
+        { "kind": "file_extension", "value": "sh" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": "skills/bar/SKILL.md",
+      "tags": [
+        { "kind": "file_type", "value": "skill" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": "skills/bar/README.md",
+      "tags": [
+        { "kind": "file_type", "value": "skill_resource" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": "commands/build.md",
+      "tags": [
+        { "kind": "file_type", "value": "command" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": ".codex/prompts/fix.md",
+      "tags": [
+        { "kind": "file_type", "value": "command" },
+        { "kind": "agent_type", "value": "codex" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": "agents/researcher.md",
+      "tags": [
+        { "kind": "file_type", "value": "agent" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": ".agent/memory.md",
+      "tags": [
+        { "kind": "file_type", "value": "agent" },
+        { "kind": "agent_type", "value": "generic_agent" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": "specs/auth.md",
+      "tags": [
+        { "kind": "file_type", "value": "spec" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": ".codex/hooks.json",
+      "tags": [
+        { "kind": "file_type", "value": "hook" },
+        { "kind": "agent_type", "value": "codex" },
+        { "kind": "file_extension", "value": "json" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": ".claude/settings.json",
+      "tags": [
+        { "kind": "file_type", "value": "config" },
+        { "kind": "agent_type", "value": "claude" },
+        { "kind": "file_extension", "value": "json" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": "opencode.json",
+      "tags": [
+        { "kind": "file_type", "value": "config" },
+        { "kind": "agent_type", "value": "opencode" },
+        { "kind": "file_extension", "value": "json" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": ".opencode/config.json",
+      "tags": [
+        { "kind": "file_type", "value": "config" },
+        { "kind": "agent_type", "value": "opencode" },
+        { "kind": "file_extension", "value": "json" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": ".codex/config.toml",
+      "tags": [
+        { "kind": "file_type", "value": "config" },
+        { "kind": "agent_type", "value": "codex" },
+        { "kind": "file_extension", "value": "toml" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": ".gemini/settings.json",
+      "tags": [
+        { "kind": "file_type", "value": "config" },
+        { "kind": "agent_type", "value": "gemini" },
+        { "kind": "file_extension", "value": "json" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": ".continue/config.json",
+      "tags": [
+        { "kind": "file_type", "value": "config" },
+        { "kind": "agent_type", "value": "continue" },
+        { "kind": "file_extension", "value": "json" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": ".mcp.json",
+      "tags": [
+        { "kind": "file_type", "value": "mcp" },
+        { "kind": "file_extension", "value": "json" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": "mcp.json",
+      "tags": [
+        { "kind": "file_type", "value": "mcp" },
+        { "kind": "file_extension", "value": "json" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": ".cursor/rules.md",
+      "tags": [
+        { "kind": "agent_type", "value": "cursor" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": ".codex/foo.md",
+      "tags": [
+        { "kind": "agent_type", "value": "codex" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": ".roo/agent.md",
+      "tags": [
+        { "kind": "agent_type", "value": "roocode" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": ".trae/rules.md",
+      "tags": [
+        { "kind": "agent_type", "value": "trae" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": ".qoder/config.json",
+      "tags": [
+        { "kind": "agent_type", "value": "qoder" },
+        { "kind": "file_extension", "value": "json" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": ".codebuddy/rules.md",
+      "tags": [
+        { "kind": "agent_type", "value": "codebuddy" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": ".github/copilot/instructions.md",
+      "tags": [
+        { "kind": "agent_type", "value": "copilot" },
+        { "kind": "file_extension", "value": "md" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": "Makefile",
+      "tags": [
+        { "kind": "file_extension", "value": "none" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": ".gitignore",
+      "tags": [
+        { "kind": "file_extension", "value": "none" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": "foo.PY",
+      "tags": [
+        { "kind": "file_extension", "value": "py" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": "archive.tar.gz",
+      "tags": [
+        { "kind": "file_extension", "value": "gz" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    },
+    {
+      "path": "src/index.ts",
+      "tags": [
+        { "kind": "file_extension", "value": "ts" },
+        { "kind": "project_scope", "value": "subproject" }
+      ]
+    },
+    {
+      "path": "bundle.exotic+ext",
+      "tags": [
+        { "kind": "file_extension", "value": "exotic+ext" },
+        { "kind": "project_scope", "value": "root" }
+      ]
+    }
+  ]
+}
