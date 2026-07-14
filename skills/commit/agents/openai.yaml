@@ -1,0 +1,4 @@
+interface:
+  display_name: "Commit"
+  short_description: "Apply this repo's commit message rules"
+  default_prompt: "Use $commit to prepare a compliant commit for this repository."
