@@ -40,6 +40,51 @@ meta.md     The spec of specs
 
 ## Packages
 
+### CLI
+
+| Group | File | Summary |
+| --- | --- | --- |
+| user | [cli.md](user/cli.md) | CLI usage, format flags, output routing, and exit codes |
+| dev | [cli.md](dev/cli.md) | Entry-point validation, repo-root resolution, and module execution rules |
+| test | [cli.md](test/cli.md) | CLI acceptance checks for usage, output, and exit behavior |
+
+### SCAN
+
+| Group | File | Summary |
+| --- | --- | --- |
+| dev | [repository-scan.md](dev/repository-scan.md) | Tracked-file collection, filtering, and line-count rules |
+| test | [repository-scan.md](test/repository-scan.md) | Scan acceptance checks for tracked files and measurements |
+
+### TAG
+
+| Group | File | Summary |
+| --- | --- | --- |
+| dev | [tagging.md](dev/tagging.md) | Path tagging, normalization, and advanced skill detection |
+| test | [tagging.md](test/tagging.md) | Tagging acceptance checks across all classifier dimensions |
+
+### MAT
+
+| Group | File | Summary |
+| --- | --- | --- |
+| user | [maturity.md](user/maturity.md) | User-facing AMI and L0-L4 scoring model |
+| dev | [maturity.md](dev/maturity.md) | Raw metrics, normalization caps, and AMI composition |
+| test | [maturity.md](test/maturity.md) | Scoring acceptance checks for levels and normalized metrics |
+
+### REP
+
+| Group | File | Summary |
+| --- | --- | --- |
+| user | [reporting.md](user/reporting.md) | Terminal, Markdown, and JSON report surfaces |
+| dev | [reporting.md](dev/reporting.md) | Report payload and renderer contracts |
+| test | [reporting.md](test/reporting.md) | Report-rendering acceptance checks |
+
+### DIST
+
+| Group | File | Summary |
+| --- | --- | --- |
+| dev | [distribution.md](dev/distribution.md) | Package metadata, build hooks, and smoke-check requirements |
+| test | [distribution.md](test/distribution.md) | Distribution acceptance checks for packaging and built CLI smoke |
+
 ### GIT
 
 | Group | File | Summary |

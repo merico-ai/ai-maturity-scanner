@@ -27,6 +27,10 @@ The `specs/` directory shall contain the following subdirectories and files:
 
 Each item file shall include an `## Intent` section stating its purpose.
 
+### META-28
+
+Each `user/` or `dev/` item file's `## Intent` section shall include one sentence beginning with `It does not cover` that declares the package boundary.
+
 ### META-21
 
 Test items shall focus on integration and system testing.

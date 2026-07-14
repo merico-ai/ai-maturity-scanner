@@ -41,16 +41,18 @@ Use bullets when they make the change easier to scan.
 
 Do not add any `Co-authored-by` trailer or AI co-author attribution.
 
-Always include at least one Spex trailer:
+Always include one Spex trailer:
 
 ```text
 Spex: <package id>
 ```
 
 Use the package short form from `specs/map.md`, such as `GIT` or `LIC`.
-If a commit affects multiple spec packages, add one `Spex:` trailer per package.
-For changes unrelated to an existing spec package, use the closest applicable
-package and update specs first when the requested behavior changes project rules.
+If a commit affects multiple spec packages, list them in one comma-separated
+`Spex:` trailer, such as `Spex: GIT, LIC`.
+If a commit is unrelated to spec-covered behavior, use `Spex: none` and add
+a non-empty `Reason:` trailer. If the correct Spex package is unclear, stop
+and ask before committing.
 
 ## Example
 
@@ -61,4 +63,11 @@ Document the repository-specific commit workflow so agents use the
 same subject, body, and trailer rules.
 
 Spex: GIT
+```
+
+```text
+chore(release): update package metadata
+
+Spex: none
+Reason: release metadata only
 ```

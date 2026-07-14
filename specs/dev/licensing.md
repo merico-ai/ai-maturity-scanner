@@ -6,6 +6,7 @@
 ## Intent
 
 This spec defines SPDX header requirements for files included in the project.
+It does not cover commit message rules, package distribution, or application runtime behavior.
 
 ## Scope
 

@@ -6,6 +6,7 @@
 ## Intent
 
 This spec defines git workflow rules for the project.
+It does not cover source formatting, licensing headers, or runtime application behavior.
 
 ## Commits
 
@@ -27,4 +28,8 @@ When AI assists in coding or authoring, the commit message shall not include a `
 
 ### GIT-5
 
-When writing a commit message, the commit message shall include one or more `Spex: <package id>` trailers, where `<package id>` is the applicable spec package short form from [map.md](../map.md#packages).
+When writing a commit message, the commit message shall include exactly one `Spex:` trailer. The trailer value shall be one applicable spec package short form from [map.md](../map.md#packages), a comma-separated list of package short forms when multiple packages apply, or `none` when the change is unrelated to spec-covered behavior.
+
+### GIT-6
+
+When a commit message uses `Spex: none`, the commit message shall include a non-empty `Reason:` trailer explaining why no spec package applies.
