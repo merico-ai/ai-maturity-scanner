@@ -21,7 +21,7 @@ jobs:
         id: release
         with:
           release-type: node
-          package-name: ai-maturity-scanner
+          package-name: "@merico-ai/maturity-scanner"
           bump-minor-pre-major: true
 
   publish:

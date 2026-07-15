@@ -5,7 +5,7 @@ L0–L4 plus a 0–100 AMI score. Standalone Node.js CLI. No server, no database
 no auth.
 
 ```bash
-npx ai-maturity-scanner ./my-repo
+npx @merico-ai/maturity-scanner ./my-repo
 ```
 
 It walks the repo's tracked files (via `git ls-files`), classifies each one
@@ -19,12 +19,13 @@ in this package and covered by focused unit and end-to-end tests.
 ## Install
 
 ```bash
-npm install -g ai-maturity-scanner
+npm install -g @merico-ai/maturity-scanner
 # or one-off:
-npx ai-maturity-scanner ./my-repo
+npx @merico-ai/maturity-scanner ./my-repo
 ```
 
-Requires Node 22+. Requires `git` on `PATH`.
+Installs the `ai-maturity-scanner` command. Requires Node 22+. Requires
+`git` on `PATH`.
 
 ## Usage
 

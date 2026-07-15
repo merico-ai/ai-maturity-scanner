@@ -20,10 +20,10 @@ Lanes share no source files, so tasks across lanes may run concurrently.
 
 ## Deliverables
 
-- [ ] `ALGORITHM_VERSION = "v1"` constant surfaced in terminal, markdown, and json reports
-- [ ] `--lang zh|en` flag (default `zh`) translating report user-facing text; CLI prompts and rules untouched
-- [ ] Package renamed to `@merico-ai/maturity-scanner`; CLI command name `ai-maturity-scanner` retained
-- [ ] `specs/dev/image-rendering.md` design doc selecting `sharp` + SVG, pinning `qrcode`, and limiting redaction to the repository address
+- [x] `ALGORITHM_VERSION = "v1"` constant surfaced in terminal, markdown, and json reports
+- [x] `--lang zh|en` flag (default `zh`) translating report user-facing text; CLI prompts and rules untouched
+- [x] Package renamed to `@merico-ai/maturity-scanner`; CLI command name `ai-maturity-scanner` retained
+- [x] `specs/dev/image-rendering.md` design doc selecting `sharp` + SVG, pinning `qrcode`, and limiting redaction to the repository address
 - [ ] `web/` Next.js 14 App Router project with landing, metrics, and docs pages plus vibeinsight CTA
 - [ ] `web/` deployed (Vercel or equivalent)
 - [ ] Package published to npm under the new scope (final task, after all features stabilize)
@@ -42,11 +42,11 @@ Lanes share no source files, so tasks across lanes may run concurrently.
 
 ### Lane B — Packaging
 
-5. Rename `package.json` `name` to `@merico-ai/maturity-scanner`; keep `bin.ai-maturity-scanner`; update README install snippet; verify with `npm pack --dry-run`.
+5. Rename `package.json` `name` to `@merico-ai/maturity-scanner`; keep `bin.ai-maturity-scanner`; update README install snippet; verify with `npm pack --dry-run`. — **done**; also switched `prepack`/`prepublishOnly` from `pnpm` to `npm` so the lifecycle hooks match the project's npm lockfile and toolchain.
 
-6. Sync the new name into any release-please manifest or workflow config under `.github/`.
+6. Sync the new name into any release-please manifest or workflow config under `.github/`. — **done** (`release.yml` `package-name`).
 
-7. Publish to npm via the release-please tag once Lanes A, C, and D land; smoke-test with `npx @merico-ai/maturity-scanner --help`.
+7. Publish to npm via the release-please tag once Lanes A, C, and D land; smoke-test with `npx @merico-ai/maturity-scanner --help`. — **pending**; blocked on Lane D (`web/`) and the `NPM_TOKEN` secret being configured for the `@merico-ai` scope.
 
 ### Lane C — Image rendering research
 

@@ -1,5 +1,5 @@
 {
-  "name": "ai-maturity-scanner",
+  "name": "@merico-ai/maturity-scanner",
   "version": "0.1.0",
   "description": "Scan a code repository and report its AI coding maturity (level L0-L4 + AMI score). Standalone CLI, no server, no database.",
   "type": "module",
@@ -16,14 +16,14 @@
   ],
   "scripts": {
     "build": "tsup",
+    "demo:image": "npm run build && node scripts/render-image-demo.mjs",
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "biome check src tests",
     "format": "biome format --write src tests",
-    "prepublishOnly": "pnpm test && pnpm build",
-    "prepack": "pnpm build",
-    "demo:image": "npm run build && node scripts/render-image-demo.mjs"
+    "prepublishOnly": "npm test && npm run build",
+    "prepack": "npm run build"
   },
   "keywords": [
     "ai",
