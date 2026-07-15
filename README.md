@@ -24,7 +24,7 @@ npm install -g ai-maturity-scanner
 npx ai-maturity-scanner ./my-repo
 ```
 
-Requires Node 18+. Requires `git` on `PATH`.
+Requires Node 22+. Requires `git` on `PATH`.
 
 ## Usage
 

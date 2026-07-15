@@ -12,7 +12,7 @@ It does not cover runtime CLI behavior, scan semantics, or release automation cr
 
 ### DIST-1
 
-When the package is distributed, the package shall declare `type=module`, `engines.node >= 18`, and the `ai-maturity-scanner` executable mapped to `./dist/cli.js`.
+When the package is distributed, the package shall declare `type=module`, `engines.node >= 22`, and the `ai-maturity-scanner` executable mapped to `./dist/cli.js`.
 
 ### DIST-2
 

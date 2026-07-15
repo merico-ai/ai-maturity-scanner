@@ -12,7 +12,7 @@ This spec defines acceptance tests for packaging, build hooks, and the built CLI
 ### DIST-6
 Verifies: [DIST-1](../dev/distribution.md#dist-1), [DIST-2](../dev/distribution.md#dist-2)
 
-When package metadata is inspected for distribution, the package manifest shall declare ESM packaging, `Node >= 18`, the CLI bin entry for `./dist/cli.js`, and the packaged file set `dist/`, `README.md`, and `LICENSE`.
+When package metadata is inspected for distribution, the package manifest shall declare ESM packaging, `Node >= 22`, the CLI bin entry for `./dist/cli.js`, and the packaged file set `dist/`, `README.md`, and `LICENSE`.
 
 ### DIST-7
 Verifies: [DIST-3](../dev/distribution.md#dist-3), [DIST-4](../dev/distribution.md#dist-4)
