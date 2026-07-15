@@ -38,9 +38,9 @@ export function HomeContent({ locale }: HomeContentProps) {
             </Link>
           </div>
         </div>
-        <div className="rounded-lg border border-line bg-white p-4 shadow-soft">
-          <div className="rounded-md bg-slate-950 p-4 text-sm text-slate-100">
-            <pre className="code-scroll">
+        <div className="min-w-0 rounded-lg border border-line bg-white p-4 shadow-soft">
+          <div className="min-w-0 rounded-md bg-slate-950 p-4 text-sm text-slate-100">
+            <pre className="code-scroll max-w-full">
               <code>{`npx @merico-ai/maturity-scanner ./my-repo
 
 AI Maturity Report
