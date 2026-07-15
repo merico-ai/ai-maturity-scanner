@@ -15,6 +15,7 @@ function stripAnsi(value: string): string {
 function sampleReport(over: Partial<MaturityReport> = {}): MaturityReport {
   return {
     repo: { root: "/repo", headSha: "abc1234567", scannedAt: "2026-07-14T00:00:00Z" },
+    meta: { algorithmVersion: "v1", lang: "en" },
     level: "L3",
     ami: 67.5,
     dimensions: {
@@ -71,6 +72,10 @@ describe("renderJson", () => {
     expect(parsed.ami).toBe(67.5);
     expect(parsed.repo.headSha).toBe("abc1234567");
   });
+  it("surfaces meta.algorithmVersion", () => {
+    const parsed = JSON.parse(renderJson(sampleReport()));
+    expect(parsed.meta.algorithmVersion).toBe("v1");
+  });
   it("round-trips through parse without losing fields", () => {
     const r = sampleReport();
     const parsed = JSON.parse(renderJson(r)) as MaturityReport;
@@ -119,6 +124,10 @@ describe("renderMarkdown", () => {
   it("renders an empty-state files section", () => {
     const md = renderMarkdown(sampleReport());
     expect(md).toContain("_No AI-related files detected._");
+  });
+  it("surfaces the algorithm version", () => {
+    const md = renderMarkdown(sampleReport());
+    expect(md).toContain("**Algorithm version:** v1");
   });
   it("lists files grouped by file_type", () => {
     const files: FileWithTags[] = [
@@ -171,5 +180,46 @@ describe("renderTerminal", () => {
   it("emits the empty-state message when there are no files", () => {
     const out = stripAnsi(renderTerminal(sampleReport()));
     expect(out).toContain("No AI-related files detected.");
+  });
+  it("surfaces the algorithm version", () => {
+    const out = stripAnsi(renderTerminal(sampleReport()));
+    expect(out).toContain("algorithm v1");
+  });
+});
+
+describe("i18n: zh output", () => {
+  it("renderMarkdown emits Chinese labels", () => {
+    const md = renderMarkdown(sampleReport({ meta: { algorithmVersion: "v1", lang: "zh" } }));
+    expect(md).toContain("# AI 成熟度报告");
+    expect(md).toContain("**仓库:**");
+    expect(md).toContain("**等级:** L3");
+    expect(md).toContain("## 总览");
+    expect(md).toContain("## 指标");
+    expect(md).toContain("### 配置深度 — Skill 类");
+    expect(md).toContain("### 上下文丰富度 — 指令");
+    expect(md).toContain("### 集成广度");
+    expect(md).toContain("_agent_type_distinct（辅助指标，不计入 AMI）：2_");
+    expect(md).toContain("_未检测到 AI 相关文件。_");
+  });
+
+  it("renderTerminal emits Chinese labels", () => {
+    const out = stripAnsi(
+      renderTerminal(sampleReport({ meta: { algorithmVersion: "v1", lang: "zh" } })),
+    );
+    expect(out).toContain("AI 成熟度报告");
+    expect(out).toContain("等级: L3");
+    expect(out).toContain("配置深度");
+    expect(out).toContain("Skill 类");
+    expect(out).toContain("agent_type_distinct（辅助指标，不计入 AMI）：2");
+    expect(out).toContain("未检测到 AI 相关文件。");
+  });
+
+  it("metric identifiers stay canonical in both languages", () => {
+    const en = renderMarkdown(sampleReport());
+    const zh = renderMarkdown(sampleReport({ meta: { algorithmVersion: "v1", lang: "zh" } }));
+    for (const name of ["skill_count", "agent_count", "mcp_count", "subproject_coverage"]) {
+      expect(en).toContain(`| ${name} |`);
+      expect(zh).toContain(`| ${name} |`);
+    }
   });
 });

@@ -14,6 +14,15 @@ It does not cover command-line option parsing, repository scanning, or maturity 
 
 When a report is built, the report object shall contain `repo.root`, `repo.headSha`, `repo.scannedAt`, `level`, `ami`, `dimensions.configuration_depth`, `dimensions.context_richness`, `dimensions.integration_breadth`, `normalizedMetrics`, `rawMetrics`, and `files`.
 
+### REP-13
+
+When a report is built, the report object shall contain `meta.algorithmVersion` set to the algorithm version constant declared in `src/metrics/types.ts` (currently `v1`), so that older reports remain interpretable after future scoring changes.
+
+### REP-14
+
+When a report is built, the report object shall contain `meta.lang` set to the language used for renderer text (`zh` or `en`, default `zh`).
+Rule names, tag values, and metric identifiers shall remain in their canonical form regardless of `meta.lang`.
+
 ### REP-5
 
 When rendering metric sections, the terminal and Markdown renderers shall expose all normalized metrics and raw metric values grouped as Skill, Agent, Command, MCP, Instruction, Specs, and Integration, and shall expose `agent_type_distinct` as a helper metric that is outside AMI.

@@ -1,3 +1,5 @@
+import { stringsFor } from "../i18n/index.ts";
+import type { ReportStrings } from "../i18n/index.ts";
 import type { MaturityRawMetrics } from "../metrics/types.ts";
 import type { FileWithTags, Tag } from "../types.ts";
 import type { MaturityReport } from "./types.ts";
@@ -16,7 +18,11 @@ function metricTable(rows: ReadonlyArray<{ name: string; raw: number; score: num
   return lines.join("\n");
 }
 
-function metricsSections(raw: MaturityRawMetrics, normalized: Record<string, number>): string {
+function metricsSections(
+  raw: MaturityRawMetrics,
+  normalized: Record<string, number>,
+  t: ReportStrings,
+): string {
   const g = (k: string) => normalized[k] ?? 0;
   const skill = metricTable([
     { name: "skill_count", raw: raw.skillCount, score: g("skill_count") },
@@ -54,28 +60,28 @@ function metricsSections(raw: MaturityRawMetrics, normalized: Record<string, num
     { name: "subproject_coverage", raw: raw.subprojectCoverage, score: g("subproject_coverage") },
   ]);
   return [
-    "### Configuration depth — Skill class",
+    `### ${t.configurationDepth} — ${t.skillClass}`,
     skill,
     "",
-    "### Configuration depth — Agent class",
+    `### ${t.configurationDepth} — ${t.agentClass}`,
     agent,
     "",
-    "### Configuration depth — Command class",
+    `### ${t.configurationDepth} — ${t.commandClass}`,
     command,
     "",
-    "### Configuration depth — MCP class",
+    `### ${t.configurationDepth} — ${t.mcpClass}`,
     mcp,
     "",
-    "### Context richness — Instruction",
+    `### ${t.contextRichness} — ${t.instruction}`,
     instruction,
     "",
-    "### Context richness — Specs",
+    `### ${t.contextRichness} — ${t.specs}`,
     specs,
     "",
-    "### Integration breadth",
+    `### ${t.integrationBreadth}`,
     integration,
     "",
-    `_agent_type_distinct (helper, not in AMI): ${raw.agentTypeDistinct}_`,
+    `_${t.helperLabel(raw.agentTypeDistinct)}_`,
   ].join("\n");
 }
 
@@ -94,8 +100,8 @@ function findTag(tags: readonly Tag[], kind: string): string | undefined {
   return tags.find((t) => t.kind === kind)?.value;
 }
 
-function filesSection(files: readonly FileWithTags[]): string {
-  if (files.length === 0) return "## Files\n\n_No AI-related files detected._";
+function filesSection(files: readonly FileWithTags[], t: ReportStrings): string {
+  if (files.length === 0) return `## ${t.filesHeader(0)}\n\n_${t.noFilesMessage}_`;
   const grouped = groupByFileType(files);
   const order = [
     "instruction",
@@ -115,7 +121,7 @@ function filesSection(files: readonly FileWithTags[]): string {
     return (ia === -1 ? Number.MAX_SAFE_INTEGER : ia) - (ib === -1 ? Number.MAX_SAFE_INTEGER : ib);
   });
 
-  const lines: string[] = [`## Files (${files.length} total)`];
+  const lines: string[] = [`## ${t.filesHeader(files.length)}`];
   let shown = 0;
   let truncated = false;
   for (const k of keys) {
@@ -139,36 +145,38 @@ function filesSection(files: readonly FileWithTags[]): string {
   }
   if (truncated) {
     lines.push("");
-    lines.push(`_… truncated, showing first ${FILE_SHOW_LIMIT} of ${files.length} files._`);
+    lines.push(`_${t.truncatedMessage(FILE_SHOW_LIMIT, files.length)}_`);
   }
   return lines.join("\n");
 }
 
 export function renderMarkdown(report: MaturityReport): string {
+  const t = stringsFor(report.meta.lang);
   const d = report.dimensions;
   return [
-    "# AI Maturity Report",
+    `# ${t.title}`,
     "",
-    `**Repo:** \`${report.repo.root}\`  `,
-    `**HEAD:** \`${report.repo.headSha}\`  `,
-    `**Scanned at:** ${report.repo.scannedAt}`,
+    `**${t.repoLabel}:** \`${report.repo.root}\`  `,
+    `**${t.headLabel}:** \`${report.repo.headSha}\`  `,
+    `**${t.scannedAtLabel}:** ${report.repo.scannedAt}  `,
+    `**${t.algorithmVersionLabel}:** ${report.meta.algorithmVersion}`,
     "",
-    "## Overall",
+    `## ${t.overallSection}`,
     "",
-    `**Level:** ${report.level}  `,
+    `**${t.levelLabel}:** ${report.level}  `,
     `**AMI:** ${fmt(report.ami)} / 100`,
     "",
-    "| Dimension | Score |",
+    `| ${t.dimensionHeader} | ${t.scoreHeader} |`,
     "| --- | ---: |",
-    `| Configuration depth | ${fmt(d.configuration_depth)} |`,
-    `| Context richness | ${fmt(d.context_richness)} |`,
-    `| Integration breadth | ${fmt(d.integration_breadth)} |`,
+    `| ${t.configurationDepth} | ${fmt(d.configuration_depth)} |`,
+    `| ${t.contextRichness} | ${fmt(d.context_richness)} |`,
+    `| ${t.integrationBreadth} | ${fmt(d.integration_breadth)} |`,
     "",
-    "## Metrics",
+    `## ${t.metricsSection}`,
     "",
-    metricsSections(report.rawMetrics, report.normalizedMetrics),
+    metricsSections(report.rawMetrics, report.normalizedMetrics, t),
     "",
-    filesSection(report.files),
+    filesSection(report.files, t),
     "",
   ].join("\n");
 }

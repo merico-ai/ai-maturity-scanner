@@ -109,13 +109,17 @@ describe("e2e: full pipeline on a fixture git repo", () => {
   });
 
   itOrSkip("buildReport + renderReport produce parseable output in every format", async () => {
-    const report = await buildReport(repoDir);
+    const report = await buildReport(repoDir, { lang: "en" });
     expect(report.level).toMatch(/^L[0-4]$/);
+    expect(report.meta.algorithmVersion).toBe("v1");
+    expect(report.meta.lang).toBe("en");
 
     const json = renderReport(report, "json");
     const parsed = JSON.parse(json);
     expect(parsed.level).toBe(report.level);
     expect(parsed.repo.headSha).toBe(report.repo.headSha);
+    expect(parsed.meta.algorithmVersion).toBe("v1");
+    expect(parsed.meta.lang).toBe("en");
     expect(Object.keys(parsed.normalizedMetrics)).toHaveLength(15);
 
     const md = renderReport(report, "md");

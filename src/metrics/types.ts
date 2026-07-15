@@ -1,3 +1,10 @@
+/**
+ * Algorithm version stamped into every report. Bump when scoring rules,
+ * normalization caps, or level thresholds change in a backward-incompatible
+ * way. Stable, additive changes may keep the same version.
+ */
+export const ALGORITHM_VERSION = "v1" as const;
+
 export interface MaturityRawMetrics {
   // ── Configuration depth: Skill class (5 metrics) ───────────────
   skillCount: number;

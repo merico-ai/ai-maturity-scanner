@@ -1,3 +1,4 @@
+import type { Lang } from "../i18n/index.ts";
 import type { MaturityRawMetrics } from "../metrics/types.ts";
 import type { FileWithTags } from "../types.ts";
 
@@ -8,6 +9,10 @@ export interface MaturityReport {
     root: string;
     headSha: string;
     scannedAt: string;
+  };
+  meta: {
+    algorithmVersion: string;
+    lang: Lang;
   };
   level: Level;
   ami: number;
