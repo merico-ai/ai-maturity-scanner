@@ -31,6 +31,7 @@ export const messages = {
     nav: {
       home: "首页介绍",
       quickStart: "快速开始",
+      metrics: "指标说明",
       about: "关于我们",
       languageLabel: "语言",
       zh: "中文",
@@ -71,39 +72,51 @@ export const messages = {
         "扫描器先统计 15 个 raw metrics，再归一化为三个加权维度，最终形成 0-100 的 AMI 分数和 L0-L4 成熟度等级。",
       overview: [
         {
-          title: "Configuration depth",
+          title: "配置深度",
           weight: "60%",
           description: "skill、skill_resource、agent、command、MCP 等能力配置的数量和结构。",
         },
         {
-          title: "Context richness",
+          title: "上下文丰富度",
           weight: "30%",
           description: "AI instruction files 和 specs 文件为模型提供的稳定上下文。",
         },
         {
-          title: "Integration breadth",
+          title: "集成广度",
           weight: "10%",
           description: "子项目范围 instruction 的覆盖情况，反映复杂仓库的整合能力。",
         },
       ],
       homeOverview: [
         {
-          title: "Configuration depth",
+          title: "配置深度",
           weight: "60%",
           description: "衡量 skills、agents、commands、MCP 等配置化 AI 能力是否成体系。",
         },
         {
-          title: "Context richness",
+          title: "上下文丰富度",
           weight: "30%",
           description: "衡量 instruction files 与 specs 是否为 AI 协作提供足够上下文。",
         },
         {
-          title: "Integration breadth",
+          title: "集成广度",
           weight: "10%",
           description: "衡量 AI instruction 是否覆盖子项目，反映多模块仓库的集成广度。",
         },
       ],
       levelTitle: "L0-L4 level",
+      imageTitle: "图片报告里的分数怎么看",
+      imageDescription:
+        "图片报告展示的是 normalized score：每个指标先按规则换算为 0-100 分，进度条表示当前分数。AI 文件和能力应用是原始数量，不参与这一组进度条。",
+      imageScoreLabel: "图片分数",
+      formulaTitle: "完整计算流程",
+      formulaSteps: [
+        "先从 git-tracked files 聚合 raw metrics。",
+        "再把 raw metrics 归一化成 0-100 分数。",
+        "Configuration depth、Context richness、Integration breadth 分别汇总子指标。",
+        "AMI = Configuration depth × 60% + Context richness × 30% + Integration breadth × 10%。",
+      ],
+      metricFormulaTitle: "15 个 normalized metrics",
       levels: [
         ["L0", "没有 AI instruction file。"],
         ["L1", "默认起点，仓库已经出现基础 AI 协作信号。"],
@@ -171,6 +184,7 @@ export const messages = {
     nav: {
       home: "Overview",
       quickStart: "Quick start",
+      metrics: "Metrics",
       about: "About",
       languageLabel: "Language",
       zh: "中文",
@@ -244,6 +258,18 @@ export const messages = {
         },
       ],
       levelTitle: "L0-L4 level",
+      imageTitle: "How to read the image report scores",
+      imageDescription:
+        "The image report shows normalized scores. Each metric is converted to a 0-100 score, and the progress bar visualizes that score. AI files and ability applied are raw counts, not progress-bar scores.",
+      imageScoreLabel: "Image score",
+      formulaTitle: "Full scoring flow",
+      formulaSteps: [
+        "Aggregate raw metrics from git-tracked files.",
+        "Normalize raw metrics into 0-100 scores.",
+        "Roll metrics into Configuration depth, Context richness, and Integration breadth.",
+        "AMI = Configuration depth × 60% + Context richness × 30% + Integration breadth × 10%.",
+      ],
+      metricFormulaTitle: "15 normalized metrics",
       levels: [
         ["L0", "No AI instruction file is present."],
         ["L1", "The baseline once the repository has basic AI collaboration signals."],
