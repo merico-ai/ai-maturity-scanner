@@ -22,7 +22,8 @@
     "lint": "biome check src tests",
     "format": "biome format --write src tests",
     "prepublishOnly": "pnpm test && pnpm build",
-    "prepack": "pnpm build"
+    "prepack": "pnpm build",
+    "demo:image": "npm run build && node scripts/render-image-demo.mjs"
   },
   "keywords": [
     "ai",
@@ -47,7 +48,9 @@
   },
   "dependencies": {
     "commander": "^12.1.0",
-    "picocolors": "^1.1.1"
+    "picocolors": "^1.1.1",
+    "qrcode": "^1.5.4",
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

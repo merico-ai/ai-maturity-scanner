@@ -37,6 +37,7 @@ meta.md     The spec of specs
 | ID | File | Goal |
 | --- | --- | --- |
 | IR-000 | [000-spdx-headers.md](iterations/000-spdx-headers.md) | Add SPDX headers to applicable files |
+| IR-001 | [001-high-priority-roadmap.md](iterations/001-high-priority-roadmap.md) | High-priority ROADMAP batch: version, i18n, npm rename, image research, web site |
 
 ## Packages
 
@@ -90,6 +91,12 @@ meta.md     The spec of specs
 | Group | File | Summary |
 | --- | --- | --- |
 | dev | [git.md](dev/git.md) | Commit message format and Spex trailers |
+
+### IMGR
+
+| Group | File | Summary |
+| --- | --- | --- |
+| dev | [image-rendering.md](dev/image-rendering.md) | Shareable image report rendering backend, QR, and redaction design |
 
 ### LIC
 

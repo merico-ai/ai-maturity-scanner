@@ -131,6 +131,7 @@ npm install
 npm test            # vitest
 npm run build       # tsup → dist/cli.js
 npm run lint        # biome
+npm run demo:image  # writes preview PNG reports under demo-output/
 ```
 
 The repo is a single ESM TypeScript package. Source layout:
@@ -140,6 +141,19 @@ The repo is a single ESM TypeScript package. Source layout:
 - `src/git/`, `src/scan/` — repo walking and line counting
 - `src/report/` — `terminal` / `md` / `json` renderers
 - `tests/` — golden fixture, unit, and end-to-end tests
+
+### Image rendering demo
+
+The image report prototype uses `sharp` to rasterize a deterministic SVG
+template and `qrcode` to embed the QR code. It writes full and redacted sharing
+variants to `demo-output/`, which is ignored by git.
+
+```bash
+nvm exec 22 npm run demo:image
+nvm exec 22 node scripts/render-image-demo.mjs --lang zh
+```
+
+This is a development preview, not a stable CLI output format yet.
 
 Each translated file cites the upstream Python source by commit SHA in a
 header comment.
