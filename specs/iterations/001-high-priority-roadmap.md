@@ -24,7 +24,7 @@ Lanes share no source files, so tasks across lanes may run concurrently.
 - [x] `--lang zh|en` flag (default `zh`) translating report user-facing text; CLI prompts and rules untouched
 - [x] Package renamed to `@merico-ai/maturity-scanner`; CLI command name `ai-maturity-scanner` retained
 - [x] `specs/dev/image-rendering.md` design doc selecting `sharp` + SVG, pinning `qrcode`, and limiting redaction to the repository address
-- [ ] `web/` Next.js 14 App Router project with landing, metrics, and docs pages plus vibeinsight CTA
+- [x] `web/` Next.js 14 App Router project with landing, metrics, and docs pages plus vibeinsight CTA
 - [ ] `web/` deployed (Vercel or equivalent)
 - [ ] Package published to npm under the new scope (final task, after all features stabilize)
 
@@ -46,7 +46,7 @@ Lanes share no source files, so tasks across lanes may run concurrently.
 
 6. Sync the new name into any release-please manifest or workflow config under `.github/`. — **done** (`release.yml` `package-name`).
 
-7. Publish to npm via the release-please tag once Lanes A, C, and D land; smoke-test with `npx @merico-ai/maturity-scanner --help`. — **pending**; blocked on Lane D (`web/`) and the `NPM_TOKEN` secret being configured for the `@merico-ai` scope.
+7. Publish to npm via the release-please tag once Lanes A, C, and D land; smoke-test with `npx @merico-ai/maturity-scanner --help`. — **pending**; blocked on `web/` deployment verification and the `NPM_TOKEN` secret being configured for the `@merico-ai` scope.
 
 ### Lane C — Image rendering research
 
@@ -54,11 +54,11 @@ Lanes share no source files, so tasks across lanes may run concurrently.
 
 ### Lane D — Web site
 
-9. Scaffold a Next.js 14 App Router project under `web/` with its own `package.json`, Tailwind, and a placeholder landing page; isolate from CLI toolchain.
+9. Scaffold a Next.js 14 App Router project under `web/` with its own `package.json`, Tailwind, and a placeholder landing page; isolate from CLI toolchain. — **done**; verified with `npm run lint` and `npm run build` in `web/`.
 
-10. Build the landing page (feature overview + CTA), `/metrics` (metric explanations), and `/docs` (install + usage); include a vibeinsight referral entry point.
+10. Build the landing page (feature overview + CTA), `/metrics` (metric explanations), and `/docs` (install + usage); include a vibeinsight referral entry point. — **done**; includes localized `zh` and `en` routes for landing, quick start, about, metrics, and docs.
 
-11. Configure deployment (Vercel preferred for zero-config Next.js); set domain and routes.
+11. Configure deployment (Vercel preferred for zero-config Next.js); set domain and routes. — **partial**; `web/vercel.json` is present, but production deployment and URL/domain verification are still pending.
 
 ## Acceptance criteria
 
@@ -66,7 +66,7 @@ Lanes share no source files, so tasks across lanes may run concurrently.
 - Running with `--lang en` produces English report text; running with no flag (or `--lang zh`) produces Chinese; both languages covered by tests.
 - `npm pack --dry-run` lists the package under `@merico-ai/maturity-scanner` and the CLI still launches as `ai-maturity-scanner`.
 - `specs/dev/image-rendering.md` exists with `sharp` + SVG as the selected backend and a follow-up task outline.
-- `web/` runs locally (`pnpm --filter web dev` or equivalent) and deploys cleanly; the deployed URL loads the landing page.
+- `web/` builds locally with `npm run build`; production deployment and deployed URL verification remain pending.
 - The published npm package installs via `npx @merico-ai/maturity-scanner --help` from a clean environment.
 
 ## Parallelism
