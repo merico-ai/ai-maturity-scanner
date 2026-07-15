@@ -1,3 +1,4 @@
+import { BackToTop } from "./back-to-top";
 import { SiteHeader } from "./site-header";
 
 type RootShellProps = Readonly<{
@@ -11,6 +12,7 @@ export function RootShell({ children, lang }: RootShellProps) {
       <body>
         <SiteHeader />
         {children}
+        <BackToTop />
       </body>
     </html>
   );

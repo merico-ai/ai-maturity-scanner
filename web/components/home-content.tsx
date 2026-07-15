@@ -14,32 +14,38 @@ export function HomeContent({ locale }: HomeContentProps) {
 
   return (
     <main>
-      <section className="mx-auto grid max-w-6xl gap-8 px-4 pb-10 pt-8 sm:px-6 sm:pt-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:pb-16">
+      <section className="page-shell grid gap-8 pb-10 pt-8 sm:pt-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:pb-16">
         <div>
-          <p className="text-sm font-bold uppercase tracking-wide text-brand">{home.eyebrow}</p>
-          <h1 className="mt-4 text-4xl font-black leading-tight text-ink sm:text-5xl lg:text-6xl">
+          <p className="eyebrow">{home.eyebrow}</p>
+          <h1 className="page-title mt-4 sm:text-5xl lg:text-6xl">
             {home.title}
           </h1>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-muted sm:text-lg">
+          <p className="body-copy mt-5 max-w-2xl text-base sm:text-lg">
             {home.description}
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Link
-              className="rounded-lg bg-ink px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-slate-800"
+              className="primary-button"
               href={localizePath("/quick-start", locale)}
             >
               {home.primaryCta}
             </Link>
             <Link
-              className="rounded-lg border border-line bg-white px-5 py-3 text-center text-sm font-bold text-ink transition hover:border-ink"
+              className="secondary-button"
               href={localizePath("/metrics", locale)}
             >
               {home.secondaryCta}
             </Link>
           </div>
         </div>
-        <div className="min-w-0 rounded-lg border border-line bg-white p-4 shadow-soft">
-          <div className="min-w-0 rounded-md bg-slate-950 p-4 text-sm text-slate-100">
+        <div className="surface-card min-w-0">
+          <div className="mb-3 flex items-center justify-between border-b border-line pb-3">
+            <span className="font-mono text-sm font-semibold text-ink">scan-preview</span>
+            <span className="rounded-md bg-brand/10 px-2.5 py-1 text-xs font-bold text-brand">
+              L3
+            </span>
+          </div>
+          <div className="code-panel min-w-0 p-4 text-sm">
             <pre className="code-scroll max-w-full">
               <code>{`npx @merico-ai/maturity-scanner ./my-repo
 
@@ -53,7 +59,7 @@ Integration breadth  40.0`}</code>
           </div>
           <div className="mt-4 grid grid-cols-3 gap-3 text-center">
             {["L0-L4", "AMI 0-100", "3 dimensions"].map((item) => (
-              <div className="rounded-md bg-paper px-2 py-3 text-xs font-bold text-ink" key={item}>
+              <div className="rounded-md border border-line bg-canvas px-2 py-3 text-xs font-bold text-ink" key={item}>
                 {item}
               </div>
             ))}
@@ -61,23 +67,23 @@ Integration breadth  40.0`}</code>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+      <section className="page-shell py-8">
         <div className="content-grid">
           {home.features.map((feature) => (
-            <div className="rounded-lg border border-line bg-white p-5 shadow-sm" key={feature}>
+            <div className="surface-card" key={feature}>
               <p className="text-sm leading-6 text-muted">{feature}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+      <section className="page-shell py-8">
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-bold uppercase tracking-wide text-accent">
+            <p className="eyebrow text-accent">
               {home.metricEyebrow}
             </p>
-            <h2 className="mt-2 text-3xl font-black text-ink">{home.metricTitle}</h2>
+            <h2 className="mt-2 font-mono text-3xl font-semibold text-ink">{home.metricTitle}</h2>
           </div>
           <Link
             className="text-sm font-bold text-brand hover:underline"
@@ -98,7 +104,7 @@ Integration breadth  40.0`}</code>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+      <section className="page-shell py-10">
         <CtaPanel locale={locale} />
       </section>
     </main>

@@ -8,15 +8,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#111827",
-        muted: "#5b6475",
-        line: "#d8dde8",
-        paper: "#f7f8fb",
-        brand: "#0f766e",
-        accent: "#c2410c",
+        ink: "#f8fafc",
+        muted: "#94a3b8",
+        line: "#334155",
+        paper: "#1e293b",
+        brand: "#22c55e",
+        accent: "#f59e0b",
+        surface: "#1e293b",
+        canvas: "#0f172a",
       },
       boxShadow: {
-        soft: "0 18px 60px rgba(15, 23, 42, 0.08)",
+        soft: "0 4px 12px rgba(0, 0, 0, 0.14)",
       },
     },
   },

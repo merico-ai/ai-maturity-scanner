@@ -10,11 +10,11 @@ export function MetricsContent({ locale }: MetricsContentProps) {
   const metrics = messages[locale].metrics;
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+    <main className="page-shell py-8 sm:py-12">
       <section className="max-w-3xl">
-        <p className="text-sm font-bold uppercase tracking-wide text-brand">{metrics.eyebrow}</p>
-        <h1 className="mt-3 text-4xl font-black text-ink sm:text-5xl">{metrics.title}</h1>
-        <p className="mt-4 text-base leading-7 text-muted">{metrics.description}</p>
+        <p className="eyebrow">{metrics.eyebrow}</p>
+        <h1 className="page-title mt-3 sm:text-5xl">{metrics.title}</h1>
+        <p className="body-copy mt-4 text-base">{metrics.description}</p>
       </section>
 
       <section className="mt-8 grid gap-4 lg:grid-cols-3">
@@ -28,15 +28,15 @@ export function MetricsContent({ locale }: MetricsContentProps) {
         ))}
       </section>
 
-      <section className="mt-8 rounded-lg border border-line bg-white p-5 shadow-sm sm:p-6">
-        <h2 className="text-2xl font-black text-ink">{metrics.levelTitle}</h2>
+      <section className="surface-card mt-8 sm:p-6">
+        <h2 className="font-mono text-2xl font-semibold text-ink">{metrics.levelTitle}</h2>
         <div className="mt-5 grid gap-3">
           {metrics.levels.map(([level, description]) => (
             <div
-              className="grid gap-2 rounded-md bg-paper p-4 sm:grid-cols-[5rem_1fr] sm:items-center"
+              className="grid gap-2 rounded-md border border-line bg-canvas p-4 sm:grid-cols-[5rem_1fr] sm:items-center"
               key={level}
             >
-              <strong className="text-xl text-ink">{level}</strong>
+              <strong className="font-mono text-xl text-brand">{level}</strong>
               <span className="text-sm leading-6 text-muted">{description}</span>
             </div>
           ))}

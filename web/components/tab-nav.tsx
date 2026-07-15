@@ -16,7 +16,7 @@ export function TabNav() {
   const nav = messages[locale].nav;
 
   return (
-    <nav className="flex min-w-0 flex-1 gap-1 rounded-full border border-line bg-white/80 p-1 shadow-sm lg:flex-none">
+    <nav className="flex min-w-0 flex-1 gap-1 rounded-md border border-line bg-surface p-1 shadow-sm lg:flex-none">
       {tabRoutes.map((tab) => {
         const href = localizePath(tab.href, locale);
         const active = pathname === href;
@@ -26,7 +26,7 @@ export function TabNav() {
             aria-current={active ? "page" : undefined}
             className={[
               "min-w-0 flex-1 whitespace-nowrap rounded-full px-2 py-2 text-center text-xs font-semibold transition sm:px-4 sm:text-sm lg:flex-none",
-              active ? "bg-ink text-white" : "text-muted hover:bg-paper hover:text-ink",
+              active ? "bg-brand text-white" : "text-muted hover:bg-slate-700 hover:text-ink",
             ].join(" ")}
             href={href}
             key={tab.href}
