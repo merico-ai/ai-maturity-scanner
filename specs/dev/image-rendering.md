@@ -30,6 +30,10 @@ When image report rendering is implemented, the scanner shall render the report 
 
 When rasterizing an image report, the scanner shall use the same `MaturityReport` data contract used by existing report renderers and shall not rescan or recompute metrics inside the image renderer.
 
+### IMGR-9
+
+When rendering a PNG report, the scanner shall use a portrait-oriented layout suitable for mobile reading.
+
 ## QR Codes
 
 ### IMGR-4
@@ -39,30 +43,41 @@ When a QR code is included in an image report, the scanner shall generate it wit
 ### IMGR-5
 
 Where the configured QR target URL is unavailable, when an image report is rendered, the scanner shall reserve the QR slot with a placeholder instead of failing the report generation.
+The CLI shall not expose the QR target URL as a user-facing flag; the configured URL is reserved for a future web quick start link.
 
 ## Sensitive Output
 
 ### IMGR-6
 
-When a public image variant is requested, the scanner shall include the repository address, using `repo.url` when available and otherwise using the existing `repo.root` display value.
+When a public image variant is requested, the scanner shall include the repository display name.
+The display name shall be the final path segment of `repo.remoteUrl` with a trailing `.git` suffix removed when `repo.remoteUrl` is available, and otherwise the basename of `repo.root`.
 
 ### IMGR-7
 
-When a redacted image variant is requested, the scanner shall redact only the repository address and shall not redact HEAD SHA, score, level, metrics, file classifications, algorithm version, or scan timestamp.
+When a redacted image variant is requested, the scanner shall redact only the repository display name and shall not redact HEAD SHA, score, level, metrics, file classifications, algorithm version, or scan timestamp.
 
 ### IMGR-8
 
 When rendering both full and redacted image variants, the scanner shall derive both variants from the same report payload and shall apply redaction only to a presentation copy so that JSON, Markdown, and terminal report data remain unchanged.
 
+## Fingerprint
+
+### IMGR-10
+
+When rendering an image report, the scanner shall derive a deterministic SHA-256 hash from the decoded image pixels plus image dimensions and write it to a PNG `tEXt` metadata chunk named `AI-Maturity-Image-Hash`.
+The scanner may also write the report payload fingerprint to `AI-Maturity-Fingerprint` as auxiliary metadata.
+Neither value shall be visibly rendered in the image.
+The image hash is a content integrity signal and does not by itself prove issuer authenticity; issuer authenticity requires a trusted signed payload or a future web quick start record.
+
 ## Follow-up Implementation Outline
 
 1. Promote the `scripts/render-image-demo.mjs` prototype into a typed image renderer module after the report i18n work settles.
-2. Add image output options to the CLI using a format name such as `png` or a separate `--image` flag.
+2. Add image output options to the CLI using `png` as a format name.
 3. Keep `qrcode` and `sharp` as runtime dependencies and verify the latest `sharp` release against the Node 22 CI baseline.
 4. Convert `MaturityReport` into a fixed-size SVG string with explicit typography, spacing, and color tokens.
 5. Implement QR generation as a small helper that returns either QR SVG markup or a placeholder SVG group.
-6. Implement redaction as a pure function over the renderer view model, limited to the repository URL/root display field.
-7. Add tests that verify SVG generation, redacted-field scope, QR placeholder behavior, and PNG smoke rendering on the supported CI platforms.
+6. Implement redaction as a pure function over the renderer view model, limited to the repository display name field.
+7. Add tests that verify SVG generation, redacted-field scope, QR placeholder behavior, image hash metadata, report fingerprinting, and PNG smoke rendering on the supported CI platforms.
 
 ## References
 

@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { emptyRawMetrics } from "../src/metrics/types.ts";
+import {
+  PNG_FINGERPRINT_KEYWORD,
+  PNG_IMAGE_HASH_KEYWORD,
+  imagePixelHash,
+  readPngTextChunk,
+  renderImagePng,
+  renderImageSvg,
+  repoDisplayName,
+  reportFingerprint,
+} from "../src/report/image.ts";
 import { renderJson } from "../src/report/json.ts";
 import { renderMarkdown } from "../src/report/markdown.ts";
 import { renderTerminal } from "../src/report/terminal.ts";
@@ -184,6 +194,90 @@ describe("renderTerminal", () => {
   it("surfaces the algorithm version", () => {
     const out = stripAnsi(renderTerminal(sampleReport()));
     expect(out).toContain("algorithm v1");
+  });
+});
+
+describe("renderImage", () => {
+  it("derives the repository display name from remote URL or repo root", () => {
+    expect(
+      repoDisplayName(
+        sampleReport({
+          repo: {
+            root: "/work/fallback",
+            remoteUrl: "git@github.com:merico-ai/ai-maturity-scanner.git",
+            headSha: "abc1234567",
+            scannedAt: "2026-07-14T00:00:00Z",
+          },
+        }),
+      ),
+    ).toBe("ai-maturity-scanner");
+    expect(
+      repoDisplayName(sampleReport({ repo: { ...sampleReport().repo, root: "/work/local" } })),
+    ).toBe("local");
+  });
+
+  it("renders report data into an SVG image template", async () => {
+    const report = sampleReport({
+      repo: {
+        root: "/repo",
+        remoteUrl: "https://github.com/merico-ai/ai-maturity-scanner.git",
+        headSha: "abc1234567",
+        scannedAt: "2026-07-14T00:00:00Z",
+      },
+    });
+    const svg = await renderImageSvg(report);
+
+    expect(svg).toContain('width="1080" height="1920"');
+    expect(svg).toContain("Repository AI Maturity");
+    expect(svg).toContain("ai-maturity-scanner");
+    expect(svg).not.toContain("github.com");
+    expect(svg).not.toContain(".git");
+    expect(svg).toContain("L3");
+    expect(svg).toContain("67.5");
+    expect(svg).toContain("QR unavailable");
+    expect(svg).toContain("Scan to view my");
+    expect(svg).toContain("repository AI maturity");
+    expect(svg).not.toContain("Fingerprint");
+    expect(svg).not.toContain(reportFingerprint(report));
+    expect(svg).not.toContain("Full sharing variant");
+    expect(svg).not.toContain("Redacted sharing variant");
+  });
+
+  it("generates a deterministic SHA-256 report fingerprint", () => {
+    const fingerprint = reportFingerprint(sampleReport());
+
+    expect(fingerprint).toMatch(/^[a-f0-9]{64}$/);
+    expect(reportFingerprint(sampleReport())).toBe(fingerprint);
+    expect(reportFingerprint(sampleReport({ ami: 68 }))).not.toBe(fingerprint);
+  });
+
+  it("redacts only the repository display field", async () => {
+    const svg = await renderImageSvg(sampleReport(), { redacted: true });
+
+    expect(svg).toContain("Repository hidden");
+    expect(svg).not.toContain("/repo");
+    expect(svg).toContain("abc12345");
+    expect(svg).toContain("67.5");
+    expect(svg).toContain("L3");
+  });
+
+  it("renders Chinese image copy", async () => {
+    const svg = await renderImageSvg(
+      sampleReport({ meta: { algorithmVersion: "v1", lang: "zh" } }),
+    );
+
+    expect(svg).toContain("代码库 AI 成熟度");
+    expect(svg).toContain("扫码查看我的");
+    expect(svg).toContain("代码库 AI 成熟度");
+  });
+
+  it("renders a PNG buffer", async () => {
+    const report = sampleReport();
+    const png = await renderImagePng(report);
+
+    expect(png.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
+    expect(readPngTextChunk(png, PNG_FINGERPRINT_KEYWORD)).toBe(reportFingerprint(report));
+    expect(readPngTextChunk(png, PNG_IMAGE_HASH_KEYWORD)).toBe(await imagePixelHash(png));
   });
 });
 

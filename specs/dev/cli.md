@@ -20,12 +20,18 @@ When the target path resolves inside a git working tree, the CLI shall discover 
 
 ### CLI-11
 
-When the user passes an invalid `--format` value, the CLI shall print `error: invalid --format '<value>'. Expected one of: terminal, md, json` to stderr and shall terminate with exit code `1`.
+When the user passes an invalid `--format` value, the CLI shall print `error: invalid --format '<value>'. Expected one of: png, terminal, md, json` to stderr and shall terminate with exit code `1`.
 
 ### CLI-12
 
-When the scan succeeds, the CLI shall render the report according to the selected format and shall write UTF-8 output either to stdout or to the resolved `--out` file path.
+When the scan succeeds, the CLI shall render the report according to the selected format.
+For text formats, it shall write UTF-8 output either to stdout or to the resolved `--out` file path.
+For `png`, it shall write a PNG file to the resolved `--out` path, or to `ai-maturity-report.png` in the caller's current working directory when `--out` is omitted, and shall print `AI maturity report generated at: <path>` to stdout.
 
 ### CLI-13
 
 When `src/cli.ts` is imported as a module rather than executed as the entry point, the module shall not parse `process.argv` automatically.
+
+### CLI-20
+
+When `verify-image` is executed against a file without valid `AI-Maturity-Image-Hash` PNG metadata or with mismatched image hash metadata, the CLI shall print a user-facing error and terminate with exit code `1`.

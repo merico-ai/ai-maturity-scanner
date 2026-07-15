@@ -1,8 +1,8 @@
 # ai-maturity-scanner
 
-Scan a code repository and print its **AI coding maturity** — a level from
-L0–L4 plus a 0–100 AMI score. Standalone Node.js CLI. No server, no database,
-no auth.
+Scan a code repository and generate its **AI coding maturity** report — a
+level from L0–L4 plus a 0–100 AMI score. Standalone Node.js CLI. No server, no
+database, no auth.
 
 ```bash
 npx @merico-ai/maturity-scanner ./my-repo
@@ -11,7 +11,7 @@ npx @merico-ai/maturity-scanner ./my-repo
 It walks the repo's tracked files (via `git ls-files`), classifies each one
 into five maturity dimensions (`file_type`, `agent_type`, `file_extension`,
 `project_scope`, `skill_level`), aggregates them into 15 raw metrics,
-normalizes those into 3 weighted dimensions, and prints the result.
+normalizes those into 3 weighted dimensions, and renders the result.
 
 The classification rules, scoring caps, and level thresholds are maintained
 in this package and covered by focused unit and end-to-end tests.
@@ -30,17 +30,26 @@ Installs the `ai-maturity-scanner` command. Requires Node 22+. Requires
 ## Usage
 
 ```bash
-# Default: scan CWD, colored terminal output
+# Default: scan CWD, write ./ai-maturity-report.png, print the generated path
 ai-maturity-scanner
 
 # Explicit path
 ai-maturity-scanner ./my-repo
+
+# Terminal report to stdout
+ai-maturity-scanner --format terminal
 
 # Markdown report to stdout
 ai-maturity-scanner --format md
 
 # JSON report for CI gates
 ai-maturity-scanner --format json --out report.json
+
+# PNG report at a custom path
+ai-maturity-scanner --out report.png
+
+# Read and validate the hidden PNG fingerprint metadata
+ai-maturity-scanner verify-image report.png
 ```
 
 ### Flags
@@ -48,8 +57,15 @@ ai-maturity-scanner --format json --out report.json
 | Flag | Values | Default | Purpose |
 | --- | --- | --- | --- |
 | `[path]` | directory path | `.` | Repository to scan |
-| `-f, --format` | `terminal` \| `md` \| `json` | `terminal` | Output format |
-| `-o, --out` | file path | _(stdout)_ | Write to file instead of stdout |
+| `-f, --format` | `png` \| `terminal` \| `md` \| `json` | `png` | Output format |
+| `-o, --out` | file path | `./ai-maturity-report.png` for `png`, stdout for text | Write report output |
+| `--redacted` | boolean | `false` | Hide the repository path in PNG output |
+
+### Subcommands
+
+| Command | Purpose |
+| --- | --- |
+| `verify-image <file>` | Recompute the image pixel hash and validate hidden PNG metadata |
 
 ### Exit codes
 
@@ -140,21 +156,24 @@ The repo is a single ESM TypeScript package. Source layout:
 - `src/rules/` — path classification (mirrored from `rules.py`)
 - `src/metrics/` — aggregation + scoring (mirrored from `calculator.py`)
 - `src/git/`, `src/scan/` — repo walking and line counting
-- `src/report/` — `terminal` / `md` / `json` renderers
+- `src/report/` — `png` / `terminal` / `md` / `json` renderers
 - `tests/` — golden fixture, unit, and end-to-end tests
 
-### Image rendering demo
+### Image rendering
 
-The image report prototype uses `sharp` to rasterize a deterministic SVG
-template and `qrcode` to embed the QR code. It writes full and redacted sharing
-variants to `demo-output/`, which is ignored by git.
+The PNG report uses `sharp` to rasterize a deterministic 1080x1920 SVG template
+for mobile sharing.
+The QR slot is reserved for the future web quick start link and shows a
+placeholder until that URL is configured in the CLI. The PNG file includes a
+hidden `AI-Maturity-Image-Hash` metadata field derived from decoded image
+pixels, plus a report payload fingerprint. `verify-image` recomputes the pixel
+hash and compares it with the hidden value; issuer authenticity will still
+require a future signed web record.
 
 ```bash
-nvm exec 22 npm run demo:image
-nvm exec 22 node scripts/render-image-demo.mjs --lang zh
+nvm exec 22 npm run build
+nvm exec 22 node dist/cli.js --out report.png
 ```
-
-This is a development preview, not a stable CLI output format yet.
 
 Each translated file cites the upstream Python source by commit SHA in a
 header comment.

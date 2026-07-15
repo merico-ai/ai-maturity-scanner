@@ -77,6 +77,15 @@ export async function getHeadSha(cwd: string): Promise<string> {
   return (await runGit(["rev-parse", "HEAD"], { cwd })).trim();
 }
 
+export async function getRemoteUrl(cwd: string): Promise<string | undefined> {
+  try {
+    const url = (await runGit(["config", "--get", "remote.origin.url"], { cwd })).trim();
+    return url || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function getRepoRoot(cwd: string): Promise<string> {
   return (await runGit(["rev-parse", "--show-toplevel"], { cwd })).trim();
 }

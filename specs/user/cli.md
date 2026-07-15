@@ -20,11 +20,17 @@ When the user runs `ai-maturity-scanner <path>`, the CLI shall treat `<path>` as
 
 ### CLI-3
 
-When the user sets `-f` or `--format`, the CLI shall accept only `terminal`, `md`, or `json`, and shall use `terminal` when the option is omitted.
+When the user sets `-f` or `--format`, the CLI shall accept only `png`, `terminal`, `md`, or `json`, and shall use `png` when the option is omitted.
 
 ### CLI-4
 
-When the user sets `-o` or `--out`, the CLI shall write the rendered report to the specified file path instead of stdout.
+When the user sets `-o` or `--out`, the CLI shall write the rendered report to the specified file path.
+For `png` output, the CLI shall print `AI maturity report generated at: <path>` to stdout after writing the image.
+For text output formats, the CLI shall write to stdout when `--out` is omitted.
+
+### CLI-18
+
+When the user runs `ai-maturity-scanner verify-image <file>`, the CLI shall read the hidden `AI-Maturity-Image-Hash` PNG metadata, recompute the image pixel hash, and print `Fingerprint verified.` when the values match.
 
 ## Exit Codes
 

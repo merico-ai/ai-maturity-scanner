@@ -22,9 +22,14 @@ When the CLI is executed with each supported format and with one unsupported for
 ### CLI-16
 Verifies: [CLI-4](../user/cli.md#cli-4), [CLI-12](../dev/cli.md#cli-12)
 
-Where the target repository is valid, when the CLI is executed once with stdout output and once with `--out`, the stdout run shall print the report and the `--out` run shall create a UTF-8 file containing the selected rendered format.
+Where the target repository is valid, when the CLI is executed once with default output and once with `--out`, the default run shall create a PNG image and print `AI maturity report generated at: <path>`, and the `--out` run shall create the selected rendered format at the requested path.
 
 ### CLI-17
 Verifies: [CLI-5](../user/cli.md#cli-5), [CLI-6](../user/cli.md#cli-6), [CLI-7](../user/cli.md#cli-7), [CLI-8](../user/cli.md#cli-8), [CLI-9](../dev/cli.md#cli-9)
 
 When the CLI is exercised across successful execution, invalid arguments, a non-repository target, and an environment without `git` on `PATH`, the process shall return exit codes `0`, `1`, `2`, and `3` respectively.
+
+### CLI-21
+Verifies: [CLI-18](../user/cli.md#cli-18), [CLI-20](../dev/cli.md#cli-20)
+
+When the CLI is executed with `verify-image` against a generated PNG report, it shall recompute the image hash, print `Fingerprint verified.`, and fail when the metadata is absent or the image hash differs.

@@ -7,6 +7,7 @@ export type Level = "L0" | "L1" | "L2" | "L3" | "L4";
 export interface MaturityReport {
   repo: {
     root: string;
+    remoteUrl?: string;
     headSha: string;
     scannedAt: string;
   };
