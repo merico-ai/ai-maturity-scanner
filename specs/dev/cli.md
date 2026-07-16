@@ -27,6 +27,7 @@ When the user passes an invalid `--format` value, the CLI shall print `error: in
 When the scan succeeds, the CLI shall render the report according to the selected format.
 For text formats, it shall write UTF-8 output either to stdout or to the resolved `--out` file path.
 For `png`, it shall write a PNG file to the resolved `--out` path, or to `ai-maturity-report.png` in the caller's current working directory when `--out` is omitted, and shall print `AI maturity report generated at: <path>` to stdout.
+When `--verbose` is set and the primary output is written to a file, the CLI shall additionally render the terminal report to stdout after the primary output is written.
 
 ### CLI-13
 

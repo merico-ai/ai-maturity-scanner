@@ -96,9 +96,16 @@ export function renderReport(report: MaturityReport, format: TextFormat): string
   return renderTerminal(report);
 }
 
-async function run(
+export async function run(
   target: string,
-  opts: { format: Format; out?: string; lang: Lang; redacted?: boolean; specGlobs?: string[] },
+  opts: {
+    format: Format;
+    out?: string;
+    lang: Lang;
+    redacted?: boolean;
+    specGlobs?: string[];
+    verbose?: boolean;
+  },
 ): Promise<void> {
   if (!(await isGitInstalled())) {
     throw new UserError("git not found on PATH", 3);
@@ -111,11 +118,15 @@ async function run(
 
   const root = await getRepoRoot(cwd);
   const report = await buildReport(root, { lang: opts.lang, specGlobs: opts.specGlobs });
+  const printVerbose = opts.verbose && (opts.format === "png" || Boolean(opts.out));
 
   if (isTextFormat(opts.format)) {
     const output = renderReport(report, opts.format);
     if (opts.out) {
       await writeFile(resolve(opts.out), output, "utf8");
+      if (printVerbose) {
+        process.stdout.write(renderReport(report, "terminal"));
+      }
     } else {
       process.stdout.write(output);
     }
@@ -129,6 +140,9 @@ async function run(
   });
   await writeFile(outputPath, output);
   process.stdout.write(`AI maturity report generated at: ${outputPath}\n`);
+  if (printVerbose) {
+    process.stdout.write(renderReport(report, "terminal"));
+  }
 }
 
 async function verifyImage(file: string): Promise<void> {
@@ -172,6 +186,7 @@ program
   .option("-l, --lang <lang>", "report language: zh | en", DEFAULT_LANG)
   .option("-o, --out <file>", "write report file path")
   .option("--redacted", "redact repository address in png output")
+  .option("--verbose", "print scan results and metric data to stdout when primary output is a file")
   .option(
     "-g, --spec-glob <glob>",
     "glob matching spec files (repeatable); overrides .ai-maturity-scanner.json",
@@ -186,6 +201,7 @@ program
         lang: string;
         out?: string;
         redacted?: boolean;
+        verbose?: boolean;
         specGlob?: string[];
       },
     ) => {
@@ -205,6 +221,7 @@ program
           lang: opts.lang,
           out: opts.out,
           redacted: opts.redacted,
+          verbose: opts.verbose,
           specGlobs: opts.specGlob,
         });
       } catch (err) {

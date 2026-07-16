@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { buildReport, renderReport } from "../src/cli.ts";
+import { buildReport, renderReport, run } from "../src/cli.ts";
 import { aggregateRawMetrics } from "../src/metrics/aggregate.ts";
 import { score } from "../src/metrics/score.ts";
 import { collectFiles } from "../src/scan/collect.ts";
@@ -153,6 +153,35 @@ describe("e2e: full pipeline on a fixture git repo", () => {
     const term = renderReport(report, "terminal");
     expect(term).toContain("AI Maturity Report");
     expect(term).toContain(report.level);
+  });
+
+  itOrSkip("verbose png output also prints terminal metrics to stdout", async () => {
+    const outputPath = join(repoDir, "verbose-report.png");
+    const writes: string[] = [];
+    const originalWrite = process.stdout.write;
+    process.stdout.write = ((chunk: string | Uint8Array) => {
+      writes.push(typeof chunk === "string" ? chunk : chunk.toString());
+      return true;
+    }) as typeof process.stdout.write;
+
+    try {
+      await run(repoDir, {
+        format: "png",
+        out: outputPath,
+        lang: "en",
+        verbose: true,
+      });
+    } finally {
+      process.stdout.write = originalWrite;
+    }
+
+    const stdout = writes.join("");
+    expect(stdout).toContain(`AI maturity report generated at: ${outputPath}`);
+    expect(stdout).toContain("AI Maturity Report");
+    expect(stdout).toContain("Level:");
+    expect(stdout).toContain("AMI:");
+    expect(stdout).toContain("Configuration depth");
+    expect(stdout).toContain("mcp_count");
   });
 
   itOrSkip("collectFiles honors a custom spec glob over the default", async () => {

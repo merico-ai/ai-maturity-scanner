@@ -22,7 +22,7 @@ When the CLI is executed with each supported format and with one unsupported for
 ### CLI-16
 Verifies: [CLI-4](../user/cli.md#cli-4), [CLI-12](../dev/cli.md#cli-12)
 
-Where the target repository is valid, when the CLI is executed once with default output and once with `--out`, the default run shall create a PNG image and print `AI maturity report generated at: <path>`, and the `--out` run shall create the selected rendered format at the requested path.
+Where the target repository is valid, when the CLI is executed once with default output, once with `--out`, and once with `--verbose` in separate runs, the default run shall create a PNG image and print `AI maturity report generated at: <path>`, the `--out` run shall create the selected rendered format at the requested path, and the verbose run shall also print scan results and metric data to stdout.
 
 ### CLI-17
 Verifies: [CLI-5](../user/cli.md#cli-5), [CLI-6](../user/cli.md#cli-6), [CLI-7](../user/cli.md#cli-7), [CLI-8](../user/cli.md#cli-8), [CLI-9](../dev/cli.md#cli-9)

@@ -48,6 +48,9 @@ ai-maturity-scanner --format json --out report.json
 # PNG report at a custom path
 ai-maturity-scanner --out report.png
 
+# PNG report plus terminal scan results and metrics on stdout
+ai-maturity-scanner --verbose
+
 # Read and validate the hidden PNG fingerprint metadata
 ai-maturity-scanner verify-image report.png
 ```
@@ -60,6 +63,7 @@ ai-maturity-scanner verify-image report.png
 | `-f, --format` | `png` \| `terminal` \| `md` \| `json` | `png` | Output format |
 | `-o, --out` | file path | `./ai-maturity-report.png` for `png`, stdout for text | Write report output |
 | `--redacted` | boolean | `false` | Hide the repository path in PNG output |
+| `--verbose` | boolean | `false` | Also print terminal scan results and metrics when the primary output is written to a file |
 
 ### Subcommands
 
