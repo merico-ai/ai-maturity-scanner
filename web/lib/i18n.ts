@@ -8,8 +8,24 @@ export const vibeinsightUrl = "https://merico.cn/vibeinsight";
 
 export const githubUrl = "https://github.com/merico-ai/ai-maturity-scanner";
 
+export function normalizePathname(pathname: string) {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+  const pathnameWithoutBase =
+    basePath && (pathname === basePath || pathname.startsWith(`${basePath}/`))
+      ? pathname.slice(basePath.length) || "/"
+      : pathname;
+
+  return pathnameWithoutBase === "/"
+    ? pathnameWithoutBase
+    : pathnameWithoutBase.replace(/\/+$/, "") || "/";
+}
+
 export function localeFromPathname(pathname: string): Locale {
-  return pathname === "/en" || pathname.startsWith("/en/") ? "en" : defaultLocale;
+  const normalizedPathname = normalizePathname(pathname);
+
+  return normalizedPathname === "/en" || normalizedPathname.startsWith("/en/")
+    ? "en"
+    : defaultLocale;
 }
 
 export function localizePath(path: string, locale: Locale) {
@@ -21,9 +37,12 @@ export function localizePath(path: string, locale: Locale) {
 }
 
 export function alternateLocalePath(pathname: string, locale: Locale) {
-  const currentLocale = localeFromPathname(pathname);
+  const normalizedPathname = normalizePathname(pathname);
+  const currentLocale = localeFromPathname(normalizedPathname);
   const normalizedPath =
-    currentLocale === "en" ? pathname.replace(/^\/en(?=\/|$)/, "") || "/" : pathname;
+    currentLocale === "en"
+      ? normalizedPathname.replace(/^\/en(?=\/|$)/, "") || "/"
+      : normalizedPathname;
 
   return localizePath(normalizedPath, locale);
 }

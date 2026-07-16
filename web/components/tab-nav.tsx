@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { localeFromPathname, localizePath, messages } from "../lib/i18n";
+import { localeFromPathname, localizePath, messages, normalizePathname } from "../lib/i18n";
 
 const tabRoutes = [
   { href: "/", labelKey: "home" },
@@ -47,6 +47,7 @@ function CloseIcon() {
 
 export function TabNav() {
   const pathname = usePathname();
+  const normalizedPathname = normalizePathname(pathname);
   const locale = localeFromPathname(pathname);
   const nav = messages[locale].nav;
   const [open, setOpen] = useState(false);
@@ -57,7 +58,7 @@ export function TabNav() {
       <nav className="hidden min-w-0 gap-1 rounded-md border border-line bg-surface p-1 shadow-sm lg:flex lg:flex-none">
         {tabRoutes.map((tab) => {
           const href = localizePath(tab.href, locale);
-          const active = pathname === href;
+          const active = normalizedPathname === normalizePathname(href);
 
           return (
             <Link
@@ -101,7 +102,7 @@ export function TabNav() {
             <div className="flex flex-col gap-1">
               {tabRoutes.map((tab) => {
                 const href = localizePath(tab.href, locale);
-                const active = pathname === href;
+                const active = normalizedPathname === normalizePathname(href);
 
                 return (
                   <Link
