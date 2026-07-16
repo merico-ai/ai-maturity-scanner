@@ -17,7 +17,7 @@ When representative raw metrics are scored across repositories for each threshol
 ### MAT-12
 Verifies: [MAT-4](../dev/maturity.md#mat-4), [MAT-5](../dev/maturity.md#mat-5), [MAT-6](../dev/maturity.md#mat-6)
 
-Where collected files include ability fixtures, plain Markdown documents, repeated agent types, nested instruction files, and non-matching nested documents, when raw metrics are aggregated, the output shall include the full raw metric set, shall count specs only from allowed Markdown files, shall use the maximum instruction line count, shall count distinct agent types, and shall count only distinct `apps/<name>/` and `libs/<name>/` instruction prefixes for `subproject_coverage`.
+Where collected files include ability fixtures, plain Markdown documents, repeated agent types, nested instruction files, supported MCP config files with overlapping server names, and non-matching nested documents, when raw metrics are aggregated, the output shall include the full raw metric set, shall count specs only from allowed Markdown files, shall use the maximum instruction line count, shall count distinct agent types, shall count unique supported MCP server names for `mcp_count`, and shall count only distinct `apps/<name>/` and `libs/<name>/` instruction prefixes for `subproject_coverage`.
 
 ### MAT-13
 Verifies: [MAT-7](../dev/maturity.md#mat-7), [MAT-8](../dev/maturity.md#mat-8), [MAT-9](../dev/maturity.md#mat-9)

@@ -13,6 +13,7 @@ It does not cover command-line invocation, path tagging rules, or renderer-speci
 ### MAT-4
 
 When aggregating collected files, the scanner shall compute raw metrics for `skill_count`, `skill_line_count`, `advanced_skill_count`, `skill_resource_count`, `agent_count`, `agent_line_count`, `command_count`, `command_line_count`, `mcp_count`, `ai_instruction_files`, `instruction_max_line_count`, `specs_file_count`, `specs_line_count`, `subproject_coverage`, and helper metric `agent_type_distinct`.
+For `mcp_count`, the scanner shall count unique trimmed MCP server names parsed from explicitly supported repository-level MCP config sources only: Claude Code `.mcp.json` and `mcp.json` top-level `mcpServers` object keys, and Codex `.codex/config.toml` top-level `mcp_servers` object or table keys. The scanner shall deduplicate the same server name across supported files, ignore empty trimmed names, treat names as case-sensitive, and return no names on parse failure without failing the scan.
 
 ### MAT-5
 

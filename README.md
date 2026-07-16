@@ -91,7 +91,7 @@ reserved for repos with no AI instruction file at all.
 
 Where:
 
-- **ability_applied** = `skill + skill_resource + agent + command + mcp` file counts
+- **ability_applied** = `skill + skill_resource + agent + command + mcp`, where `mcp` is the count of unique supported MCP server names
 - **advanced_skill** = skills whose directory bundles scripts/ or script files
 - **skill_engineering_rate** = `advanced_skill / skill`
 - **specs_files** = Markdown files that aren't themselves ability fixtures
@@ -136,7 +136,7 @@ A non-exhaustive list of path patterns the classifier looks for:
 - **Hook**: `.codex/hooks.json`
 - **Config**: `.claude/settings.json`, `opencode.json`, `.codex/config.toml`,
   `.gemini/settings.json`, `.continue/config.json`
-- **MCP**: `.mcp.json`, `mcp.json`
+- **MCP**: unique server names parsed from Claude Code `.mcp.json` / `mcp.json` and Codex `.codex/config.toml`
 
 Plus the matching `agent_type` dimension (claude, codex, cursor, gemini, etc.)
 for files under each tool's directory.

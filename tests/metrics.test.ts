@@ -387,4 +387,27 @@ describe("aggregateRawMetrics", () => {
     const m = aggregateRawMetrics(files);
     expect(m.subprojectCoverage).toBe(0);
   });
+
+  it("counts unique MCP server names across supported files", () => {
+    const files: FileWithTags[] = [
+      {
+        ...ft(".mcp.json", 0, [{ kind: "file_type", value: "mcp" }]),
+        mcpServerNames: ["github", "docs", " docs ", ""],
+      },
+      {
+        ...ft("mcp.json", 0, [{ kind: "file_type", value: "mcp" }]),
+        mcpServerNames: ["github", "filesystem"],
+      },
+      {
+        ...ft(".codex/config.toml", 0, [
+          { kind: "file_type", value: "config" },
+          { kind: "agent_type", value: "codex" },
+        ]),
+        mcpServerNames: ["filesystem", "memory"],
+      },
+    ];
+
+    const m = aggregateRawMetrics(files);
+    expect(m.mcpCount).toBe(4);
+  });
 });

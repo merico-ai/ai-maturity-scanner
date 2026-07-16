@@ -62,6 +62,7 @@ export function aggregateRawMetrics(files: readonly FileWithTags[]): MaturityRaw
   }
 
   const agentTypeValues = new Set<string>();
+  const mcpServerNames = new Set<string>();
   const subprojectInstructionPaths: string[] = [];
 
   for (const f of files) {
@@ -71,6 +72,12 @@ export function aggregateRawMetrics(files: readonly FileWithTags[]): MaturityRaw
     const skillLevel = findTagValue(f.tags, "skill_level");
     const ext = findTagValue(f.tags, "file_extension");
     const scope = findTagValue(f.tags, "project_scope");
+    for (const name of f.mcpServerNames ?? []) {
+      const trimmed = name.trim();
+      if (trimmed) {
+        mcpServerNames.add(trimmed);
+      }
+    }
 
     if (fileType === FILE_TYPE_SKILL) {
       metrics.skillCount += 1;
@@ -89,9 +96,6 @@ export function aggregateRawMetrics(files: readonly FileWithTags[]): MaturityRaw
     if (fileType === FILE_TYPE_COMMAND) {
       metrics.commandCount += 1;
       metrics.commandLineCount += lines;
-    }
-    if (fileType === FILE_TYPE_MCP) {
-      metrics.mcpCount += 1;
     }
     if (fileType === FILE_TYPE_INSTRUCTION) {
       metrics.aiInstructionFiles += 1;
@@ -112,6 +116,7 @@ export function aggregateRawMetrics(files: readonly FileWithTags[]): MaturityRaw
   }
 
   metrics.agentTypeDistinct = agentTypeValues.size;
+  metrics.mcpCount = mcpServerNames.size;
   metrics.subprojectCoverage = countSubprojectPrefixes(subprojectInstructionPaths);
   return metrics;
 }

@@ -12,6 +12,7 @@ import { buildRules } from "../rules/patterns.ts";
 import { classifyFileInContext } from "../rules/tagger.ts";
 import type { CollectedFile, FileWithTags, Tag } from "../types.ts";
 import { countLines } from "./line-count.ts";
+import { readMcpServerNames } from "./mcp.ts";
 
 const MARKDOWN_EXTS = new Set(["md", "mdx", "mdc"]);
 
@@ -76,7 +77,8 @@ export async function collectFiles(
       const ext = entry.tags.find((t) => t.kind === "file_extension")?.value;
       const isMd = ext !== undefined && MARKDOWN_EXTS.has(ext);
       const lines = isMd ? await safeCountLines(join(repoRoot, entry.path)) : 0;
-      out[i] = { path: entry.path, tags: entry.tags, size, lines };
+      const mcpServerNames = await readMcpServerNames(repoRoot, entry.path);
+      out[i] = { path: entry.path, tags: entry.tags, size, lines, mcpServerNames };
     }
   }
 

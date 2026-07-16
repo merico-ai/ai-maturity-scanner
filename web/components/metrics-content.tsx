@@ -38,7 +38,7 @@ const imageMetricDetails = {
       label: "MCP 服务",
       key: "mcp_count",
       formula: "score = min(mcp_count, 3) / 3 × 100",
-      raw: "统计 MCP 服务配置文件的数量，例如 .mcp.json。",
+      raw: "统计明确支持的仓库级 MCP 配置来源里解析出的唯一服务名数量，目前包括 Claude Code 的 .mcp.json / mcp.json 与 Codex 的 .codex/config.toml。",
     },
     {
       label: "指令文件",
@@ -88,7 +88,7 @@ const imageMetricDetails = {
       label: "MCP servers",
       key: "mcp_count",
       formula: "score = min(mcp_count, 3) / 3 × 100",
-      raw: "Counts MCP server configuration files, such as .mcp.json.",
+      raw: "Counts unique MCP server names parsed from explicitly supported repository-level MCP sources: Claude Code .mcp.json / mcp.json and Codex .codex/config.toml.",
     },
     {
       label: "Instructions",

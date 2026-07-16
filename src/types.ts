@@ -4,6 +4,7 @@ export interface CollectedFile {
   path: string;
   size?: number | null;
   lineCount?: number | null;
+  mcpServerNames?: string[] | null;
 }
 
 export interface Tag {
@@ -16,6 +17,7 @@ export interface FileWithTags {
   tags: Tag[];
   size: number;
   lines: number;
+  mcpServerNames?: string[];
 }
 
 export type TagKind =

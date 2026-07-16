@@ -51,7 +51,8 @@
     "minimatch": "^10.2.5",
     "picocolors": "^1.1.1",
     "qrcode": "^1.5.4",
-    "sharp": "^0.35.3"
+    "sharp": "^0.35.3",
+    "smol-toml": "^1.7.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

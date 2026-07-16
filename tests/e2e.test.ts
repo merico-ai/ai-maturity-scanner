@@ -60,7 +60,30 @@ beforeAll(async () => {
   await mkdir(join(repoDir, "agents"), { recursive: true });
   await writeFile(join(repoDir, "agents", "researcher.md"), "# Researcher\n");
 
-  await writeFile(join(repoDir, ".mcp.json"), "{}\n");
+  await writeFile(
+    join(repoDir, ".mcp.json"),
+    `${JSON.stringify(
+      {
+        mcpServers: {
+          github: { command: "npx" },
+          filesystem: { command: "npx" },
+        },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  await mkdir(join(repoDir, ".codex"), { recursive: true });
+  await writeFile(
+    join(repoDir, ".codex", "config.toml"),
+    `
+[mcp_servers.github]
+command = "npx"
+
+[mcp_servers.memory]
+command = "uvx"
+`,
+  );
 
   await mkdir(join(repoDir, "apps", "web"), { recursive: true });
   await writeFile(join(repoDir, "apps", "web", "CLAUDE.md"), "# Web\n");
@@ -93,9 +116,10 @@ describe("e2e: full pipeline on a fixture git repo", () => {
     expect(metrics.aiInstructionFiles).toBe(2); // CLAUDE.md + apps/web/CLAUDE.md
     expect(metrics.skillCount).toBe(2);
     expect(metrics.advancedSkillCount).toBe(1);
+    expect(metrics.mcpCount).toBe(3);
     expect(metrics.specsFileCount).toBeGreaterThanOrEqual(12);
     expect(metrics.subprojectCoverage).toBe(1); // apps/web/
-    expect(metrics.agentTypeDistinct).toBe(1); // claude
+    expect(metrics.agentTypeDistinct).toBe(2); // claude + codex
 
     const result = score(metrics);
     expect(result.level).toMatch(/^L[0-4]$/);
