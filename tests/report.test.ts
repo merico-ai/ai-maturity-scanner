@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { emptyRawMetrics } from "../src/metrics/types.ts";
 import {
+  IMAGE_REPORT_QR_TARGET_URL,
   PNG_FINGERPRINT_KEYWORD,
   PNG_IMAGE_HASH_KEYWORD,
   imagePixelHash,
@@ -244,6 +245,17 @@ describe("renderImage", () => {
     expect(svg).not.toContain(reportFingerprint(report));
     expect(svg).not.toContain("Full sharing variant");
     expect(svg).not.toContain("Redacted sharing variant");
+  });
+
+  it("embeds a QR code when a target URL is configured", async () => {
+    const svg = await renderImageSvg(sampleReport(), {
+      qrTargetUrl: IMAGE_REPORT_QR_TARGET_URL,
+    });
+
+    expect(svg).not.toContain("QR unavailable");
+    expect(svg).toContain("<svg");
+    expect(svg).toContain('width="150" height="150"');
+    expect(svg).toContain("Scan report");
   });
 
   it("generates a deterministic SHA-256 report fingerprint", () => {

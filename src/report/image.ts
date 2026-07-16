@@ -6,6 +6,8 @@ import type { ImageSvgOptions } from "./image-svg.ts";
 import type { MaturityReport } from "./types.ts";
 
 const PNG_SIGNATURE_LENGTH = 8;
+export const IMAGE_REPORT_QR_TARGET_URL =
+  "https://merico-ai.github.io/ai-maturity-scanner/quick-start";
 export const PNG_FINGERPRINT_KEYWORD = "AI-Maturity-Fingerprint";
 export const PNG_IMAGE_HASH_KEYWORD = "AI-Maturity-Image-Hash";
 

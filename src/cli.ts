@@ -16,6 +16,7 @@ import { aggregateRawMetrics } from "./metrics/aggregate.ts";
 import { determineLevel, scoreAmi } from "./metrics/score.ts";
 import { ALGORITHM_VERSION } from "./metrics/types.ts";
 import {
+  IMAGE_REPORT_QR_TARGET_URL,
   PNG_FINGERPRINT_KEYWORD,
   PNG_IMAGE_HASH_KEYWORD,
   imagePixelHash,
@@ -136,6 +137,7 @@ export async function run(
   const outputPath = resolve(opts.out ?? "ai-maturity-report.png");
   const output = await renderImagePng(report, {
     lang: opts.lang,
+    qrTargetUrl: IMAGE_REPORT_QR_TARGET_URL,
     redacted: opts.redacted,
   });
   await writeFile(outputPath, output);
