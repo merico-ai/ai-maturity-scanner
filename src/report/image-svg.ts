@@ -153,6 +153,41 @@ function truncate(value: string, maxLength: number): string {
   return value.length > maxLength ? `${value.slice(0, maxLength - 3)}...` : value;
 }
 
+function levelBadgeColor(level: string): string {
+  switch (level) {
+    case "L0":
+      return "#e05d44";
+    case "L1":
+      return "#fe7d37";
+    case "L2":
+      return "#dfb317";
+    case "L3":
+      return "#4c1";
+    case "L4":
+      return "#007ec6";
+    default:
+      return "#9f9f9f";
+  }
+}
+
+function levelBadge(level: string, x: number, y: number): string {
+  const label = "AI Maturity";
+  const labelWidth = 164;
+  const valueWidth = 118;
+  const height = 58;
+  const radius = 8;
+
+  return `
+    <g role="img" aria-label="${escapeXml(`${label} badge ${level}`)}">
+      <rect x="${x}" y="${y}" width="${labelWidth + valueWidth}" height="${height}" rx="${radius}" fill="#555"/>
+      <path d="M ${x + labelWidth} ${y} h ${valueWidth - radius} a ${radius} ${radius} 0 0 1 ${radius} ${radius} v ${height - 2 * radius} a ${radius} ${radius} 0 0 1 -${radius} ${radius} h -${valueWidth} z" fill="${levelBadgeColor(level)}"/>
+      <path d="M ${x + labelWidth - 1} ${y} v ${height} h 1 v -${height} z" fill="#000" opacity="0.12"/>
+      ${svgText(label, x + labelWidth / 2, y + 38, { size: 24, weight: 750, fill: "#ffffff", anchor: "middle" })}
+      ${svgText(level, x + labelWidth + valueWidth / 2, y + 40, { size: 31, weight: 900, fill: "#ffffff", anchor: "middle" })}
+    </g>
+  `;
+}
+
 function statCard(label: string, value: string, x: number, y: number, width = 285): string {
   return `
     <rect x="${x}" y="${y}" width="${width}" height="138" rx="24" fill="#ffffff" stroke="#d8dee8"/>
@@ -245,9 +280,7 @@ export function renderImageSvg(report: ImageReportData, opts: ImageSvgOptions = 
   <rect x="88" y="334" width="904" height="304" rx="34" fill="#182133"/>
   ${svgText(t.amiScore, 132, 414, { size: 30, weight: 750, fill: "#b9c7dc" })}
   ${svgText(report.ami.toFixed(1), 132, 550, { size: 112, weight: 900, fill: "#ffffff" })}
-  <circle cx="840" cy="486" r="86" fill="#ffffff" opacity="0.12"/>
-  ${svgText(report.level, 840, 510, { size: 68, weight: 900, fill: "#ffffff", anchor: "middle" })}
-  ${svgText(t.level, 840, 590, { size: 25, weight: 750, fill: "#b9c7dc", anchor: "middle" })}
+  ${levelBadge(report.level, 676, 456)}
 
   ${statCard(t.aiFiles, String(report.files.length), 88, 704)}
   ${statCard(t.abilityApplied, String(raw.skillCount + raw.skillResourceCount + raw.agentCount + raw.commandCount + raw.mcpCount), 397, 704)}

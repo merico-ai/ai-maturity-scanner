@@ -234,6 +234,9 @@ describe("renderImage", () => {
     expect(svg).not.toContain(".git");
     expect(svg).toContain("L3");
     expect(svg).toContain("67.5");
+    expect(svg).toContain('role="img" aria-label="AI Maturity badge L3"');
+    expect(svg).toContain("AI Maturity");
+    expect(svg).toContain('fill="#4c1"');
     expect(svg).toContain("QR unavailable");
     expect(svg).toContain("Scan to view my");
     expect(svg).toContain("repository AI maturity");
