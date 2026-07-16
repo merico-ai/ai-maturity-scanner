@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "commander": "^12.1.0",
+    "minimatch": "^10.2.5",
     "picocolors": "^1.1.1",
     "qrcode": "^1.5.4",
     "sharp": "^0.35.3"

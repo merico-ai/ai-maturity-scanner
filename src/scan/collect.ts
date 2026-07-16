@@ -8,6 +8,7 @@
 import { open } from "node:fs/promises";
 import { join } from "node:path";
 import { listTrackedFiles } from "../git/workspace.ts";
+import { buildRules } from "../rules/patterns.ts";
 import { classifyFileInContext } from "../rules/tagger.ts";
 import type { CollectedFile, FileWithTags, Tag } from "../types.ts";
 import { countLines } from "./line-count.ts";
@@ -37,6 +38,8 @@ async function fileSize(repoRoot: string, relativePath: string): Promise<number>
 export interface CollectOptions {
   /** Cap on parallel file reads. Defaults to 16. */
   concurrency?: number;
+  /** Globs selecting spec documents; defaults to the built-in spec glob. */
+  specGlobs?: readonly string[];
 }
 
 /**
@@ -51,9 +54,10 @@ export async function collectFiles(
   const collected: CollectedFile[] = paths.map((p) => ({ path: p }));
 
   // Tag every file once, in memory.
+  const rules = buildRules(opts.specGlobs);
   const tagged = collected.map((f) => ({
     path: f.path,
-    tags: classifyFileInContext(f, collected),
+    tags: classifyFileInContext(f, collected, rules),
   }));
 
   // Keep only files that can move a metric needle.

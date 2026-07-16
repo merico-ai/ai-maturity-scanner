@@ -3,20 +3,21 @@
 import type { CollectedFile, Tag } from "../types.ts";
 import { isSkillMd, parseAdvancedSkill } from "./advanced-skill.ts";
 import {
-  ALL_RULES,
+  DEFAULT_RULES,
   DIMENSIONS,
   classifyFileExtension,
   classifyProjectScope,
   normalizePath,
 } from "./patterns.ts";
+import type { Rule } from "./patterns.ts";
 
-export function classifyFile(path: string): Tag[] {
+export function classifyFile(path: string, rules: readonly Rule[] = DEFAULT_RULES): Tag[] {
   const normalized = normalizePath(path);
   const tags: Tag[] = [];
   for (const dimension of DIMENSIONS) {
-    for (const rule of ALL_RULES) {
+    for (const rule of rules) {
       if (rule.kind !== dimension) continue;
-      if (rule.pattern.test(normalized)) {
+      if (rule.test(normalized)) {
         tags.push({ kind: rule.kind, value: rule.value });
         break;
       }
@@ -36,9 +37,10 @@ export function classifyFile(path: string): Tag[] {
 export function classifyFileInContext(
   file: CollectedFile,
   allFiles: readonly CollectedFile[],
+  rules: readonly Rule[] = DEFAULT_RULES,
 ): Tag[] {
   if (!file.path) return [];
-  const tags = classifyFile(file.path);
+  const tags = classifyFile(file.path, rules);
   if (isSkillMd(file.path)) {
     tags.push(...parseAdvancedSkill(file, allFiles));
   }
@@ -47,11 +49,12 @@ export function classifyFileInContext(
 
 export function classifyFiles(
   files: readonly CollectedFile[],
+  rules: readonly Rule[] = DEFAULT_RULES,
 ): Array<{ path: string; tags: Tag[] }> {
   return files
     .filter((f) => f.path)
     .map((f) => ({
       path: normalizePath(f.path),
-      tags: classifyFileInContext(f, files),
+      tags: classifyFileInContext(f, files, rules),
     }));
 }

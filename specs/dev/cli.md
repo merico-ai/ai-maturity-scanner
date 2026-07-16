@@ -35,3 +35,17 @@ When `src/cli.ts` is imported as a module rather than executed as the entry poin
 ### CLI-20
 
 When `verify-image` is executed against a file without valid `AI-Maturity-Image-Hash` PNG metadata or with mismatched image hash metadata, the CLI shall print a user-facing error and terminate with exit code `1`.
+
+## Configuration
+
+### CLI-21
+
+When a `.ai-maturity-scanner.json` file exists at the repository root with a `specGlobs` field that is an array of strings, the scanner shall classify repository-relative paths matching any of those globs as `file_type=spec`, evaluated with `minimatch` and dotfile matching enabled.
+
+### CLI-22
+
+When the user passes `--spec-glob <glob>` one or more times, the scanner shall use exactly the provided globs to classify `file_type=spec`, overriding `.ai-maturity-scanner.json`; when neither `--spec-glob` nor a valid `specGlobs` configuration is provided, the scanner shall use the default glob `**/specs/**/*.md`.
+
+### CLI-23
+
+When `.ai-maturity-scanner.json` is malformed JSON, is not a JSON object, or contains a `specGlobs` value that is not an array of strings, the scanner shall log a warning to stderr and continue the scan using the CLI-provided or default globs.

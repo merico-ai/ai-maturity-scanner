@@ -90,9 +90,16 @@ export async function getRepoRoot(cwd: string): Promise<string> {
   return (await runGit(["rev-parse", "--show-toplevel"], { cwd })).trim();
 }
 
-/** List repo-relative tracked paths (respects .gitignore, matches `git ls-files`). */
+/**
+ * List repo-relative tracked paths (respects .gitignore, matches `git ls-files`).
+ *
+ * Uses `-z` (NUL-separated) output so paths are returned raw: forward-slash
+ * separators on every platform and no `core.quotePath` C-quoting, which would
+ * otherwise turn non-ASCII names into `"\nnn"` strings (with literal backslashes
+ * that confuse both `normalizePath` and glob matching).
+ */
 export async function listTrackedFiles(cwd: string): Promise<string[]> {
-  const stdout = await runGit(["ls-files", "--full-name"], { cwd });
+  const stdout = await runGit(["ls-files", "-z", "--full-name"], { cwd });
   if (!stdout) return [];
-  return stdout.split("\n").filter(Boolean);
+  return stdout.split("\0").filter(Boolean);
 }

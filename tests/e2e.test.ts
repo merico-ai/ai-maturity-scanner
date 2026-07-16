@@ -130,4 +130,33 @@ describe("e2e: full pipeline on a fixture git repo", () => {
     expect(term).toContain("AI Maturity Report");
     expect(term).toContain(report.level);
   });
+
+  itOrSkip("collectFiles honors a custom spec glob over the default", async () => {
+    // Add a committed spec under a non-default path.
+    await mkdir(join(repoDir, "design", "specs"), { recursive: true });
+    await writeFile(join(repoDir, "design", "specs", "feat.md"), "# Feat spec\n");
+    await git(repoDir, ["add", "."]);
+    await git(repoDir, ["commit", "-q", "-m", "design specs"]);
+
+    // Custom glob replaces the default; only design/specs is tagged `spec`.
+    // (specsFileCount counts all Markdown, so assert the tag, which the glob controls.)
+    const files = await collectFiles(repoDir, { specGlobs: ["design/specs/**/*.md"] });
+    const specPaths = files
+      .filter((f) => f.tags.some((t) => t.kind === "file_type" && t.value === "spec"))
+      .map((f) => f.path);
+    expect(specPaths).toEqual(["design/specs/feat.md"]);
+  });
+
+  itOrSkip("returns un-quoted non-ASCII paths that still match the spec glob", async () => {
+    // core.quotePath would C-quote this as "\346\245\246..." (with backslashes);
+    // `-z` output keeps the raw filename so normalizePath + the glob see the real path.
+    await writeFile(join(repoDir, "specs", "用户故事.md"), "# 用户故事\n");
+    await git(repoDir, ["add", "."]);
+    await git(repoDir, ["commit", "-q", "-m", "cjk spec"]);
+
+    const files = await collectFiles(repoDir);
+    const cjk = files.find((f) => f.path === "specs/用户故事.md");
+    expect(cjk, "expected the raw CJK path in collected files").toBeDefined();
+    expect(cjk?.tags.some((t) => t.kind === "file_type" && t.value === "spec")).toBe(true);
+  });
 });

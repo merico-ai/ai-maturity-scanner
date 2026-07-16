@@ -2,6 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { Command } from "commander";
+import { loadConfig, resolveSpecGlobs } from "./config.ts";
 import {
   checkIsGitRepo,
   getHeadSha,
@@ -55,6 +56,8 @@ const SHA256_RE = /^[a-f0-9]{64}$/i;
 
 export interface BuildReportOptions {
   lang?: Lang;
+  /** CLI-provided spec globs; override the config file when non-empty. */
+  specGlobs?: readonly string[];
 }
 
 export async function buildReport(
@@ -63,7 +66,9 @@ export async function buildReport(
 ): Promise<MaturityReport> {
   const headSha = await getHeadSha(repoRoot);
   const remoteUrl = await getRemoteUrl(repoRoot);
-  const files = await collectFiles(repoRoot);
+  const cfg = await loadConfig(repoRoot);
+  const specGlobs = resolveSpecGlobs(cfg.specGlobs, opts.specGlobs ?? []);
+  const files = await collectFiles(repoRoot, { specGlobs });
 
   const metrics = aggregateRawMetrics(files);
   const { ami, dimensions, normalizedMetrics } = scoreAmi(metrics);
@@ -93,7 +98,7 @@ export function renderReport(report: MaturityReport, format: TextFormat): string
 
 async function run(
   target: string,
-  opts: { format: Format; out?: string; lang: Lang; redacted?: boolean },
+  opts: { format: Format; out?: string; lang: Lang; redacted?: boolean; specGlobs?: string[] },
 ): Promise<void> {
   if (!(await isGitInstalled())) {
     throw new UserError("git not found on PATH", 3);
@@ -105,7 +110,7 @@ async function run(
   }
 
   const root = await getRepoRoot(cwd);
-  const report = await buildReport(root, { lang: opts.lang });
+  const report = await buildReport(root, { lang: opts.lang, specGlobs: opts.specGlobs });
 
   if (isTextFormat(opts.format)) {
     const output = renderReport(report, opts.format);
@@ -152,6 +157,11 @@ async function verifyImage(file: string): Promise<void> {
   process.stdout.write("Fingerprint verified.\n");
 }
 
+// Commander coercion: collect repeated `--spec-glob` values into an array.
+function appendSpecGlob(value: string, previous: string[]): string[] {
+  return previous.concat(value);
+}
+
 const program = new Command();
 
 program
@@ -162,10 +172,22 @@ program
   .option("-l, --lang <lang>", "report language: zh | en", DEFAULT_LANG)
   .option("-o, --out <file>", "write report file path")
   .option("--redacted", "redact repository address in png output")
+  .option(
+    "-g, --spec-glob <glob>",
+    "glob matching spec files (repeatable); overrides .ai-maturity-scanner.json",
+    appendSpecGlob,
+    [],
+  )
   .action(
     async (
       path: string,
-      opts: { format: string; lang: string; out?: string; redacted?: boolean },
+      opts: {
+        format: string;
+        lang: string;
+        out?: string;
+        redacted?: boolean;
+        specGlob?: string[];
+      },
     ) => {
       if (!isFormat(opts.format)) {
         console.error(
@@ -183,6 +205,7 @@ program
           lang: opts.lang,
           out: opts.out,
           redacted: opts.redacted,
+          specGlobs: opts.specGlob,
         });
       } catch (err) {
         if (err instanceof UserError) {
