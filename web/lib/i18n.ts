@@ -180,6 +180,14 @@ export const messages = {
         "AI Maturity Scanner 是独立 Node.js CLI。需要 Node 22+，并且本机可以访问 git。",
       install: "Install",
       usage: "Usage",
+      mcpSupport: {
+        title: "MCP 支持边界",
+        description:
+          "MCP 配置在不同代码助手之间没有统一的仓库级格式，因此当前识别能力仍不完善。现阶段只把 Claude Code 的项目级 .mcp.json / mcp.json 和 Codex 的项目级 .codex/config.toml 作为明确支持的 MCP 配置来源。",
+        note:
+          "其他工具也可能支持 MCP，但配置路径、字段和优先级差异较大，公开文档完整度也不一致。为避免误报，扫描器不会把这些格式当作稳定支持项。",
+        supported: ["Claude Code: .mcp.json / mcp.json", "Codex: .codex/config.toml"],
+      },
       usageExamples: [
         {
           title: "默认生成图片报告",
@@ -202,6 +210,24 @@ export const messages = {
           code: "# 报告内容使用英文\nai-maturity-scanner ./my-repo --lang en",
         },
       ],
+      config: {
+        title: "Spec 文件配置",
+        description:
+          "扫描器默认把仓库内 specs/ 目录下的 Markdown 文件识别为 spec 文档。如果你的 spec 放在别的位置（如 docs/specs/、design/），可以用仓库根目录的配置文件或 --spec-glob 参数自定义匹配规则。优先级：--spec-glob 参数 > 配置文件 > 默认值。",
+        configFile: "在仓库根目录放置 .ai-maturity-scanner.json，用 specGlobs 指定一个或多个 glob：",
+        configFileCode:
+          '{\n  "specGlobs": [\n    "docs/specs/**/*.md",\n    "design/**/*.md"\n  ]\n}',
+        flag: "或用 --spec-glob 参数临时指定（可重复，会覆盖配置文件）：",
+        flagCode:
+          "# 只把 docs/specs 下的 Markdown 当作 spec\nai-maturity-scanner ./my-repo --spec-glob 'docs/specs/**/*.md'",
+        default:
+          "未提供任何配置时使用默认 glob **/specs/**/*.md（任意深度的 specs/ 目录，仅 Markdown：.md/.mdx/.mdc）。",
+        notes: [
+          "glob 使用正斜杠 / 作为路径分隔符（与 .gitignore、tsconfig 等一致），Windows 上也请用 /。",
+          "配置文件解析失败或字段类型不符时，扫描器会打印警告并回退到默认值，不会中断扫描。",
+          "spec 配置只影响报告里的文件分组归类，不影响 AMI 分数与等级。",
+        ],
+      },
       table: {
         flag: "Flag",
         values: "Values",
@@ -360,6 +386,14 @@ export const messages = {
         "AI Maturity Scanner is a standalone Node.js CLI. It requires Node 22+ and git on PATH.",
       install: "Install",
       usage: "Usage",
+      mcpSupport: {
+        title: "MCP support boundary",
+        description:
+          "MCP configuration does not have one repository-level format across coding assistants, so current detection is intentionally incomplete. For now, only Claude Code project .mcp.json / mcp.json files and Codex project .codex/config.toml are treated as explicitly supported MCP configuration sources.",
+        note:
+          "Other tools may also support MCP, but their paths, fields, precedence rules, and public documentation vary. To avoid false positives, the scanner does not treat those formats as stable supported inputs.",
+        supported: ["Claude Code: .mcp.json / mcp.json", "Codex: .codex/config.toml"],
+      },
       usageExamples: [
         {
           title: "Generate the default image report",
@@ -382,6 +416,24 @@ export const messages = {
           code: "# Render report text in English\nai-maturity-scanner ./my-repo --lang en",
         },
       ],
+      config: {
+        title: "Spec file configuration",
+        description:
+          "By default the scanner treats Markdown files under the repo's specs/ directory as spec documents. If your specs live elsewhere (e.g. docs/specs/, design/), customize the match with a config file at the repo root or the --spec-glob flag. Precedence: --spec-glob flag > config file > default.",
+        configFile: "Place .ai-maturity-scanner.json at the repository root with a specGlobs array:",
+        configFileCode:
+          '{\n  "specGlobs": [\n    "docs/specs/**/*.md",\n    "design/**/*.md"\n  ]\n}',
+        flag: "Or pass --spec-glob on the command line (repeatable; overrides the config file):",
+        flagCode:
+          "# Treat only Markdown under docs/specs as specs\nai-maturity-scanner ./my-repo --spec-glob 'docs/specs/**/*.md'",
+        default:
+          "With no configuration the default glob **/specs/**/*.md is used (specs/ at any depth, Markdown only: .md/.mdx/.mdc).",
+        notes: [
+          "Globs use forward slashes as path separators (same as .gitignore, tsconfig, etc.) — use / on Windows too.",
+          "If the config file is malformed or has the wrong shape, the scanner logs a warning and falls back to the default; it never aborts the scan.",
+          "Spec configuration only affects file grouping in the report; it does not change the AMI score or level.",
+        ],
+      },
       table: {
         flag: "Flag",
         values: "Values",

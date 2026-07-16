@@ -6,6 +6,7 @@ const flags = [
   ["-f, --format", "png | terminal | md | json", "png"],
   ["-o, --out", "Write report to file", "ai-maturity-report.png for PNG; stdout for text"],
   ["--lang", "zh | en", "zh"],
+  ["--spec-glob", "glob (repeatable)", "**/specs/**/*.md"],
 ];
 
 type DocsContentProps = {
@@ -42,6 +43,38 @@ export function DocsContent({ locale }: DocsContentProps) {
               </div>
             ))}
           </div>
+        </article>
+        <article className="surface-card">
+          <h2 className="font-mono text-xl font-semibold text-ink">{docs.config.title}</h2>
+          <p className="body-copy mt-4 text-sm">{docs.config.description}</p>
+          <p className="body-copy mt-6 text-sm">{docs.config.configFile}</p>
+          <pre className="code-scroll code-panel mt-3 p-4 text-sm">
+            <code>{docs.config.configFileCode}</code>
+          </pre>
+          <p className="body-copy mt-6 text-sm">{docs.config.flag}</p>
+          <pre className="code-scroll code-panel mt-3 p-4 text-sm">
+            <code>{docs.config.flagCode}</code>
+          </pre>
+          <p className="body-copy mt-6 text-sm">{docs.config.default}</p>
+          <ul className="mt-4 grid gap-2 text-sm text-muted">
+            {docs.config.notes.map((note) => (
+              <li className="rounded-md border border-line bg-canvas px-3 py-2" key={note}>
+                {note}
+              </li>
+            ))}
+          </ul>
+        </article>
+        <article className="surface-card">
+          <h2 className="font-mono text-xl font-semibold text-ink">{docs.mcpSupport.title}</h2>
+          <p className="body-copy mt-4 text-sm">{docs.mcpSupport.description}</p>
+          <ul className="mt-4 grid gap-2 text-sm text-muted sm:grid-cols-2">
+            {docs.mcpSupport.supported.map((item) => (
+              <li className="rounded-md border border-line bg-canvas px-3 py-2" key={item}>
+                {item}
+              </li>
+            ))}
+          </ul>
+          <p className="body-copy mt-4 text-sm">{docs.mcpSupport.note}</p>
         </article>
       </section>
 
