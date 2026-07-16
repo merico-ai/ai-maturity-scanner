@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Locale } from "../lib/i18n";
-import { localizePath, messages, vibeinsightUrl } from "../lib/i18n";
+import { localizePath, messages, githubUrl } from "../lib/i18n";
 
 type CtaPanelProps = {
   locale: Locale;
@@ -28,11 +28,11 @@ export function CtaPanel({ locale }: CtaPanelProps) {
           </Link>
           <a
             className="secondary-button"
-            href={vibeinsightUrl}
+            href={githubUrl}
             rel="noreferrer"
             target="_blank"
           >
-            {cta.vibeinsight}
+            {cta.github}
           </a>
         </div>
       </div>

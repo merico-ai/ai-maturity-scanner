@@ -6,6 +6,8 @@ export const defaultLocale: Locale = "zh";
 
 export const vibeinsightUrl = "https://merico.cn/vibeinsight";
 
+export const githubUrl = "https://github.com/merico-ai/ai-maturity-scanner";
+
 export function localeFromPathname(pathname: string): Locale {
   return pathname === "/en" || pathname.startsWith("/en/") ? "en" : defaultLocale;
 }
@@ -63,7 +65,7 @@ export const messages = {
       description:
         "不需要服务器、账号或数据库。CLI 只读取 git-tracked files，输出 L0-L4 与 AMI 评分。",
       quickStart: "查看 Quick start",
-      vibeinsight: "了解 vibeinsight",
+      github: "在 GitHub 上查看",
     },
     metrics: {
       eyebrow: "Metrics",
@@ -161,10 +163,10 @@ export const messages = {
         ["工程视角", "评分不是评价个人使用 AI 的熟练度，而是评价仓库里沉淀的协作能力。"],
         ["持续改进", "团队可以用 JSON 或 Markdown 报告追踪多仓库、多阶段的 AMI 变化。"],
       ],
-      vibeTitle: "vibeinsight referral",
+      vibeTitle: "了解更多 vibe coding 指标",
       vibeDescription:
-        "如果你希望把 AI 工程成熟度和团队洞察、流程改进、管理视图结合起来，可以从 vibeinsight 入口继续了解相关能力。",
-      vibeCta: "打开 vibeinsight",
+        "想进一步查看 vibe coding 相关指标、团队洞察和改进趋势，可以前往 vibeinsight 了解完整能力。",
+      vibeCta: "前往 vibeinsight",
     },
     docs: {
       eyebrow: "Docs",
@@ -216,7 +218,7 @@ export const messages = {
       description:
         "No server, account, or database required. The CLI reads git-tracked files and reports L0-L4 plus an AMI score.",
       quickStart: "Open Quick start",
-      vibeinsight: "Explore vibeinsight",
+      github: "View on GitHub",
     },
     metrics: {
       eyebrow: "Metrics",
@@ -314,10 +316,10 @@ export const messages = {
         ["Engineering lens", "The score measures repository-level collaboration assets, not personal AI proficiency."],
         ["Continuous improvement", "Teams can use JSON or Markdown reports to track AMI across repositories and phases."],
       ],
-      vibeTitle: "vibeinsight referral",
+      vibeTitle: "Explore more vibe coding metrics",
       vibeDescription:
-        "If you want to connect AI engineering maturity with team insights, process improvement, and management views, continue through the vibeinsight entry point.",
-      vibeCta: "Open vibeinsight",
+        "For more vibe coding metrics, team insights, and improvement trends, continue to vibeinsight.",
+      vibeCta: "Go to vibeinsight",
     },
     docs: {
       eyebrow: "Docs",
