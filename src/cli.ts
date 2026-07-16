@@ -1,6 +1,7 @@
+import { realpathSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { Command } from "commander";
 import { loadConfig, resolveSpecGlobs } from "./config.ts";
 import {
@@ -254,8 +255,17 @@ program
     }
   });
 
+export function isCliEntryPoint(argvPath = process.argv[1], moduleUrl = import.meta.url): boolean {
+  if (!argvPath) return false;
+
+  try {
+    return realpathSync(argvPath) === realpathSync(fileURLToPath(moduleUrl));
+  } catch {
+    return pathToFileURL(argvPath).href === moduleUrl;
+  }
+}
+
 // Only parse argv when this file is the entry point, not when imported (e.g. by tests).
-const entryUrl = process.argv[1] ? pathToFileURL(process.argv[1]).href : "";
-if (entryUrl === import.meta.url) {
+if (isCliEntryPoint()) {
   program.parseAsync(process.argv);
 }

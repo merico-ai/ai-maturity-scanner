@@ -1,6 +1,6 @@
 {
   "name": "@merico-ai/maturity-scanner",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Scan a code repository and report its AI coding maturity (level L0-L4 + AMI score). Standalone CLI, no server, no database.",
   "type": "module",
   "engines": {
