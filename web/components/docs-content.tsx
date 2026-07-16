@@ -25,13 +25,13 @@ export function DocsContent({ locale }: DocsContentProps) {
       </section>
 
       <section className="mt-8 grid gap-4">
-        <article className="surface-card">
+        <article className="surface-card min-w-0">
           <h2 className="font-mono text-xl font-semibold text-ink">{docs.install}</h2>
           <pre className="code-scroll code-panel mt-4 p-4 text-sm">
             <code>{"npm install -g @merico-ai/maturity-scanner"}</code>
           </pre>
         </article>
-        <article className="surface-card">
+        <article className="surface-card min-w-0">
           <h2 className="font-mono text-xl font-semibold text-ink">{docs.usage}</h2>
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             {docs.usageExamples.map((example) => (
@@ -44,7 +44,7 @@ export function DocsContent({ locale }: DocsContentProps) {
             ))}
           </div>
         </article>
-        <article className="surface-card">
+        <article className="surface-card min-w-0">
           <h2 className="font-mono text-xl font-semibold text-ink">{docs.config.title}</h2>
           <p className="body-copy mt-4 text-sm">{docs.config.description}</p>
           <p className="body-copy mt-6 text-sm">{docs.config.configFile}</p>
@@ -64,7 +64,7 @@ export function DocsContent({ locale }: DocsContentProps) {
             ))}
           </ul>
         </article>
-        <article className="surface-card">
+        <article className="surface-card min-w-0">
           <h2 className="font-mono text-xl font-semibold text-ink">{docs.mcpSupport.title}</h2>
           <p className="body-copy mt-4 text-sm">{docs.mcpSupport.description}</p>
           <ul className="mt-4 grid gap-2 text-sm text-muted sm:grid-cols-2">
