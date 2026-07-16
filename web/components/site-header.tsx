@@ -12,7 +12,7 @@ export function SiteHeader() {
   const header = messages[locale].header;
 
   return (
-    <header className="z-20 border-b border-line bg-canvas/95 backdrop-blur lg:sticky lg:top-0">
+    <header className="z-20 border-b border-line bg-canvas lg:sticky lg:top-0">
       <div className="page-shell relative flex flex-row items-center justify-between gap-2 py-2.5 sm:py-3">
         <Link className="flex min-w-0 items-center gap-3" href={localizePath("/", locale)}>
           <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-brand text-xs font-black text-white sm:h-9 sm:w-9 sm:text-sm">

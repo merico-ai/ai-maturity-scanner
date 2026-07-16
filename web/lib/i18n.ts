@@ -181,6 +181,7 @@ export const messages = {
         "AI Maturity Scanner 是独立 Node.js CLI。需要 Node 22+，并且本机可以访问 git。",
       install: "Install",
       usage: "Usage",
+      tocLabel: "本页目录",
       mcpSupport: {
         title: "MCP 支持边界",
         description:
@@ -230,6 +231,7 @@ export const messages = {
         ],
       },
       table: {
+        title: "命令行参数",
         flag: "Flag",
         values: "Values",
         default: "Default",
@@ -388,6 +390,7 @@ export const messages = {
         "AI Maturity Scanner is a standalone Node.js CLI. It requires Node 22+ and git on PATH.",
       install: "Install",
       usage: "Usage",
+      tocLabel: "On this page",
       mcpSupport: {
         title: "MCP support boundary",
         description:
@@ -437,6 +440,7 @@ export const messages = {
         ],
       },
       table: {
+        title: "CLI flags",
         flag: "Flag",
         values: "Values",
         default: "Default",
