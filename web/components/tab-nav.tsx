@@ -7,6 +7,7 @@ import { localeFromPathname, localizePath, messages } from "../lib/i18n";
 const tabRoutes = [
   { href: "/", labelKey: "home" },
   { href: "/quick-start", labelKey: "quickStart" },
+  { href: "/docs", labelKey: "docs" },
   { href: "/metrics", labelKey: "metrics" },
   { href: "/about", labelKey: "about" },
 ] as const;

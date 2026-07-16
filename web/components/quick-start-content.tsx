@@ -29,28 +29,26 @@ export function QuickStartContent({ locale }: QuickStartContentProps) {
         </div>
       </section>
 
-      <section className="mt-8 grid min-w-0 gap-4">
-        {quickStart.commands.map(([title, code], index) => (
-          <article className="surface-card min-w-0" key={title}>
-            <div className="mb-3 flex min-w-0 items-center gap-3">
-              <span className="grid h-8 w-8 place-items-center rounded-md bg-brand text-sm font-bold text-white">
-                {index + 1}
+      <section className="mt-8 grid min-w-0 gap-4 lg:grid-cols-2">
+        {quickStart.usageModes.map((mode) => (
+          <article className="surface-card flex min-w-0 flex-col" key={mode.title}>
+            <div className="mb-4 flex min-w-0 items-start gap-3">
+              <span className="whitespace-nowrap rounded-md bg-brand/10 px-2.5 py-1 font-mono text-xs font-bold uppercase text-brand">
+                {mode.label}
               </span>
-              <h2 className="min-w-0 font-mono text-lg font-semibold text-ink">{title}</h2>
+              <div className="min-w-0">
+                <h2 className="font-mono text-lg font-semibold text-ink">{mode.title}</h2>
+                <p className="mt-2 text-sm leading-6 text-muted">{mode.description}</p>
+              </div>
             </div>
-            <pre className="code-scroll code-panel max-w-full p-4 text-sm">
-              <code>{code}</code>
-            </pre>
+            <div className="mt-auto grid gap-3">
+              {mode.steps.map((step) => (
+                <pre className="code-scroll code-panel max-w-full p-4 text-sm" key={step}>
+                  <code>{step}</code>
+                </pre>
+              ))}
+            </div>
           </article>
-        ))}
-      </section>
-
-      <section className="mt-8 grid min-w-0 gap-4 lg:grid-cols-3">
-        {quickStart.formats.map(([format, description]) => (
-          <div className="surface-card min-w-0" key={format}>
-            <h3 className="font-mono text-lg font-semibold text-ink">--format {format}</h3>
-            <p className="mt-3 text-sm leading-6 text-muted">{description}</p>
-          </div>
         ))}
       </section>
 

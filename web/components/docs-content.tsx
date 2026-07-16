@@ -3,8 +3,8 @@ import { messages } from "../lib/i18n";
 
 const flags = [
   ["[path]", "Repository path", "."],
-  ["-f, --format", "terminal | md | json", "terminal"],
-  ["-o, --out", "Write report to file", "stdout"],
+  ["-f, --format", "png | terminal | md | json", "png"],
+  ["-o, --out", "Write report to file", "ai-maturity-report.png for PNG; stdout for text"],
   ["--lang", "zh | en", "zh"],
 ];
 
@@ -32,13 +32,16 @@ export function DocsContent({ locale }: DocsContentProps) {
         </article>
         <article className="surface-card">
           <h2 className="font-mono text-xl font-semibold text-ink">{docs.usage}</h2>
-          <pre className="code-scroll code-panel mt-4 p-4 text-sm">
-            <code>{`ai-maturity-scanner
-ai-maturity-scanner ./my-repo
-ai-maturity-scanner --format md
-ai-maturity-scanner --format json --out report.json
-ai-maturity-scanner --lang en`}</code>
-          </pre>
+          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+            {docs.usageExamples.map((example) => (
+              <div className="min-w-0" key={example.title}>
+                <h3 className="font-mono text-base font-semibold text-ink">{example.title}</h3>
+                <pre className="code-scroll code-panel mt-3 p-4 text-sm">
+                  <code>{example.code}</code>
+                </pre>
+              </div>
+            ))}
+          </div>
         </article>
       </section>
 

@@ -33,6 +33,7 @@ export const messages = {
     nav: {
       home: "首页介绍",
       quickStart: "快速开始",
+      docs: "使用文档",
       metrics: "指标说明",
       about: "关于我们",
       languageLabel: "语言",
@@ -137,15 +138,19 @@ export const messages = {
         ["Node.js 22+", "用于运行 npx、全局安装和本地 CLI。"],
         ["git", "需要在 PATH 中可访问；扫描器通过 git ls-files 读取 tracked files。"],
       ],
-      commands: [
-        ["一次性扫描", "npx @merico-ai/maturity-scanner ./my-repo"],
-        ["全局安装", "npm install -g @merico-ai/maturity-scanner\nai-maturity-scanner ./my-repo"],
-        ["输出 JSON 给 CI", "ai-maturity-scanner --format json --out report.json"],
-      ],
-      formats: [
-        ["terminal", "默认格式，适合人工快速阅读。"],
-        ["md", "适合写入报告、PR 评论或文档系统。"],
-        ["json", "适合 CI、看板、自动化阈值判断。"],
+      usageModes: [
+        {
+          label: "方式一",
+          title: "一次性扫描",
+          description: "不安装到全局环境，直接扫描指定仓库。",
+          steps: ["npx @merico-ai/maturity-scanner ./my-repo"],
+        },
+        {
+          label: "方式二",
+          title: "安装后扫描",
+          description: "先全局安装 CLI，再在目标仓库中使用默认参数生成图片报告。",
+          steps: ["npm install -g @merico-ai/maturity-scanner", "ai-maturity-scanner ./my-repo"],
+        },
       ],
       resultTitle: "读懂结果",
       resultDescription:
@@ -175,6 +180,28 @@ export const messages = {
         "AI Maturity Scanner 是独立 Node.js CLI。需要 Node 22+，并且本机可以访问 git。",
       install: "Install",
       usage: "Usage",
+      usageExamples: [
+        {
+          title: "默认生成图片报告",
+          code: "# 扫描当前目录，并生成 ./ai-maturity-report.png\nai-maturity-scanner",
+        },
+        {
+          title: "扫描指定仓库",
+          code: "# 扫描 ./my-repo，并生成默认 PNG 图片报告\nai-maturity-scanner ./my-repo",
+        },
+        {
+          title: "导出 Markdown 报告",
+          code: "# 适合复制到文档、Issue 或 PR 评论\nai-maturity-scanner ./my-repo --format md --out report.md",
+        },
+        {
+          title: "导出 JSON 给自动化流程",
+          code: "# 适合 CI、看板或阈值检查\nai-maturity-scanner ./my-repo --format json --out report.json",
+        },
+        {
+          title: "生成英文报告",
+          code: "# 报告内容使用英文\nai-maturity-scanner ./my-repo --lang en",
+        },
+      ],
       table: {
         flag: "Flag",
         values: "Values",
@@ -186,6 +213,7 @@ export const messages = {
     nav: {
       home: "Overview",
       quickStart: "Quick start",
+      docs: "Docs",
       metrics: "Metrics",
       about: "About",
       languageLabel: "Language",
@@ -290,15 +318,19 @@ export const messages = {
         ["Node.js 22+", "Required for npx, global installs, and the local CLI runtime."],
         ["git", "Must be available on PATH; the scanner reads tracked files through git ls-files."],
       ],
-      commands: [
-        ["One-off scan", "npx @merico-ai/maturity-scanner ./my-repo"],
-        ["Global install", "npm install -g @merico-ai/maturity-scanner\nai-maturity-scanner ./my-repo"],
-        ["JSON output for CI", "ai-maturity-scanner --format json --out report.json"],
-      ],
-      formats: [
-        ["terminal", "Default output for fast human review."],
-        ["md", "Useful for reports, PR comments, and documentation systems."],
-        ["json", "Designed for CI, dashboards, and automated threshold checks."],
+      usageModes: [
+        {
+          label: "Option 1",
+          title: "One-off scan",
+          description: "Run the scanner against a target repository without installing it globally.",
+          steps: ["npx @merico-ai/maturity-scanner ./my-repo"],
+        },
+        {
+          label: "Option 2",
+          title: "Install, then scan",
+          description: "Install the CLI globally, then run the default command in the target repository to generate the image report.",
+          steps: ["npm install -g @merico-ai/maturity-scanner", "ai-maturity-scanner ./my-repo"],
+        },
       ],
       resultTitle: "Understand the result",
       resultDescription:
@@ -328,6 +360,28 @@ export const messages = {
         "AI Maturity Scanner is a standalone Node.js CLI. It requires Node 22+ and git on PATH.",
       install: "Install",
       usage: "Usage",
+      usageExamples: [
+        {
+          title: "Generate the default image report",
+          code: "# Scan the current directory and write ./ai-maturity-report.png\nai-maturity-scanner",
+        },
+        {
+          title: "Scan a target repository",
+          code: "# Scan ./my-repo and write the default PNG image report\nai-maturity-scanner ./my-repo",
+        },
+        {
+          title: "Export a Markdown report",
+          code: "# Useful for docs, issues, or PR comments\nai-maturity-scanner ./my-repo --format md --out report.md",
+        },
+        {
+          title: "Export JSON for automation",
+          code: "# Useful for CI, dashboards, or threshold checks\nai-maturity-scanner ./my-repo --format json --out report.json",
+        },
+        {
+          title: "Generate an English report",
+          code: "# Render report text in English\nai-maturity-scanner ./my-repo --lang en",
+        },
+      ],
       table: {
         flag: "Flag",
         values: "Values",
