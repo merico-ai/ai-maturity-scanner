@@ -8,8 +8,13 @@ export const vibeinsightUrl = "https://merico.cn/vibeinsight";
 
 export const githubUrl = "https://github.com/merico-ai/ai-maturity-scanner";
 
+export const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+export function assetPath(path: string) {
+  return `${basePath}${path}`;
+}
+
 export function normalizePathname(pathname: string) {
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const pathnameWithoutBase =
     basePath && (pathname === basePath || pathname.startsWith(`${basePath}/`))
       ? pathname.slice(basePath.length) || "/"
