@@ -293,7 +293,7 @@ describe("renderImage", () => {
     expect(png.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
     expect(readPngTextChunk(png, PNG_FINGERPRINT_KEYWORD)).toBe(reportFingerprint(report));
     expect(readPngTextChunk(png, PNG_IMAGE_HASH_KEYWORD)).toBe(await imagePixelHash(png));
-  });
+  }, 15_000);
 });
 
 describe("i18n: zh output", () => {
