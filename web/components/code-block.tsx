@@ -51,7 +51,7 @@ export function CodeBlock({ code, preClassName, copyLabel, copiedLabel }: CodeBl
   }, [code]);
 
   return (
-    <div className="relative">
+    <div className="relative min-w-0">
       <pre className={`code-scroll code-panel ${preClassName ?? ""}`}>
         <code>{code}</code>
       </pre>
