@@ -1,6 +1,7 @@
+import { CodeBlock } from "./code-block";
 import { DocsToc, type TocItem } from "./docs-toc";
 import type { Locale } from "../lib/i18n";
-import { messages } from "../lib/i18n";
+import { codeActions, messages } from "../lib/i18n";
 
 const flags = [
   ["[path]", "Repository path", "."],
@@ -39,9 +40,12 @@ export function DocsContent({ locale }: DocsContentProps) {
           <section className="mt-8 grid gap-4">
             <article className="surface-card min-w-0 scroll-mt-24" id="install">
               <h2 className="font-mono text-xl font-semibold text-ink">{docs.install}</h2>
-              <pre className="code-scroll code-panel mt-4 p-4 text-sm">
-                <code>{"npm install -g @merico-ai/maturity-scanner"}</code>
-              </pre>
+              <CodeBlock
+                code="npm install -g @merico-ai/maturity-scanner"
+                copiedLabel={codeActions[locale].copied}
+                copyLabel={codeActions[locale].copy}
+                preClassName="mt-4 p-4 text-sm"
+              />
             </article>
             <article className="surface-card min-w-0 scroll-mt-24" id="usage">
               <h2 className="font-mono text-xl font-semibold text-ink">{docs.usage}</h2>
@@ -49,9 +53,12 @@ export function DocsContent({ locale }: DocsContentProps) {
                 {docs.usageExamples.map((example) => (
                   <div className="min-w-0" key={example.title}>
                     <h3 className="font-mono text-base font-semibold text-ink">{example.title}</h3>
-                    <pre className="code-scroll code-panel mt-3 p-4 text-sm">
-                      <code>{example.code}</code>
-                    </pre>
+                    <CodeBlock
+                      code={example.code}
+                      copiedLabel={codeActions[locale].copied}
+                      copyLabel={codeActions[locale].copy}
+                      preClassName="mt-3 p-4 text-sm"
+                    />
                   </div>
                 ))}
               </div>
@@ -60,13 +67,19 @@ export function DocsContent({ locale }: DocsContentProps) {
               <h2 className="font-mono text-xl font-semibold text-ink">{docs.config.title}</h2>
               <p className="body-copy mt-4 text-sm">{docs.config.description}</p>
               <p className="body-copy mt-6 text-sm">{docs.config.configFile}</p>
-              <pre className="code-scroll code-panel mt-3 p-4 text-sm">
-                <code>{docs.config.configFileCode}</code>
-              </pre>
+              <CodeBlock
+                code={docs.config.configFileCode}
+                copiedLabel={codeActions[locale].copied}
+                copyLabel={codeActions[locale].copy}
+                preClassName="mt-3 p-4 text-sm"
+              />
               <p className="body-copy mt-6 text-sm">{docs.config.flag}</p>
-              <pre className="code-scroll code-panel mt-3 p-4 text-sm">
-                <code>{docs.config.flagCode}</code>
-              </pre>
+              <CodeBlock
+                code={docs.config.flagCode}
+                copiedLabel={codeActions[locale].copied}
+                copyLabel={codeActions[locale].copy}
+                preClassName="mt-3 p-4 text-sm"
+              />
               <p className="body-copy mt-6 text-sm">{docs.config.default}</p>
               <ul className="mt-4 grid gap-2 text-sm text-muted">
                 {docs.config.notes.map((note) => (

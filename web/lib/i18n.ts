@@ -52,6 +52,11 @@ export function alternateLocalePath(pathname: string, locale: Locale) {
   return localizePath(normalizedPath, locale);
 }
 
+export const codeActions = {
+  zh: { copy: "复制", copied: "已复制" },
+  en: { copy: "Copy", copied: "Copied" },
+} as const;
+
 export const messages = {
   zh: {
     nav: {

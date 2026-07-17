@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { CodeBlock } from "./code-block";
 import type { Locale } from "../lib/i18n";
-import { localizePath, messages } from "../lib/i18n";
+import { codeActions, localizePath, messages } from "../lib/i18n";
 
 type QuickStartContentProps = {
   locale: Locale;
@@ -43,9 +44,13 @@ export function QuickStartContent({ locale }: QuickStartContentProps) {
             </div>
             <div className="mt-auto grid gap-3">
               {mode.steps.map((step) => (
-                <pre className="code-scroll code-panel max-w-full p-4 text-sm" key={step}>
-                  <code>{step}</code>
-                </pre>
+                <CodeBlock
+                  code={step}
+                  copiedLabel={codeActions[locale].copied}
+                  copyLabel={codeActions[locale].copy}
+                  key={step}
+                  preClassName="max-w-full p-4 text-sm"
+                />
               ))}
             </div>
           </article>
