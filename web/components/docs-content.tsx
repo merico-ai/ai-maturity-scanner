@@ -1,5 +1,6 @@
 import { CodeBlock } from "./code-block";
 import { DocsToc, type TocItem } from "./docs-toc";
+import { SectionHeading } from "./section-heading";
 import type { Locale } from "../lib/i18n";
 import { codeActions, messages } from "../lib/i18n";
 
@@ -39,7 +40,7 @@ export function DocsContent({ locale }: DocsContentProps) {
 
           <section className="mt-8 grid gap-4">
             <article className="surface-card min-w-0 scroll-mt-24" id="install">
-              <h2 className="font-mono text-xl font-semibold text-ink">{docs.install}</h2>
+              <SectionHeading href="#install">{docs.install}</SectionHeading>
               <CodeBlock
                 code="npm install -g @merico-ai/maturity-scanner"
                 copiedLabel={codeActions[locale].copied}
@@ -48,7 +49,7 @@ export function DocsContent({ locale }: DocsContentProps) {
               />
             </article>
             <article className="surface-card min-w-0 scroll-mt-24" id="usage">
-              <h2 className="font-mono text-xl font-semibold text-ink">{docs.usage}</h2>
+              <SectionHeading href="#usage">{docs.usage}</SectionHeading>
               <div className="mt-4 grid gap-4 lg:grid-cols-2">
                 {docs.usageExamples.map((example) => (
                   <div className="min-w-0" key={example.title}>
@@ -64,7 +65,7 @@ export function DocsContent({ locale }: DocsContentProps) {
               </div>
             </article>
             <article className="surface-card min-w-0 scroll-mt-24" id="spec-config">
-              <h2 className="font-mono text-xl font-semibold text-ink">{docs.config.title}</h2>
+              <SectionHeading href="#spec-config">{docs.config.title}</SectionHeading>
               <p className="body-copy mt-4 text-sm">{docs.config.description}</p>
               <p className="body-copy mt-6 text-sm">{docs.config.configFile}</p>
               <CodeBlock
@@ -90,7 +91,7 @@ export function DocsContent({ locale }: DocsContentProps) {
               </ul>
             </article>
             <article className="surface-card min-w-0 scroll-mt-24" id="mcp">
-              <h2 className="font-mono text-xl font-semibold text-ink">{docs.mcpSupport.title}</h2>
+              <SectionHeading href="#mcp">{docs.mcpSupport.title}</SectionHeading>
               <p className="body-copy mt-4 text-sm">{docs.mcpSupport.description}</p>
               <ul className="mt-4 grid gap-2 text-sm text-muted sm:grid-cols-2">
                 {docs.mcpSupport.supported.map((item) => (
@@ -108,7 +109,7 @@ export function DocsContent({ locale }: DocsContentProps) {
             id="flags"
           >
             <div className="border-b border-line px-4 py-4 sm:px-5">
-              <h2 className="font-mono text-xl font-semibold text-ink">{docs.table.title}</h2>
+              <SectionHeading href="#flags">{docs.table.title}</SectionHeading>
             </div>
             <div className="grid grid-cols-[1fr_1fr_0.8fr] gap-0 border-b border-line bg-canvas px-4 py-3 text-xs font-bold uppercase tracking-wide text-muted">
               <span>{docs.table.flag}</span>
