@@ -1,6 +1,7 @@
 import { MetricCard } from "./metric-card";
 import type { Locale } from "../lib/i18n";
 import { messages } from "../lib/i18n";
+import { sampleQrSvg } from "../lib/sample-qr";
 import { renderImageSvg } from "../../src/report/image-svg";
 import type { ImageReportData } from "../../src/report/image-svg";
 
@@ -13,100 +14,84 @@ const imageMetricDetails = {
     {
       label: "技能",
       key: "skill_count",
-      formula: "score = min(skill_count, 30) / 30 × 100",
-      raw: "统计仓库中 skill（技能）的数量。",
+      desc: "根据仓库中 skill 的数量归一化得到的分数（满分 100）。",
     },
     {
       label: "高级技能",
       key: "advanced_skill_count",
-      formula: "score = min(advanced_skill_count, 10) / 10 × 100",
-      raw: "统计「高级技能」的数量，也就是目录里带有脚本、可被直接执行的技能。",
+      desc: "根据高级 skill 数量归一化得到的分数（满分 100）。高级 skill 指目录中带脚本的技能。",
     },
     {
       label: "代理",
       key: "agent_count",
-      formula: "score = min(agent_count, 10) / 10 × 100",
-      raw: "统计 agent（智能体）定义文件的数量。",
+      desc: "根据 agent 定义数量归一化得到的分数（满分 100）。",
     },
     {
       label: "命令",
       key: "command_count",
-      formula: "score = min(command_count, 10) / 10 × 100",
-      raw: "统计命令（command）文件的数量，例如 commands/ 或 .codex/prompts/ 下的命令。",
+      desc: "根据命令文件数量归一化得到的分数（满分 100），例如 commands/ 或 .codex/prompts/ 下的命令。",
     },
     {
       label: "MCP 服务",
       key: "mcp_count",
-      formula: "score = min(mcp_count, 3) / 3 × 100",
-      raw: "统计明确支持的仓库级 MCP 配置来源里解析出的唯一服务名数量，目前包括 Claude Code 的 .mcp.json / mcp.json 与 Codex 的 .codex/config.toml。",
+      desc: "根据仓库级 MCP 配置解析出的唯一服务名数量归一化得到的分数（满分 100）。目前支持 Claude Code 的 .mcp.json / mcp.json 与 Codex 的 .codex/config.toml。",
     },
     {
       label: "指令文件",
       key: "ai_instruction_files",
-      formula: "score = min(ai_instruction_files, 1) / 1 × 100",
-      raw: "统计给 AI 的指令文件，例如 CLAUDE.md、AGENTS.md、GEMINI.md、Cursor rules。",
+      desc: "根据 AI 指令文件数量归一化得到的分数（满分 100），例如 CLAUDE.md、AGENTS.md、GEMINI.md、Cursor rules。",
     },
     {
       label: "规格文件",
       key: "specs_file_count",
-      formula: "score = min(specs_file_count, 50) / 50 × 100",
-      raw: "统计 Markdown 文档（md/mdx/mdc）的数量，不含上面已计入的指令、技能、agent、命令或 MCP 文件。",
+      desc: "根据 spec/文档 Markdown 文件数量归一化得到的分数（满分 100）。",
     },
     {
       label: "覆盖率",
       key: "subproject_coverage",
-      formula: "score = min(subproject_coverage, 5) / 5 × 100",
-      raw: "统计带有 AI 指令文件的子项目数量（例如 apps/ 或 libs/ 下的各个子项目）。",
+      desc: "根据带有 AI 指令文件的 apps/、libs/ 子项目数量归一化得到的分数（满分 100）。",
     },
   ],
   en: [
     {
       label: "Skills",
       key: "skill_count",
-      formula: "score = min(skill_count, 30) / 30 × 100",
-      raw: "Counts the number of skills in the repository.",
+      desc: "A score (max 100) derived by normalizing the number of skills in the repository.",
     },
     {
       label: "Advanced skills",
       key: "advanced_skill_count",
-      formula: "score = min(advanced_skill_count, 10) / 10 × 100",
-      raw: "Counts advanced skills — skills whose directory includes scripts or other executable resources.",
+      desc: "A score (max 100) derived by normalizing the count of advanced skills — skills whose directory includes scripts.",
     },
     {
       label: "Agents",
       key: "agent_count",
-      formula: "score = min(agent_count, 10) / 10 × 100",
-      raw: "Counts agent definition files.",
+      desc: "A score (max 100) derived by normalizing the number of agent definitions.",
     },
     {
       label: "Commands",
       key: "command_count",
-      formula: "score = min(command_count, 10) / 10 × 100",
-      raw: "Counts command files, such as those under commands/ or .codex/prompts/.",
+      desc: "A score (max 100) derived by normalizing the number of command files, e.g. under commands/ or .codex/prompts/.",
     },
     {
       label: "MCP servers",
       key: "mcp_count",
-      formula: "score = min(mcp_count, 3) / 3 × 100",
-      raw: "Counts unique MCP server names parsed from explicitly supported repository-level MCP sources: Claude Code .mcp.json / mcp.json and Codex .codex/config.toml.",
+      desc: "A score (max 100) derived by normalizing the count of unique MCP server names from supported repository-level MCP config (Claude Code .mcp.json / mcp.json and Codex .codex/config.toml).",
     },
     {
       label: "Instructions",
       key: "ai_instruction_files",
-      formula: "score = min(ai_instruction_files, 1) / 1 × 100",
-      raw: "Counts AI instruction files, such as CLAUDE.md, AGENTS.md, GEMINI.md, and Cursor rules.",
+      desc: "A score (max 100) derived by normalizing the number of AI instruction files, e.g. CLAUDE.md, AGENTS.md, GEMINI.md, Cursor rules.",
     },
     {
       label: "Spec files",
       key: "specs_file_count",
-      formula: "score = min(specs_file_count, 50) / 50 × 100",
-      raw: "Counts Markdown documents (md/mdx/mdc), excluding files already counted above as instructions, skills, agents, commands, or MCP.",
+      desc: "A score (max 100) derived by normalizing the number of spec/document Markdown files.",
     },
     {
       label: "Coverage",
       key: "subproject_coverage",
-      formula: "score = min(subproject_coverage, 5) / 5 × 100",
-      raw: "Counts subprojects (for example under apps/ or libs/) that contain an AI instruction file.",
+      desc: "A score (max 100) derived by normalizing the number of apps/ or libs/ subprojects that contain an AI instruction file.",
     },
   ],
 } as const;
@@ -155,44 +140,38 @@ const sampleReport: ImageReportData = {
 
 const normalizedMetrics = {
   zh: [
-    ["skill_count", "技能数量，封顶 30。"],
-    ["skill_line_count", "技能文件总行数，封顶 15000 行。"],
-    ["advanced_skill_count", "高级技能数量，封顶 10。"],
-    ["skill_engineering_rate", "高级技能占技能总数的比例，达到 50% 即 100 分。"],
-    ["skill_resource_count", "skills/ 下的资源文件数量，封顶 30。"],
-    ["agent_count", "agent 定义数量，封顶 10。"],
-    ["agent_line_count", "agent 文件总行数，封顶 2000 行。"],
-    ["command_count", "命令文件数量，封顶 10。"],
-    ["command_line_count", "命令文件总行数，封顶 2000 行。"],
-    ["mcp_count", "MCP 配置文件数量，封顶 3。"],
-    ["ai_instruction_files", "AI 指令文件数量，至少 1 个即 100 分。"],
-    [
-      "instruction_max_line_count",
-      "最长指令文件的行数：50-400 行为 100 分，过短或超过 1000 行会降分。",
-    ],
-    ["specs_file_count", "规格/文档文件数量，封顶 50。"],
-    ["specs_line_count", "规格/文档总行数，封顶 5000 行。"],
-    ["subproject_coverage", "带有 AI 指令文件的 apps/libs 子项目数，封顶 5。"],
+    ["skill_count", "仓库中 skill（技能）的数量。"],
+    ["skill_line_count", "技能文件的总行数。"],
+    ["advanced_skill_count", "高级技能（目录含脚本的技能）的数量。"],
+    ["skill_engineering_rate", "高级技能占技能总数的比例。"],
+    ["skill_resource_count", "skills/ 下的资源文件数量。"],
+    ["agent_count", "agent 定义的数量。"],
+    ["agent_line_count", "agent 文件的总行数。"],
+    ["command_count", "命令文件的数量。"],
+    ["command_line_count", "命令文件的总行数。"],
+    ["mcp_count", "仓库级 MCP 配置里解析出的唯一服务名数量。"],
+    ["ai_instruction_files", "AI 指令文件（如 CLAUDE.md、AGENTS.md）的数量。"],
+    ["instruction_max_line_count", "最长一个指令文件的行数。"],
+    ["specs_file_count", "规格/文档 Markdown 文件的数量。"],
+    ["specs_line_count", "规格/文档文件的总行数。"],
+    ["subproject_coverage", "带有 AI 指令文件的 apps/、libs/ 子项目数量。"],
   ],
   en: [
-    ["skill_count", "Skill file count, capped at 30."],
-    ["skill_line_count", "Total skill file lines, capped at 15000."],
-    ["advanced_skill_count", "Advanced skill count, capped at 10."],
-    ["skill_engineering_rate", "Share of skills that are advanced; scores 100 at 50%."],
-    ["skill_resource_count", "Resource files under skills/, capped at 30."],
-    ["agent_count", "Agent definition count, capped at 10."],
-    ["agent_line_count", "Total agent file lines, capped at 2000."],
-    ["command_count", "Command file count, capped at 10."],
-    ["command_line_count", "Total command file lines, capped at 2000."],
-    ["mcp_count", "MCP configuration file count, capped at 3."],
-    ["ai_instruction_files", "AI instruction file count; 1 or more scores 100."],
-    [
-      "instruction_max_line_count",
-      "Longest instruction file lines: 50-400 lines score 100; very short or >1000 lines score lower.",
-    ],
-    ["specs_file_count", "Spec/document file count, capped at 50."],
-    ["specs_line_count", "Total spec/document lines, capped at 5000."],
-    ["subproject_coverage", "apps/libs subproject prefixes covered by instruction files, capped at 5."],
+    ["skill_count", "Number of skills in the repository."],
+    ["skill_line_count", "Total lines across skill files."],
+    ["advanced_skill_count", "Number of advanced skills (skills whose directory includes scripts)."],
+    ["skill_engineering_rate", "Share of skills that are advanced."],
+    ["skill_resource_count", "Number of resource files under skills/."],
+    ["agent_count", "Number of agent definitions."],
+    ["agent_line_count", "Total lines across agent files."],
+    ["command_count", "Number of command files."],
+    ["command_line_count", "Total lines across command files."],
+    ["mcp_count", "Number of unique MCP server names in repository-level MCP config."],
+    ["ai_instruction_files", "Number of AI instruction files (e.g. CLAUDE.md, AGENTS.md)."],
+    ["instruction_max_line_count", "Line count of the longest instruction file."],
+    ["specs_file_count", "Number of spec/document Markdown files."],
+    ["specs_line_count", "Total lines across spec/document files."],
+    ["subproject_coverage", "Number of apps/ or libs/ subprojects with an AI instruction file."],
   ],
 } as const;
 
@@ -200,7 +179,7 @@ function ReportImageGuide({ locale }: MetricsContentProps) {
   const metrics = messages[locale].metrics;
   const previewSvg = renderImageSvg(
     { ...sampleReport, meta: { ...sampleReport.meta, lang: locale } },
-    { lang: locale },
+    { lang: locale, qrSvg: sampleQrSvg },
   ).replace(/^<\?xml[^>]*>\s*/, "");
 
   return (
@@ -224,10 +203,7 @@ function ReportImageGuide({ locale }: MetricsContentProps) {
                 <h3 className="font-mono text-base font-semibold text-ink">{item.label}</h3>
                 <code className="text-xs font-bold text-brand">{item.key}</code>
               </div>
-              <p className="mt-3 text-sm leading-6 text-muted">{item.raw}</p>
-              <p className="mt-2 rounded-md bg-slate-950 px-3 py-2 font-mono text-xs leading-5 text-emerald-200">
-                {item.formula}
-              </p>
+              <p className="mt-3 text-sm leading-6 text-muted">{item.desc}</p>
             </article>
           ))}
         </div>
@@ -263,20 +239,6 @@ export function MetricsContent({ locale }: MetricsContentProps) {
       </section>
 
       <section className="surface-card mt-8 sm:p-6">
-        <h2 className="font-mono text-2xl font-semibold text-ink">{metrics.formulaTitle}</h2>
-        <div className="mt-5 grid gap-3 lg:grid-cols-4">
-          {metrics.formulaSteps.map((step, index) => (
-            <div className="rounded-md border border-line bg-canvas p-4" key={step}>
-              <span className="font-mono text-sm font-black text-brand">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <p className="mt-3 text-sm leading-6 text-muted">{step}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="surface-card mt-8 sm:p-6">
         <h2 className="font-mono text-2xl font-semibold text-ink">
           {metrics.metricFormulaTitle}
         </h2>
@@ -293,13 +255,16 @@ export function MetricsContent({ locale }: MetricsContentProps) {
       <section className="surface-card mt-8 sm:p-6">
         <h2 className="font-mono text-2xl font-semibold text-ink">{metrics.levelTitle}</h2>
         <div className="mt-5 grid gap-3">
-          {metrics.levels.map(([level, description]) => (
+          {metrics.levels.map((item) => (
             <div
               className="grid gap-2 rounded-md border border-line bg-canvas p-4 sm:grid-cols-[5rem_1fr] sm:items-center"
-              key={level}
+              key={item.level}
             >
-              <strong className="font-mono text-xl text-brand">{level}</strong>
-              <span className="text-sm leading-6 text-muted">{description}</span>
+              <strong className="font-mono text-xl text-brand">{item.level}</strong>
+              <div className="min-w-0">
+                <div className="font-semibold text-ink">{item.title}</div>
+                <span className="text-sm leading-6 text-muted">{item.description}</span>
+              </div>
             </div>
           ))}
         </div>

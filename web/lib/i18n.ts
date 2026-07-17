@@ -142,20 +142,13 @@ export const messages = {
       imageDescription:
         "图片报告展示的是 normalized score：每个指标先按规则换算为 0-100 分，进度条表示当前分数。AI 文件和能力应用是原始数量，不参与这一组进度条。",
       imageScoreLabel: "图片分数",
-      formulaTitle: "完整计算流程",
-      formulaSteps: [
-        "先从 git-tracked files 聚合 raw metrics。",
-        "再把 raw metrics 归一化成 0-100 分数。",
-        "Configuration depth、Context richness、Integration breadth 分别汇总子指标。",
-        "AMI = Configuration depth × 60% + Context richness × 30% + Integration breadth × 10%。",
-      ],
-      metricFormulaTitle: "15 个 normalized metrics",
+      metricFormulaTitle: "15 个指标",
       levels: [
-        ["L0", "没有 AI instruction file。"],
-        ["L1", "默认起点，仓库已经出现基础 AI 协作信号。"],
-        ["L2", "具备一定能力资产，并开始出现 advanced skill。"],
-        ["L3", "能力资产、advanced skill、specs 和工程化比例都达到较高水平。"],
-        ["L4", "成熟仓库，AI 能力资产和 specs 已形成规模化沉淀。"],
+        { level: "L0", title: "一窍不通", description: "没有 AI instruction file。" },
+        { level: "L1", title: "初学乍练", description: "默认起点，仓库已经出现基础 AI 协作信号。" },
+        { level: "L2", title: "渐入佳境", description: "具备一定能力资产，并开始出现 advanced skill。" },
+        { level: "L3", title: "驾轻就熟", description: "能力资产、advanced skill、specs 和工程化比例都达到较高水平。" },
+        { level: "L4", title: "炉火纯青", description: "成熟仓库，AI 能力资产和 specs 已形成规模化沉淀。" },
       ],
     },
     quickStart: {
@@ -259,6 +252,147 @@ export const messages = {
           "spec 配置只影响报告里的文件分组归类，不影响 AMI 分数与等级。",
         ],
       },
+      normalization: {
+        title: "归一化",
+        intro:
+          "raw metric 通过线性饱和映射到 0–100 分：未达 cap 时按比例线性增长，达到或超过 cap 即 100 分。",
+        rule: "score = min(raw, cap) / cap × 100",
+        capsTitle: "封顶值（caps）",
+        tableHeaders: { metric: "指标", cap: "封顶 cap" },
+        caps: [
+          ["skill_count", "30"],
+          ["skill_line_count", "15000"],
+          ["advanced_skill_count", "10"],
+          ["skill_resource_count", "30"],
+          ["agent_count", "10"],
+          ["agent_line_count", "2000"],
+          ["command_count", "10"],
+          ["command_line_count", "2000"],
+          ["mcp_count", "3"],
+          ["ai_instruction_files", "1"],
+          ["specs_file_count", "50"],
+          ["specs_line_count", "5000"],
+          ["subproject_coverage", "5"],
+        ],
+        specialTitle: "特殊归一化",
+        special: [
+          {
+            name: "instruction_max_line_count",
+            desc: "按分段计分（非线性）：0 行→10 分，0–20 行→10–30，20–50 行→30–100，50–400 行→100（最佳区间），400–1000 行→100–30，超过 1000 行→10。",
+          },
+          {
+            name: "skill_engineering_rate",
+            desc: "rate = advanced_skill_count / skill_count（skill_count 为 0 时记 0）；rate 达到 0.50 即 100 分。",
+          },
+        ],
+      },
+      ami: {
+        title: "AMI 加权",
+        intro:
+          "归一化后的指标先汇总成三个维度，再加权得到 0–100 的 AMI 分数（保留两位小数）。",
+        rollupTitle: "维度汇总",
+        rows: [
+          {
+            dimension: "configuration_depth",
+            weight: "60%",
+            composed: "skill、agent、command、mcp 四个 subscore 的均值。",
+          },
+          {
+            dimension: "context_richness",
+            weight: "30%",
+            composed:
+              "ai_instruction_files、instruction_max_line_count、specs_file_count、specs_line_count 的均值。",
+          },
+          {
+            dimension: "integration_breadth",
+            weight: "10%",
+            composed: "normalized subproject_coverage。",
+          },
+        ],
+        subscoreTitle: "configuration_depth 的 subscore 分组",
+        subscores: [
+          {
+            name: "skill subscore",
+            members:
+              "skill_count、skill_line_count、advanced_skill_count、skill_engineering_rate、skill_resource_count 的均值",
+          },
+          { name: "agent subscore", members: "agent_count、agent_line_count 的均值" },
+          { name: "command subscore", members: "command_count、command_line_count 的均值" },
+          { name: "mcp subscore", members: "mcp_count" },
+        ],
+        formulaTitle: "AMI 公式",
+        formula: "AMI = configuration_depth × 0.6 + context_richness × 0.3 + integration_breadth × 0.1",
+      },
+      levelMetrics: {
+        title: "等级判定指标",
+        intro:
+          "以下 5 个指标参与 L0–L4 判定。其中 ability_applied 与 skill_engineering_rate 由其他 raw metrics 派生得到，需要先单独计算；其余三个是扫描时直接统计的原始计数。",
+        derivedTitle: "派生指标",
+        derived: [
+          {
+            name: "ability_applied",
+            formula: "skill + skill_resource + agent + command + mcp",
+            desc: "已应用的能力资产总数，config 与 hook 不计入。",
+            exampleLabel: "例",
+            example:
+              "skill=3、skill_resource=2、agent=1、command=1、mcp=0 → ability_applied = 3+2+1+1+0 = 7",
+          },
+          {
+            name: "skill_engineering_rate",
+            formula: "advanced_skill_count / skill_count",
+            desc: "advanced skill 占全部 skill 的比例；skill_count 为 0 时记为 0。",
+            exampleLabel: "例",
+            example: "advanced_skill=3、skill=10 → skill_engineering_rate = 3/10 = 0.30",
+          },
+        ],
+        rawTitle: "原始计数",
+        raw: [
+          { name: "advanced_skill", desc: "目录中带有脚本的 skill 数量。" },
+          { name: "specs_files", desc: "被识别为 spec 的 Markdown 文件数量。" },
+          { name: "ai_instruction_files", desc: "仓库中 AI instruction file 的数量。" },
+        ],
+      },
+      levels: {
+        title: "L0–L4 等级算法",
+        intro:
+          "成熟度等级由一组阈值级联判定：先检查 L0 这个门槛，再从 L4 向下逐级比较，命中第一个全部满足的等级即返回，都不满足则落到 L1。各指标含义见上一节「等级判定指标」。",
+        clauseJoin: "且",
+        tableHeaders: {
+          level: "等级",
+          condition: "判定条件（自上而下，首个满足即返回）",
+        },
+        rows: [
+          { level: "L0", clauses: [["ai_instruction_files", "<", "1"]], note: "" },
+          {
+            level: "L4",
+            clauses: [
+              ["ability_applied", "≥", "25"],
+              ["skill_engineering_rate", "≥", "0.40"],
+              ["specs_files", "≥", "20"],
+            ],
+            note: "",
+          },
+          {
+            level: "L3",
+            clauses: [
+              ["ability_applied", "≥", "15"],
+              ["advanced_skill", "≥", "2"],
+              ["skill_engineering_rate", "≥", "0.15"],
+              ["specs_files", "≥", "10"],
+            ],
+            note: "",
+          },
+          {
+            level: "L2",
+            clauses: [
+              ["ability_applied", "≥", "8"],
+              ["advanced_skill", "≥", "1"],
+            ],
+            note: "",
+          },
+          { level: "L1", clauses: [], note: "默认：以上条件均不满足时返回 L1。" },
+        ],
+      },
       table: {
         title: "命令行参数",
         flag: "Flag",
@@ -351,20 +485,29 @@ export const messages = {
       imageDescription:
         "The image report shows normalized scores. Each metric is converted to a 0-100 score, and the progress bar visualizes that score. AI files and ability applied are raw counts, not progress-bar scores.",
       imageScoreLabel: "Image score",
-      formulaTitle: "Full scoring flow",
-      formulaSteps: [
-        "Aggregate raw metrics from git-tracked files.",
-        "Normalize raw metrics into 0-100 scores.",
-        "Roll metrics into Configuration depth, Context richness, and Integration breadth.",
-        "AMI = Configuration depth × 60% + Context richness × 30% + Integration breadth × 10%.",
-      ],
-      metricFormulaTitle: "15 normalized metrics",
+      metricFormulaTitle: "The 15 metrics",
       levels: [
-        ["L0", "No AI instruction file is present."],
-        ["L1", "The baseline once the repository has basic AI collaboration signals."],
-        ["L2", "A repository with meaningful capability assets and at least one advanced skill."],
-        ["L3", "A stronger repository with capability assets, advanced skills, specs, and engineering depth."],
-        ["L4", "A mature repository where AI capability assets and specs are present at scale."],
+        { level: "L0", title: "Not Started", description: "No AI instruction file is present." },
+        {
+          level: "L1",
+          title: "Beginner",
+          description: "The baseline once the repository has basic AI collaboration signals.",
+        },
+        {
+          level: "L2",
+          title: "Improving",
+          description: "A repository with meaningful capability assets and at least one advanced skill.",
+        },
+        {
+          level: "L3",
+          title: "Proficient",
+          description: "A stronger repository with capability assets, advanced skills, specs, and engineering depth.",
+        },
+        {
+          level: "L4",
+          title: "Expert",
+          description: "A mature repository where AI capability assets and specs are present at scale.",
+        },
       ],
     },
     quickStart: {
@@ -466,6 +609,147 @@ export const messages = {
           "Globs use forward slashes as path separators (same as .gitignore, tsconfig, etc.) — use / on Windows too.",
           "If the config file is malformed or has the wrong shape, the scanner logs a warning and falls back to the default; it never aborts the scan.",
           "Spec configuration only affects file grouping in the report; it does not change the AMI score or level.",
+        ],
+      },
+      normalization: {
+        title: "Normalization",
+        intro:
+          "Each raw metric is mapped to a 0–100 score by linear saturation: it grows proportionally until the cap, then stays at 100.",
+        rule: "score = min(raw, cap) / cap × 100",
+        capsTitle: "Saturation caps",
+        tableHeaders: { metric: "Metric", cap: "Cap" },
+        caps: [
+          ["skill_count", "30"],
+          ["skill_line_count", "15000"],
+          ["advanced_skill_count", "10"],
+          ["skill_resource_count", "30"],
+          ["agent_count", "10"],
+          ["agent_line_count", "2000"],
+          ["command_count", "10"],
+          ["command_line_count", "2000"],
+          ["mcp_count", "3"],
+          ["ai_instruction_files", "1"],
+          ["specs_file_count", "50"],
+          ["specs_line_count", "5000"],
+          ["subproject_coverage", "5"],
+        ],
+        specialTitle: "Special normalization",
+        special: [
+          {
+            name: "instruction_max_line_count",
+            desc: "Scored piecewise (non-linear): 0 lines→10, 0–20→10–30, 20–50→30–100, 50–400→100 (sweet spot), 400–1000→100–30, above 1000→10.",
+          },
+          {
+            name: "skill_engineering_rate",
+            desc: "rate = advanced_skill_count / skill_count (0 when skill_count is 0); the rate reaches 100 at 0.50.",
+          },
+        ],
+      },
+      ami: {
+        title: "AMI weighting",
+        intro:
+          "Normalized metrics roll up into three dimensions, which are then weighted into the 0–100 AMI score (rounded to two decimals).",
+        rollupTitle: "Dimension rollup",
+        rows: [
+          {
+            dimension: "configuration_depth",
+            weight: "60%",
+            composed: "Mean of the skill, agent, command, and mcp subscores.",
+          },
+          {
+            dimension: "context_richness",
+            weight: "30%",
+            composed:
+              "Mean of ai_instruction_files, instruction_max_line_count, specs_file_count, and specs_line_count.",
+          },
+          {
+            dimension: "integration_breadth",
+            weight: "10%",
+            composed: "Normalized subproject_coverage.",
+          },
+        ],
+        subscoreTitle: "configuration_depth subscore groups",
+        subscores: [
+          {
+            name: "skill subscore",
+            members:
+              "Mean of skill_count, skill_line_count, advanced_skill_count, skill_engineering_rate, and skill_resource_count",
+          },
+          { name: "agent subscore", members: "Mean of agent_count and agent_line_count" },
+          { name: "command subscore", members: "Mean of command_count and command_line_count" },
+          { name: "mcp subscore", members: "mcp_count" },
+        ],
+        formulaTitle: "AMI formula",
+        formula: "AMI = configuration_depth × 0.6 + context_richness × 0.3 + integration_breadth × 0.1",
+      },
+      levelMetrics: {
+        title: "Threshold metrics",
+        intro:
+          "These five metrics feed the L0–L4 cascade. ability_applied and skill_engineering_rate are derived from other raw metrics and computed separately; the remaining three are raw counts gathered directly during the scan.",
+        derivedTitle: "Derived metrics",
+        derived: [
+          {
+            name: "ability_applied",
+            formula: "skill + skill_resource + agent + command + mcp",
+            desc: "Total applied capability assets; config and hook files are excluded.",
+            exampleLabel: "Example",
+            example:
+              "skill=3, skill_resource=2, agent=1, command=1, mcp=0 → ability_applied = 3+2+1+1+0 = 7",
+          },
+          {
+            name: "skill_engineering_rate",
+            formula: "advanced_skill_count / skill_count",
+            desc: "Share of advanced skills among all skills; 0 when skill_count is 0.",
+            exampleLabel: "Example",
+            example: "advanced_skill=3, skill=10 → skill_engineering_rate = 3/10 = 0.30",
+          },
+        ],
+        rawTitle: "Raw counts",
+        raw: [
+          { name: "advanced_skill", desc: "Number of skills whose directory contains scripts." },
+          { name: "specs_files", desc: "Number of Markdown files recognized as specs." },
+          { name: "ai_instruction_files", desc: "Number of AI instruction files in the repository." },
+        ],
+      },
+      levels: {
+        title: "L0–L4 level algorithm",
+        intro:
+          "The maturity level is a threshold cascade: an L0 gate is checked first, then conditions are evaluated top-down from L4; the first level whose conditions are all met is returned, defaulting to L1. See Threshold metrics above for what each metric means.",
+        clauseJoin: "and",
+        tableHeaders: {
+          level: "Level",
+          condition: "Conditions (evaluated top-down, first match wins)",
+        },
+        rows: [
+          { level: "L0", clauses: [["ai_instruction_files", "<", "1"]], note: "" },
+          {
+            level: "L4",
+            clauses: [
+              ["ability_applied", "≥", "25"],
+              ["skill_engineering_rate", "≥", "0.40"],
+              ["specs_files", "≥", "20"],
+            ],
+            note: "",
+          },
+          {
+            level: "L3",
+            clauses: [
+              ["ability_applied", "≥", "15"],
+              ["advanced_skill", "≥", "2"],
+              ["skill_engineering_rate", "≥", "0.15"],
+              ["specs_files", "≥", "10"],
+            ],
+            note: "",
+          },
+          {
+            level: "L2",
+            clauses: [
+              ["ability_applied", "≥", "8"],
+              ["advanced_skill", "≥", "1"],
+            ],
+            note: "",
+          },
+          { level: "L1", clauses: [], note: "Default: returned when none of the above conditions are met." },
         ],
       },
       table: {
