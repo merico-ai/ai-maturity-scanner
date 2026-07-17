@@ -16,6 +16,7 @@ export interface MaturityReport {
     lang: Lang;
   };
   level: Level;
+  levelTitle: string;
   ami: number;
   dimensions: {
     configuration_depth: number;

@@ -43,6 +43,13 @@ const copy = {
   en: {
     title: "Repository AI Maturity",
     level: "Level",
+    levelTitles: {
+      L0: "Not Started",
+      L1: "Beginner",
+      L2: "Improving",
+      L3: "Proficient",
+      L4: "Expert",
+    },
     scanReport: "Scan report",
     scanCta: "Scan to view my",
     scanCtaStrong: "repository AI maturity",
@@ -70,6 +77,7 @@ const copy = {
   zh: {
     title: "代码库 AI 成熟度",
     level: "等级",
+    levelTitles: { L0: "一窍不通", L1: "初学乍练", L2: "渐入佳境", L3: "驾轻就熟", L4: "炉火纯青" },
     scanReport: "扫码查看",
     scanCta: "扫码查看我的",
     scanCtaStrong: "代码库 AI 成熟度",
@@ -153,6 +161,10 @@ function truncate(value: string, maxLength: number): string {
   return value.length > maxLength ? `${value.slice(0, maxLength - 3)}...` : value;
 }
 
+function levelTitleFor(lang: Lang, level: string): string {
+  return (copy[lang].levelTitles as Record<string, string>)[level] ?? "";
+}
+
 function levelBadgeColor(level: string): string {
   switch (level) {
     case "L0":
@@ -170,20 +182,21 @@ function levelBadgeColor(level: string): string {
   }
 }
 
-function levelBadge(level: string, x: number, y: number): string {
+function levelBadge(level: string, title: string, x: number, y: number): string {
   const label = "AI Maturity";
-  const labelWidth = 164;
-  const valueWidth = 118;
-  const height = 58;
-  const radius = 8;
+  const width = 300;
+  const height = 104;
+  const radius = 24;
+  const color = levelBadgeColor(level);
 
   return `
     <g role="img" aria-label="${escapeXml(`${label} badge ${level}`)}">
-      <rect x="${x}" y="${y}" width="${labelWidth + valueWidth}" height="${height}" rx="${radius}" fill="#555"/>
-      <path d="M ${x + labelWidth} ${y} h ${valueWidth - radius} a ${radius} ${radius} 0 0 1 ${radius} ${radius} v ${height - 2 * radius} a ${radius} ${radius} 0 0 1 -${radius} ${radius} h -${valueWidth} z" fill="${levelBadgeColor(level)}"/>
-      <path d="M ${x + labelWidth - 1} ${y} v ${height} h 1 v -${height} z" fill="#000" opacity="0.12"/>
-      ${svgText(label, x + labelWidth / 2, y + 38, { size: 24, weight: 750, fill: "#ffffff", anchor: "middle" })}
-      ${svgText(level, x + labelWidth + valueWidth / 2, y + 40, { size: 31, weight: 900, fill: "#ffffff", anchor: "middle" })}
+      <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${radius}" fill="#223049" stroke="#31425f"/>
+      <rect x="${x + 22}" y="${y + 22}" width="6" height="60" rx="3" fill="${color}"/>
+      ${svgText(label, x + 44, y + 42, { size: 19, weight: 760, fill: "#b9c7dc" })}
+      <rect x="${x + width - 88}" y="${y + 20}" width="66" height="38" rx="19" fill="${color}"/>
+      ${svgText(level, x + width - 55, y + 47, { size: 24, weight: 900, fill: "#ffffff", anchor: "middle" })}
+      ${svgText(title, x + 44, y + 78, { size: 28, weight: 850, fill: "#ffffff" })}
     </g>
   `;
 }
@@ -280,7 +293,7 @@ export function renderImageSvg(report: ImageReportData, opts: ImageSvgOptions = 
   <rect x="88" y="334" width="904" height="304" rx="34" fill="#182133"/>
   ${svgText(t.amiScore, 132, 414, { size: 30, weight: 750, fill: "#b9c7dc" })}
   ${svgText(report.ami.toFixed(1), 132, 550, { size: 112, weight: 900, fill: "#ffffff" })}
-  ${levelBadge(report.level, 676, 456)}
+  ${levelBadge(report.level, levelTitleFor(lang, report.level), 660, 452)}
 
   ${statCard(t.aiFiles, String(report.files.length), 88, 704)}
   ${statCard(t.abilityApplied, String(raw.skillCount + raw.skillResourceCount + raw.agentCount + raw.commandCount + raw.mcpCount), 397, 704)}

@@ -163,7 +163,7 @@ export function renderMarkdown(report: MaturityReport): string {
     "",
     `## ${t.overallSection}`,
     "",
-    `**${t.levelLabel}:** ${report.level}  `,
+    `**${t.levelLabel}:** ${report.level} ${t.levelTitles[report.level]}  `,
     `**AMI:** ${fmt(report.ami)} / 100`,
     "",
     `| ${t.dimensionHeader} | ${t.scoreHeader} |`,

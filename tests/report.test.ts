@@ -28,6 +28,7 @@ function sampleReport(over: Partial<MaturityReport> = {}): MaturityReport {
     repo: { root: "/repo", headSha: "abc1234567", scannedAt: "2026-07-14T00:00:00Z" },
     meta: { algorithmVersion: "v1", lang: "en" },
     level: "L3",
+    levelTitle: "Proficient",
     ami: 67.5,
     dimensions: {
       configuration_depth: 75,

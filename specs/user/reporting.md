@@ -21,3 +21,7 @@ When the selected format is `md`, the scanner shall render a Markdown report con
 ### REP-3
 
 When the selected format is `json`, the scanner shall render pretty-printed JSON for the full report object followed by a trailing newline.
+
+### REP-15
+
+The report shall carry a human-readable `levelTitle` — a short, localized title mapped one-to-one from the level (`L0`–`L4`) via the active language — rendered alongside the level code in the `terminal` and `md` formats and emitted as the `levelTitle` field in the `json` payload.

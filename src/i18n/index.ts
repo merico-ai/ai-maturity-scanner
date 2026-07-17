@@ -22,6 +22,7 @@ export interface ReportStrings {
   algorithmVersionLabel: string;
   overallSection: string;
   levelLabel: string;
+  levelTitles: Record<"L0" | "L1" | "L2" | "L3" | "L4", string>;
   dimensionHeader: string;
   scoreHeader: string;
   configurationDepth: string;
@@ -50,6 +51,13 @@ const en: ReportStrings = {
   algorithmVersionLabel: "Algorithm version",
   overallSection: "Overall",
   levelLabel: "Level",
+  levelTitles: {
+    L0: "Not Started",
+    L1: "Beginner",
+    L2: "Improving",
+    L3: "Proficient",
+    L4: "Expert",
+  },
   dimensionHeader: "Dimension",
   scoreHeader: "Score",
   configurationDepth: "Configuration depth",
@@ -78,6 +86,13 @@ const zh: ReportStrings = {
   algorithmVersionLabel: "算法版本",
   overallSection: "总览",
   levelLabel: "等级",
+  levelTitles: {
+    L0: "一窍不通",
+    L1: "初学乍练",
+    L2: "渐入佳境",
+    L3: "驾轻就熟",
+    L4: "炉火纯青",
+  },
   dimensionHeader: "维度",
   scoreHeader: "分数",
   configurationDepth: "配置深度",

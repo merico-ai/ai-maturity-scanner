@@ -11,7 +11,7 @@ import {
   getRepoRoot,
   isGitInstalled,
 } from "./git/workspace.ts";
-import { DEFAULT_LANG, LANGS, isLang } from "./i18n/index.ts";
+import { DEFAULT_LANG, LANGS, isLang, stringsFor } from "./i18n/index.ts";
 import type { Lang } from "./i18n/index.ts";
 import { aggregateRawMetrics } from "./metrics/aggregate.ts";
 import { determineLevel, scoreAmi } from "./metrics/score.ts";
@@ -75,11 +75,13 @@ export async function buildReport(
   const metrics = aggregateRawMetrics(files);
   const { ami, dimensions, normalizedMetrics } = scoreAmi(metrics);
   const level = determineLevel(metrics);
+  const lang = opts.lang ?? DEFAULT_LANG;
 
   return {
     repo: { root: repoRoot, remoteUrl, headSha, scannedAt: new Date().toISOString() },
-    meta: { algorithmVersion: ALGORITHM_VERSION, lang: opts.lang ?? DEFAULT_LANG },
+    meta: { algorithmVersion: ALGORITHM_VERSION, lang },
     level,
+    levelTitle: stringsFor(lang).levelTitles[level],
     ami,
     dimensions: {
       configuration_depth: dimensions.configurationDepth,

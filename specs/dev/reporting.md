@@ -12,7 +12,7 @@ It does not cover command-line option parsing, repository scanning, or maturity 
 
 ### REP-4
 
-When a report is built, the report object shall contain `repo.root`, `repo.headSha`, `repo.scannedAt`, `level`, `ami`, `dimensions.configuration_depth`, `dimensions.context_richness`, `dimensions.integration_breadth`, `normalizedMetrics`, `rawMetrics`, and `files`.
+When a report is built, the report object shall contain `repo.root`, `repo.headSha`, `repo.scannedAt`, `level`, `levelTitle`, `ami`, `dimensions.configuration_depth`, `dimensions.context_richness`, `dimensions.integration_breadth`, `normalizedMetrics`, `rawMetrics`, and `files`.
 When the repository has an `origin` remote URL, the report object shall include it as `repo.remoteUrl`.
 
 ### REP-13

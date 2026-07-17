@@ -37,6 +37,23 @@ function levelColor(level: Level): string {
   }
 }
 
+function levelTitleBadge(level: Level, title: string): string {
+  const fill = level === "L1" ? pc.black : pc.white;
+  const body = fill(pc.bold(` ${title} `));
+  switch (level) {
+    case "L0":
+      return pc.bgRed(body);
+    case "L1":
+      return pc.bgYellow(body);
+    case "L2":
+      return pc.bgCyan(body);
+    case "L3":
+      return pc.bgGreen(body);
+    case "L4":
+      return pc.bgBlue(body);
+  }
+}
+
 function shortSha(sha: string): string {
   return sha.length > 8 ? sha.slice(0, 8) : sha;
 }
@@ -159,7 +176,7 @@ export function renderTerminal(report: MaturityReport): string {
     `  ${pc.dim(`${report.repo.root} @ ${shortSha(report.repo.headSha)}`)}`,
     `  ${pc.dim(`algorithm ${report.meta.algorithmVersion}`)}`,
     "",
-    `  ${t.levelLabel}: ${pc.bold(levelColor(report.level))}    AMI: ${pc.bold(fmt(report.ami))}${pc.dim("/100")}`,
+    `  ${t.levelLabel}: ${pc.bold(levelColor(report.level))} ${levelTitleBadge(report.level, t.levelTitles[report.level])}    AMI: ${pc.bold(fmt(report.ami))}${pc.dim("/100")}`,
     "",
     `  ${t.configurationDepth.padEnd(dimPad)}${bar(d.configuration_depth)} ${fmt(d.configuration_depth).padStart(5)}`,
     `  ${t.contextRichness.padEnd(dimPad)}${bar(d.context_richness)} ${fmt(d.context_richness).padStart(5)}`,
