@@ -1,6 +1,7 @@
+import Link from "next/link";
 import { MetricCard } from "./metric-card";
 import type { Locale } from "../lib/i18n";
-import { messages } from "../lib/i18n";
+import { localizePath, messages } from "../lib/i18n";
 import { sampleQrSvg } from "../lib/sample-qr";
 import { renderImageSvg } from "../../src/report/image-svg";
 import type { ImageReportData } from "../../src/report/image-svg";
@@ -159,7 +160,10 @@ const normalizedMetrics = {
   en: [
     ["skill_count", "Number of skills in the repository."],
     ["skill_line_count", "Total lines across skill files."],
-    ["advanced_skill_count", "Number of advanced skills (skills whose directory includes scripts)."],
+    [
+      "advanced_skill_count",
+      "Number of advanced skills (skills whose directory includes scripts).",
+    ],
     ["skill_engineering_rate", "Share of skills that are advanced."],
     ["skill_resource_count", "Number of resource files under skills/."],
     ["agent_count", "Number of agent definitions."],
@@ -175,6 +179,22 @@ const normalizedMetrics = {
   ],
 } as const;
 
+const specConfigLinkText = {
+  zh: "查看 spec 文件配置",
+  en: "See spec file configuration",
+} as const;
+
+function SpecConfigLink({ locale }: MetricsContentProps) {
+  return (
+    <Link
+      className="font-semibold text-brand transition hover:underline"
+      href={`${localizePath("/docs", locale)}#spec-config`}
+    >
+      {specConfigLinkText[locale]}
+    </Link>
+  );
+}
+
 function ReportImageGuide({ locale }: MetricsContentProps) {
   const metrics = messages[locale].metrics;
   const previewSvg = renderImageSvg(
@@ -186,7 +206,9 @@ function ReportImageGuide({ locale }: MetricsContentProps) {
     <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
       <div className="overflow-hidden rounded-md border border-line bg-slate-100 p-4 shadow-soft">
         <div
-          aria-label={locale === "zh" ? "代码库 AI 成熟度报告示意图" : "Repository AI maturity report preview"}
+          aria-label={
+            locale === "zh" ? "代码库 AI 成熟度报告示意图" : "Repository AI maturity report preview"
+          }
           className="[&_svg]:h-auto [&_svg]:w-full"
           dangerouslySetInnerHTML={{ __html: previewSvg }}
         />
@@ -203,7 +225,15 @@ function ReportImageGuide({ locale }: MetricsContentProps) {
                 <h3 className="font-mono text-base font-semibold text-ink">{item.label}</h3>
                 <code className="text-xs font-bold text-brand">{item.key}</code>
               </div>
-              <p className="mt-3 text-sm leading-6 text-muted">{item.desc}</p>
+              <p className="mt-3 text-sm leading-6 text-muted">
+                {item.desc}
+                {item.key === "specs_file_count" && (
+                  <>
+                    {" "}
+                    <SpecConfigLink locale={locale} />
+                  </>
+                )}
+              </p>
             </article>
           ))}
         </div>
@@ -239,14 +269,20 @@ export function MetricsContent({ locale }: MetricsContentProps) {
       </section>
 
       <section className="surface-card mt-8 sm:p-6">
-        <h2 className="font-mono text-2xl font-semibold text-ink">
-          {metrics.metricFormulaTitle}
-        </h2>
+        <h2 className="font-mono text-2xl font-semibold text-ink">{metrics.metricFormulaTitle}</h2>
         <div className="mt-5 grid gap-3 lg:grid-cols-3">
           {normalizedMetrics[locale].map(([name, description]) => (
             <article className="rounded-md border border-line bg-canvas p-4" key={name}>
               <code className="text-sm font-bold text-brand">{name}</code>
-              <p className="mt-2 text-sm leading-6 text-muted">{description}</p>
+              <p className="mt-2 text-sm leading-6 text-muted">
+                {description}
+                {name === "specs_file_count" && (
+                  <>
+                    {" "}
+                    <SpecConfigLink locale={locale} />
+                  </>
+                )}
+              </p>
             </article>
           ))}
         </div>

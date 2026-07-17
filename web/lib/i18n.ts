@@ -146,9 +146,21 @@ export const messages = {
       levels: [
         { level: "L0", title: "一窍不通", description: "没有 AI instruction file。" },
         { level: "L1", title: "初学乍练", description: "默认起点，仓库已经出现基础 AI 协作信号。" },
-        { level: "L2", title: "渐入佳境", description: "具备一定能力资产，并开始出现 advanced skill。" },
-        { level: "L3", title: "驾轻就熟", description: "能力资产、advanced skill、specs 和工程化比例都达到较高水平。" },
-        { level: "L4", title: "炉火纯青", description: "成熟仓库，AI 能力资产和 specs 已形成规模化沉淀。" },
+        {
+          level: "L2",
+          title: "渐入佳境",
+          description: "具备一定能力资产，并开始出现 advanced skill。",
+        },
+        {
+          level: "L3",
+          title: "驾轻就熟",
+          description: "能力资产、advanced skill、specs 和工程化比例都达到较高水平。",
+        },
+        {
+          level: "L4",
+          title: "炉火纯青",
+          description: "成熟仓库，AI 能力资产和 specs 已形成规模化沉淀。",
+        },
       ],
     },
     quickStart: {
@@ -199,17 +211,30 @@ export const messages = {
     docs: {
       eyebrow: "Docs",
       title: "安装、运行、导出报告。",
-      description:
-        "AI Maturity Scanner 是独立 Node.js CLI。需要 Node 22+，并且本机可以访问 git。",
+      description: "AI Maturity Scanner 是独立 Node.js CLI。需要 Node 22+，并且本机可以访问 git。",
       install: "Install",
       usage: "Usage",
       tocLabel: "本页目录",
+      quickCommand: {
+        title: "先跑一次扫描",
+        description:
+          "不需要先安装到全局环境。传入目标仓库路径即可生成默认 PNG 报告；省略路径时扫描当前目录。",
+        quickStartCta: "查看快速开始",
+        metricsCta: "了解评分模型",
+      },
+      workflowsTitle: "常用工作流",
+      workflowsDescription:
+        "按报告用途选择命令：图片适合分享，Markdown 适合文档和 PR，JSON 适合自动化流程。",
+      scoringReference: {
+        title: "评分参考",
+        description:
+          "这一节保留算法细节，方便核对实现和阈值。只想理解报告含义时，可以直接阅读 Metrics 页面。",
+      },
       mcpSupport: {
         title: "MCP 支持边界",
         description:
           "MCP 配置在不同代码助手之间没有统一的仓库级格式，因此当前识别能力仍不完善。现阶段只把 Claude Code 的项目级 .mcp.json / mcp.json 和 Codex 的项目级 .codex/config.toml 作为明确支持的 MCP 配置来源。",
-        note:
-          "其他工具也可能支持 MCP，但配置路径、字段和优先级差异较大，公开文档完整度也不一致。为避免误报，扫描器不会把这些格式当作稳定支持项。",
+        note: "其他工具也可能支持 MCP，但配置路径、字段和优先级差异较大，公开文档完整度也不一致。为避免误报，扫描器不会把这些格式当作稳定支持项。",
         supported: ["Claude Code: .mcp.json / mcp.json", "Codex: .codex/config.toml"],
       },
       usageExamples: [
@@ -238,7 +263,8 @@ export const messages = {
         title: "Spec 文件配置",
         description:
           "扫描器默认把仓库内 specs/ 目录下的 Markdown 文件识别为 spec 文档。如果你的 spec 放在别的位置（如 docs/specs/、design/），可以用仓库根目录的配置文件或 --spec-glob 参数自定义匹配规则。优先级：--spec-glob 参数 > 配置文件 > 默认值。",
-        configFile: "在仓库根目录放置 .ai-maturity-scanner.json，用 specGlobs 指定一个或多个 glob：",
+        configFile:
+          "在仓库根目录放置 .ai-maturity-scanner.json，用 specGlobs 指定一个或多个 glob：",
         configFileCode:
           '{\n  "specGlobs": [\n    "docs/specs/**/*.md",\n    "design/**/*.md"\n  ]\n}',
         flag: "或用 --spec-glob 参数临时指定（可重复，会覆盖配置文件）：",
@@ -288,8 +314,7 @@ export const messages = {
       },
       ami: {
         title: "AMI 加权",
-        intro:
-          "归一化后的指标先汇总成三个维度，再加权得到 0–100 的 AMI 分数（保留两位小数）。",
+        intro: "归一化后的指标先汇总成三个维度，再加权得到 0–100 的 AMI 分数（保留两位小数）。",
         rollupTitle: "维度汇总",
         rows: [
           {
@@ -321,7 +346,8 @@ export const messages = {
           { name: "mcp subscore", members: "mcp_count" },
         ],
         formulaTitle: "AMI 公式",
-        formula: "AMI = configuration_depth × 0.6 + context_richness × 0.3 + integration_breadth × 0.1",
+        formula:
+          "AMI = configuration_depth × 0.6 + context_richness × 0.3 + integration_breadth × 0.1",
       },
       levelMetrics: {
         title: "等级判定指标",
@@ -394,10 +420,64 @@ export const messages = {
         ],
       },
       table: {
-        title: "命令行参数",
+        title: "命令行参考",
+        description:
+          "格式、输出路径、语言、隐私模式和 spec 匹配规则都在这里统一说明。报告格式不再单独成段，避免和参数表重复。",
         flag: "Flag",
         values: "Values",
         default: "Default",
+        descriptionHeader: "说明",
+        rows: [
+          {
+            flag: "[path]",
+            values: "repository path",
+            defaultValue: ".",
+            description: "要扫描的 git 仓库路径；省略时扫描当前目录。",
+          },
+          {
+            flag: "-f, --format <format>",
+            values: "png | terminal | md | json",
+            defaultValue: "png",
+            description: "选择报告格式：图片、终端文本、Markdown 或 JSON。",
+          },
+          {
+            flag: "-o, --out <file>",
+            values: "file path",
+            defaultValue: "PNG 为 ai-maturity-report.png；文本为 stdout",
+            description: "把报告写入指定文件。文本格式未设置 --out 时输出到 stdout。",
+          },
+          {
+            flag: "-l, --lang <lang>",
+            values: "zh | en",
+            defaultValue: "zh",
+            description: "选择报告语言。",
+          },
+          {
+            flag: "--redacted",
+            values: "boolean",
+            defaultValue: "false",
+            description: "隐私模式：PNG 报告隐藏仓库地址显示字段。",
+          },
+          {
+            flag: "--verbose",
+            values: "boolean",
+            defaultValue: "false",
+            description: "当主输出写入文件时，同时在 stdout 打印 terminal 报告。",
+          },
+          {
+            flag: "-g, --spec-glob <glob>",
+            values: "glob (repeatable)",
+            defaultValue: "**/specs/**/*.md",
+            description: "自定义 spec 文件匹配规则；可重复，优先级高于配置文件。",
+          },
+        ],
+        commandsTitle: "子命令",
+        commands: [
+          {
+            name: "verify-image <file>",
+            description: "校验生成的 PNG 报告中隐藏的图片指纹元数据。",
+          },
+        ],
       },
     },
   },
@@ -450,7 +530,8 @@ export const messages = {
         {
           title: "Configuration depth",
           weight: "60%",
-          description: "The count and structure of skills, skill resources, agents, commands, and MCP files.",
+          description:
+            "The count and structure of skills, skill resources, agents, commands, and MCP files.",
         },
         {
           title: "Context richness",
@@ -467,12 +548,14 @@ export const messages = {
         {
           title: "Configuration depth",
           weight: "60%",
-          description: "Whether skills, agents, commands, MCP files, and related fixtures form a real system.",
+          description:
+            "Whether skills, agents, commands, MCP files, and related fixtures form a real system.",
         },
         {
           title: "Context richness",
           weight: "30%",
-          description: "Whether instructions and specs give AI collaborators enough durable context.",
+          description:
+            "Whether instructions and specs give AI collaborators enough durable context.",
         },
         {
           title: "Integration breadth",
@@ -496,17 +579,20 @@ export const messages = {
         {
           level: "L2",
           title: "Improving",
-          description: "A repository with meaningful capability assets and at least one advanced skill.",
+          description:
+            "A repository with meaningful capability assets and at least one advanced skill.",
         },
         {
           level: "L3",
           title: "Proficient",
-          description: "A stronger repository with capability assets, advanced skills, specs, and engineering depth.",
+          description:
+            "A stronger repository with capability assets, advanced skills, specs, and engineering depth.",
         },
         {
           level: "L4",
           title: "Expert",
-          description: "A mature repository where AI capability assets and specs are present at scale.",
+          description:
+            "A mature repository where AI capability assets and specs are present at scale.",
         },
       ],
     },
@@ -524,13 +610,15 @@ export const messages = {
         {
           label: "Option 1",
           title: "One-off scan",
-          description: "Run the scanner against a target repository without installing it globally.",
+          description:
+            "Run the scanner against a target repository without installing it globally.",
           steps: ["npx @merico-ai/maturity-scanner ./my-repo"],
         },
         {
           label: "Option 2",
           title: "Install, then scan",
-          description: "Install the CLI globally, then run the default command in the target repository to generate the image report.",
+          description:
+            "Install the CLI globally, then run the default command in the target repository to generate the image report.",
           steps: ["npm install -g @merico-ai/maturity-scanner", "ai-maturity-scanner ./my-repo"],
         },
       ],
@@ -546,9 +634,18 @@ export const messages = {
       description:
         "AI Maturity Scanner focuses on reusable, reviewable, and maintainable AI collaboration assets in a repository: instructions, skills, agents, commands, MCP configuration, and specs.",
       cards: [
-        ["Local first", "Scanning happens on your machine. No code upload, server, database, or login required."],
-        ["Engineering lens", "The score measures repository-level collaboration assets, not personal AI proficiency."],
-        ["Continuous improvement", "Teams can use JSON or Markdown reports to track AMI across repositories and phases."],
+        [
+          "Local first",
+          "Scanning happens on your machine. No code upload, server, database, or login required.",
+        ],
+        [
+          "Engineering lens",
+          "The score measures repository-level collaboration assets, not personal AI proficiency.",
+        ],
+        [
+          "Continuous improvement",
+          "Teams can use JSON or Markdown reports to track AMI across repositories and phases.",
+        ],
       ],
       vibeTitle: "Explore more vibe coding metrics",
       vibeDescription:
@@ -563,12 +660,26 @@ export const messages = {
       install: "Install",
       usage: "Usage",
       tocLabel: "On this page",
+      quickCommand: {
+        title: "Run a scan first",
+        description:
+          "You do not need a global install. Pass a target repository path to generate the default PNG report; omit the path to scan the current directory.",
+        quickStartCta: "Open Quick start",
+        metricsCta: "Understand metrics",
+      },
+      workflowsTitle: "Common workflows",
+      workflowsDescription:
+        "Choose the command by report destination: image for sharing, Markdown for docs and PRs, JSON for automation.",
+      scoringReference: {
+        title: "Scoring reference",
+        description:
+          "This section keeps the algorithm details available for implementation and threshold checks. For report interpretation, start with the Metrics page.",
+      },
       mcpSupport: {
         title: "MCP support boundary",
         description:
           "MCP configuration does not have one repository-level format across coding assistants, so current detection is intentionally incomplete. For now, only Claude Code project .mcp.json / mcp.json files and Codex project .codex/config.toml are treated as explicitly supported MCP configuration sources.",
-        note:
-          "Other tools may also support MCP, but their paths, fields, precedence rules, and public documentation vary. To avoid false positives, the scanner does not treat those formats as stable supported inputs.",
+        note: "Other tools may also support MCP, but their paths, fields, precedence rules, and public documentation vary. To avoid false positives, the scanner does not treat those formats as stable supported inputs.",
         supported: ["Claude Code: .mcp.json / mcp.json", "Codex: .codex/config.toml"],
       },
       usageExamples: [
@@ -597,7 +708,8 @@ export const messages = {
         title: "Spec file configuration",
         description:
           "By default the scanner treats Markdown files under the repo's specs/ directory as spec documents. If your specs live elsewhere (e.g. docs/specs/, design/), customize the match with a config file at the repo root or the --spec-glob flag. Precedence: --spec-glob flag > config file > default.",
-        configFile: "Place .ai-maturity-scanner.json at the repository root with a specGlobs array:",
+        configFile:
+          "Place .ai-maturity-scanner.json at the repository root with a specGlobs array:",
         configFileCode:
           '{\n  "specGlobs": [\n    "docs/specs/**/*.md",\n    "design/**/*.md"\n  ]\n}',
         flag: "Or pass --spec-glob on the command line (repeatable; overrides the config file):",
@@ -680,7 +792,8 @@ export const messages = {
           { name: "mcp subscore", members: "mcp_count" },
         ],
         formulaTitle: "AMI formula",
-        formula: "AMI = configuration_depth × 0.6 + context_richness × 0.3 + integration_breadth × 0.1",
+        formula:
+          "AMI = configuration_depth × 0.6 + context_richness × 0.3 + integration_breadth × 0.1",
       },
       levelMetrics: {
         title: "Threshold metrics",
@@ -708,7 +821,10 @@ export const messages = {
         raw: [
           { name: "advanced_skill", desc: "Number of skills whose directory contains scripts." },
           { name: "specs_files", desc: "Number of Markdown files recognized as specs." },
-          { name: "ai_instruction_files", desc: "Number of AI instruction files in the repository." },
+          {
+            name: "ai_instruction_files",
+            desc: "Number of AI instruction files in the repository.",
+          },
         ],
       },
       levels: {
@@ -749,14 +865,75 @@ export const messages = {
             ],
             note: "",
           },
-          { level: "L1", clauses: [], note: "Default: returned when none of the above conditions are met." },
+          {
+            level: "L1",
+            clauses: [],
+            note: "Default: returned when none of the above conditions are met.",
+          },
         ],
       },
       table: {
-        title: "CLI flags",
+        title: "CLI reference",
+        description:
+          "Formats, output paths, language, privacy mode, and spec matching are covered here in one place.",
         flag: "Flag",
         values: "Values",
         default: "Default",
+        descriptionHeader: "Description",
+        rows: [
+          {
+            flag: "[path]",
+            values: "repository path",
+            defaultValue: ".",
+            description: "Git repository path to scan; omitted path means the current directory.",
+          },
+          {
+            flag: "-f, --format <format>",
+            values: "png | terminal | md | json",
+            defaultValue: "png",
+            description: "Select the report format: image, terminal text, Markdown, or JSON.",
+          },
+          {
+            flag: "-o, --out <file>",
+            values: "file path",
+            defaultValue: "ai-maturity-report.png for PNG; stdout for text",
+            description:
+              "Write the report to a file. Text formats write to stdout when --out is omitted.",
+          },
+          {
+            flag: "-l, --lang <lang>",
+            values: "zh | en",
+            defaultValue: "zh",
+            description: "Select report language.",
+          },
+          {
+            flag: "--redacted",
+            values: "boolean",
+            defaultValue: "false",
+            description: "Privacy mode: hide the repository address display field in PNG output.",
+          },
+          {
+            flag: "--verbose",
+            values: "boolean",
+            defaultValue: "false",
+            description:
+              "When primary output is written to a file, also print a terminal report to stdout.",
+          },
+          {
+            flag: "-g, --spec-glob <glob>",
+            values: "glob (repeatable)",
+            defaultValue: "**/specs/**/*.md",
+            description:
+              "Customize spec file matching; repeatable and higher priority than the config file.",
+          },
+        ],
+        commandsTitle: "Subcommands",
+        commands: [
+          {
+            name: "verify-image <file>",
+            description: "Verify hidden fingerprint metadata in a generated PNG report.",
+          },
+        ],
       },
     },
   },
