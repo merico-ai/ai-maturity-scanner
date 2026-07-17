@@ -16,13 +16,13 @@ Tests live in `tests/`, with fixtures under `tests/fixtures/`. Build output is g
 
 - `npm install` installs dependencies from `package-lock.json`.
 - `npm run dev` runs `tsup --watch`.
-- `npm run build` builds `dist/cli.js` with the Node 18 ESM target.
+- `npm run build` builds `dist/cli.js` with the Node 22 ESM target.
 - `npm test` runs the Vitest suite once.
 - `npm run test:watch` runs Vitest in watch mode.
 - `npm run lint` runs Biome checks on `src` and `tests`.
 - `npm run format` applies Biome formatting to `src` and `tests`.
 
-CI runs lint, build, tests, and a `node dist/cli.js --help` smoke check on Node 18, 20, and 22 across Linux, macOS, and Windows.
+CI runs lint, build, tests, and a `node dist/cli.js --help` smoke check on Node 22 across Linux, macOS, and Windows.
 
 ## Coding Style & Naming Conventions
 

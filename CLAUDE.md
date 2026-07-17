@@ -101,7 +101,7 @@ tell you that output matches expectations, not that expectations are correct.
 ## CI
 
 `.github/workflows/ci.yml` runs lint + build + test on
-ubuntu/macos/windows × Node 18/20/22. The e2e test (`tests/e2e.test.ts`)
+ubuntu/macos/windows × Node 22. The e2e test (`tests/e2e.test.ts`)
 creates a real fixture git repo in `os.tmpdir()` and skips itself if `git`
 isn't on PATH.
 
