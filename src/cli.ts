@@ -3,6 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { Command } from "commander";
+import packageJson from "../package.json" with { type: "json" };
 import { loadConfig, resolveSpecGlobs } from "./config.ts";
 import {
   checkIsGitRepo,
@@ -35,6 +36,7 @@ export type Format = TextFormat | "png";
 
 export const FORMATS: readonly Format[] = ["png", "terminal", "md", "json"] as const;
 export const TEXT_FORMATS: readonly TextFormat[] = ["terminal", "md", "json"] as const;
+export const CLI_VERSION = packageJson.version;
 
 export function isFormat(value: string): value is Format {
   return (FORMATS as readonly string[]).includes(value);
@@ -185,6 +187,7 @@ const program = new Command();
 
 program
   .name("ai-maturity-scanner")
+  .version(CLI_VERSION)
   .description("Scan a code repository and report its AI coding maturity (L0-L4 + AMI score).")
   .argument("[path]", "repository path to scan", process.cwd())
   .option("-f, --format <format>", "output format: png | terminal | md | json", "png")

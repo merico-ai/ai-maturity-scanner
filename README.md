@@ -62,6 +62,7 @@ ai-maturity-scanner verify-image report.png
 | `[path]` | directory path | `.` | Repository to scan |
 | `-f, --format` | `png` \| `terminal` \| `md` \| `json` | `png` | Output format |
 | `-o, --out` | file path | `./ai-maturity-report.png` for `png`, stdout for text | Write report output |
+| `-V, --version` | boolean | `false` | Print the current package version |
 | `--redacted` | boolean | `false` | Hide the repository path in PNG output |
 | `--verbose` | boolean | `false` | Also print terminal scan results and metrics when the primary output is written to a file |
 

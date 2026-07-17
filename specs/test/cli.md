@@ -33,3 +33,8 @@ When the CLI is exercised across successful execution, invalid arguments, a non-
 Verifies: [CLI-18](../user/cli.md#cli-18), [CLI-20](../dev/cli.md#cli-20)
 
 When the CLI is executed with `verify-image` against a generated PNG report, it shall recompute the image hash, print `Fingerprint verified.`, and fail when the metadata is absent or the image hash differs.
+
+### CLI-24
+Verifies: [CLI-24](../user/cli.md#cli-24)
+
+When the CLI is executed with `--version`, it shall print the current package version and exit successfully without requiring a git repository.

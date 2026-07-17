@@ -37,6 +37,10 @@ When the selected text output format already writes to stdout because `--out` is
 
 When the user runs `ai-maturity-scanner verify-image <file>`, the CLI shall read the hidden `AI-Maturity-Image-Hash` PNG metadata, recompute the image pixel hash, and print `Fingerprint verified.` when the values match.
 
+### CLI-24
+
+When the user sets `-V` or `--version`, the CLI shall print the current package version to stdout and exit successfully without scanning a repository.
+
 ## Exit Codes
 
 ### CLI-5

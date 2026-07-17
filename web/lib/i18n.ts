@@ -8,6 +8,8 @@ export const vibeinsightUrl = "https://merico.cn/vibeinsight";
 
 export const githubUrl = "https://github.com/merico-ai/ai-maturity-scanner";
 
+export const npmPackageUrl = "https://www.npmjs.com/package/@merico-ai/maturity-scanner";
+
 export const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export function assetPath(path: string) {
@@ -80,6 +82,7 @@ export const messages = {
         "AI Maturity Scanner 是一个独立 Node.js CLI，扫描 git-tracked files，给出 L0-L4 等级和 0-100 AMI 分数，帮助团队理解 AI 工程资产是否真正沉淀到了仓库里。",
       primaryCta: "开始扫描",
       secondaryCta: "查看评分模型",
+      npmCta: "查看 npm 包",
       features: [
         "识别 CLAUDE.md、AGENTS.md、GEMINI.md、Cursor rules 等 AI instruction files",
         "统计 skills、agents、commands、MCP、specs 等能力资产",
@@ -453,6 +456,12 @@ export const messages = {
             description: "选择报告语言。",
           },
           {
+            flag: "-V, --version",
+            values: "boolean",
+            defaultValue: "false",
+            description: "输出当前包版本号后退出，不扫描仓库。",
+          },
+          {
             flag: "--redacted",
             values: "boolean",
             defaultValue: "false",
@@ -503,6 +512,7 @@ export const messages = {
         "AI Maturity Scanner is a standalone Node.js CLI. It scans git-tracked files and reports an L0-L4 level plus a 0-100 AMI score, helping teams see whether AI engineering practices are actually captured in the repository.",
       primaryCta: "Start scanning",
       secondaryCta: "View scoring model",
+      npmCta: "View npm package",
       features: [
         "Detects CLAUDE.md, AGENTS.md, GEMINI.md, Cursor rules, and other AI instruction files",
         "Counts skills, agents, commands, MCP files, specs, and related capability assets",
@@ -905,6 +915,12 @@ export const messages = {
             values: "zh | en",
             defaultValue: "zh",
             description: "Select report language.",
+          },
+          {
+            flag: "-V, --version",
+            values: "boolean",
+            defaultValue: "false",
+            description: "Print the current package version and exit without scanning.",
           },
           {
             flag: "--redacted",

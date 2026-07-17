@@ -2,7 +2,7 @@ import Link from "next/link";
 import { CtaPanel } from "./cta-panel";
 import { MetricCard } from "./metric-card";
 import type { Locale } from "../lib/i18n";
-import { localizePath, messages } from "../lib/i18n";
+import { localizePath, messages, npmPackageUrl } from "../lib/i18n";
 
 type HomeContentProps = {
   locale: Locale;
@@ -17,25 +17,18 @@ export function HomeContent({ locale }: HomeContentProps) {
       <section className="page-shell grid gap-8 pb-10 pt-8 sm:pt-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:pb-16">
         <div>
           <p className="eyebrow">{home.eyebrow}</p>
-          <h1 className="page-title mt-4 sm:text-5xl lg:text-6xl">
-            {home.title}
-          </h1>
-          <p className="body-copy mt-5 max-w-2xl text-base sm:text-lg">
-            {home.description}
-          </p>
+          <h1 className="page-title mt-4 sm:text-5xl lg:text-6xl">{home.title}</h1>
+          <p className="body-copy mt-5 max-w-2xl text-base sm:text-lg">{home.description}</p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Link
-              className="primary-button"
-              href={localizePath("/quick-start", locale)}
-            >
+            <Link className="primary-button" href={localizePath("/quick-start", locale)}>
               {home.primaryCta}
             </Link>
-            <Link
-              className="secondary-button"
-              href={localizePath("/metrics", locale)}
-            >
+            <Link className="secondary-button" href={localizePath("/metrics", locale)}>
               {home.secondaryCta}
             </Link>
+            <a className="secondary-button" href={npmPackageUrl} rel="noreferrer" target="_blank">
+              {home.npmCta}
+            </a>
           </div>
         </div>
         <div className="surface-card min-w-0">
@@ -59,7 +52,10 @@ Integration breadth  40.0`}</code>
           </div>
           <div className="mt-4 grid grid-cols-3 gap-3 text-center">
             {["L0-L4", "AMI 0-100", "3 dimensions"].map((item) => (
-              <div className="rounded-md border border-line bg-canvas px-2 py-3 text-xs font-bold text-ink" key={item}>
+              <div
+                className="rounded-md border border-line bg-canvas px-2 py-3 text-xs font-bold text-ink"
+                key={item}
+              >
                 {item}
               </div>
             ))}
@@ -80,9 +76,7 @@ Integration breadth  40.0`}</code>
       <section className="page-shell py-8">
         <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="eyebrow text-accent">
-              {home.metricEyebrow}
-            </p>
+            <p className="eyebrow text-accent">{home.metricEyebrow}</p>
             <h2 className="mt-2 font-mono text-3xl font-semibold text-ink">{home.metricTitle}</h2>
           </div>
           <Link

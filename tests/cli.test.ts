@@ -3,7 +3,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
-import { isCliEntryPoint } from "../src/cli.ts";
+import packageJson from "../package.json" with { type: "json" };
+import { CLI_VERSION, isCliEntryPoint } from "../src/cli.ts";
 
 let tempDirs: string[] = [];
 
@@ -30,5 +31,11 @@ describe("CLI entry point detection", () => {
     expect(
       isCliEntryPoint(process.argv[0], pathToFileURL(fileURLToPath(import.meta.url)).href),
     ).toBe(false);
+  });
+});
+
+describe("CLI version", () => {
+  it("uses the package version", () => {
+    expect(CLI_VERSION).toBe(packageJson.version);
   });
 });
