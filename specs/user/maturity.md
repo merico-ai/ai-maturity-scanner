@@ -21,3 +21,7 @@ When the scanner determines the maturity level, the scanner shall return `L0` wh
 ### MAT-3
 
 When the scanner reports AMI, the score shall be a weighted average of `configuration depth` at `0.6`, `context richness` at `0.3`, and `integration breadth` at `0.1`.
+
+### MAT-15
+
+When the scanner reports repository maturity, the report shall also include one repository profile that describes the strongest visible AI collaboration pattern and may carry supporting and structural traits, shall retain the L0–L4 level and AMI unchanged, and shall not represent the profile as a further maturity grade.

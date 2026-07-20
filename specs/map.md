@@ -31,6 +31,7 @@ meta.md     The spec of specs
 | ID | File | Summary |
 | --- | --- | --- |
 | DR-000 | [000-spec-structure-format.md](decisions/000-spec-structure-format.md) | Spec structure, format, and naming conventions |
+| DR-001 | [001-repository-profile-labels.md](decisions/001-repository-profile-labels.md) | Add explainable repository profile labels alongside maturity levels |
 
 ## Iterations
 

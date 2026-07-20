@@ -39,3 +39,7 @@ When a report has no collected files, the terminal and Markdown renderers shall 
 ### REP-8
 
 When the collected file list exceeds the renderer limit, the terminal renderer shall show at most 30 file entries and the Markdown renderer shall show at most 50 file entries, with each renderer indicating truncation.
+
+### REP-17
+
+When a report contains a repository profile, the report object shall include canonical primary and trait identifiers, localized titles, primary strength rounded to two decimal places, matched rule identifiers or metric facts, and every eligible primary candidate's identifier, strength rounded to two decimal places, headroom components, and selected status; terminal and Markdown renderers shall render one primary, at most one supporting trait, and every structural trait.

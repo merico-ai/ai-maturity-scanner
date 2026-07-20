@@ -28,3 +28,8 @@ When raw metrics are normalized at zero, midpoint, cap, and over-cap values, the
 Verifies: [MAT-3](../user/maturity.md#mat-3), [MAT-10](../dev/maturity.md#mat-10)
 
 When normalized metrics are scored into dimensions and AMI, the result shall use the declared dimension weights, the declared dimension compositions, and rounding to two decimal places.
+
+### MAT-18
+Verifies: [MAT-15](../user/maturity.md#mat-15), [MAT-16](../dev/maturity.md#mat-16), [MAT-17](../dev/maturity.md#mat-17)
+
+Where representative reports contain no AI instruction, competing eligible multi-evidence profiles, MCP services, and subproject instruction coverage, when repository profiles are derived, the scanner shall preserve the existing maturity output, shall select the highest-strength eligible primary profile with deterministic tie-breaking, shall return `unstarted` without instruction, shall expose candidate strengths and evidence components, and shall return MCP and cross-project results only as structural traits.
