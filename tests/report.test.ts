@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { emptyRawMetrics } from "../src/metrics/types.ts";
 import {
+  IMAGE_REPORT_METRICS_SOURCE_URL,
   IMAGE_REPORT_QR_TARGET_URL,
   PNG_FINGERPRINT_KEYWORD,
   PNG_IMAGE_HASH_KEYWORD,
@@ -264,9 +265,12 @@ describe("renderImage", () => {
   it("embeds a second QR code for metric sources when its URL is configured", async () => {
     const svg = await renderImageSvg(sampleReport(), {
       qrTargetUrl: IMAGE_REPORT_QR_TARGET_URL,
-      metricsSourceUrl: "https://example.com/metrics",
+      metricsSourceUrl: IMAGE_REPORT_METRICS_SOURCE_URL,
     });
 
+    expect(IMAGE_REPORT_METRICS_SOURCE_URL).toBe(
+      "https://mp.weixin.qq.com/s/hX6bbhVHa6yhqHtGrYWq-w",
+    );
     expect((svg.match(/width="150" height="150"/g) ?? []).length).toBe(2);
     expect(svg).toContain("Scan my repository AI maturity");
     expect(svg).toContain("Scan metric sources");
