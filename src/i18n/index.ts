@@ -4,6 +4,8 @@
 // rule names, and tag values (e.g. `file_type=instruction`) stay in their
 // canonical form regardless of language.
 
+import type { ProfileLabelId } from "../metrics/profile.ts";
+
 export type Lang = "zh" | "en";
 
 export const LANGS: readonly Lang[] = ["zh", "en"] as const;
@@ -23,6 +25,8 @@ export interface ReportStrings {
   overallSection: string;
   levelLabel: string;
   levelTitles: Record<"L0" | "L1" | "L2" | "L3" | "L4", string>;
+  profileLabel: string;
+  profileTitles: Record<ProfileLabelId, string>;
   dimensionHeader: string;
   scoreHeader: string;
   configurationDepth: string;
@@ -58,6 +62,21 @@ const en: ReportStrings = {
     L3: "Proficient",
     L4: "Expert",
   },
+  profileLabel: "Profile",
+  profileTitles: {
+    unstarted: "Awaiting Start",
+    "early-collaboration": "Collaboration Seedling",
+    "ai-operating-system": "AI Collaboration Hub",
+    "skill-workshop": "Skill Workshop",
+    "agent-troupe": "Agent Troupe",
+    "command-center": "Command Center",
+    "knowledge-library": "Knowledge Library",
+    "engineered-skills": "Engineered Skills",
+    "multi-agent": "Multi-Agent Collaboration",
+    "tool-connected": "Deep Tool Connectivity",
+    "structured-context": "Structured Context",
+    "cross-project": "Cross-Project Coverage",
+  },
   dimensionHeader: "Dimension",
   scoreHeader: "Score",
   configurationDepth: "Configuration depth",
@@ -92,6 +111,21 @@ const zh: ReportStrings = {
     L2: "渐入佳境",
     L3: "驾轻就熟",
     L4: "炉火纯青",
+  },
+  profileLabel: "协作画像",
+  profileTitles: {
+    unstarted: "静待启程",
+    "early-collaboration": "协作萌芽",
+    "ai-operating-system": "AI 协作中枢",
+    "skill-workshop": "技能工坊",
+    "agent-troupe": "多代理剧团",
+    "command-center": "命令指挥台",
+    "knowledge-library": "上下文图书馆",
+    "engineered-skills": "能力工程化",
+    "multi-agent": "多代理协作",
+    "tool-connected": "工具深连",
+    "structured-context": "上下文成册",
+    "cross-project": "跨项目覆盖",
   },
   dimensionHeader: "维度",
   scoreHeader: "分数",

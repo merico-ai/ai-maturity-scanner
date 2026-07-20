@@ -12,12 +12,13 @@ It does not cover command-line option parsing, repository scanning, or maturity 
 
 ### REP-4
 
-When a report is built, the report object shall contain `repo.root`, `repo.headSha`, `repo.scannedAt`, `level`, `levelTitle`, `ami`, `dimensions.configuration_depth`, `dimensions.context_richness`, `dimensions.integration_breadth`, `normalizedMetrics`, `rawMetrics`, and `files`.
+When a report is built, the report object shall contain `repo.root`, `repo.headSha`, `repo.scannedAt`, `level`, `levelTitle`, `ami`, `dimensions.configuration_depth`, `dimensions.context_richness`, `dimensions.integration_breadth`, `normalizedMetrics`, `rawMetrics`, additive `profile`, and `files`.
 When the repository has an `origin` remote URL, the report object shall include it as `repo.remoteUrl`.
 
 ### REP-13
 
 When a report is built, the report object shall contain `meta.algorithmVersion` set to the algorithm version constant declared in `src/metrics/types.ts` (currently `v1`), so that older reports remain interpretable after future scoring changes.
+The additive profile release retains `meta.algorithmVersion = "v1"` and adds `meta.profileRuleVersion = "v1"`, independently versioning profile rules.
 
 ### REP-14
 

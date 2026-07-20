@@ -8,13 +8,18 @@
 Deliver the additive, explainable repository-profile surface defined by [DR-001](../decisions/001-repository-profile-labels.md).
 Keep raw metrics, AMI, and the L0–L4 cascade unchanged while making the selected profile, traits, and alternatives available in all report formats.
 
+## Status
+
+Tasks 1–7 are complete: the evaluator, localized report contract, terminal, Markdown, JSON, and automated coverage are implemented.
+The audit harness and a redacted synthetic calibration fixture are checked in, but Tasks 8–10 remain open until a representative pre-release corpus or immutable external-corpus fingerprint is supplied.
+
 ## Deliverables
 
-- [ ] A localized profile contract with canonical IDs, rule/fact evidence, rounded strengths and candidates, and `meta.profileRuleVersion = "v1"` while `meta.algorithmVersion` remains `v1`
-- [ ] Deterministic primary selection and trait selection using only existing report metrics
-- [ ] Terminal, Markdown, and JSON profile output
-- [ ] Unit and acceptance coverage for profile rules and rendering
-- [ ] A reproducible representative-corpus audit, saved result, and documented calibration disposition
+- [x] A localized profile contract with canonical IDs, rule/fact evidence, rounded strengths and candidates, and `meta.profileRuleVersion = "v1"` while `meta.algorithmVersion` remains `v1`
+- [x] Deterministic primary selection and trait selection using only existing report metrics
+- [x] Terminal, Markdown, and JSON profile output
+- [x] Unit and acceptance coverage for profile rules and rendering
+- [ ] A reproducible representative-corpus audit, saved result, and documented calibration disposition — harness and synthetic calibration are checked in; a representative corpus remains required
 
 ## Tasks
 
@@ -38,6 +43,10 @@ Keep raw metrics, AMI, and the L0–L4 cascade unchanged while making the select
 
 10. Review the checked-in audit result against DR-001 constraints and record the calibration disposition: retain the fixed rules or author a follow-up decision for any threshold or transform change.
 
+11. Render the localized primary profile and eligible supporting and structural traits alongside the level and AMI in the PNG report; preserve fixed-layout readability in English and Chinese, retain redaction behavior, and add SVG/PNG renderer coverage.
+
+12. Update the Chinese and English Web metrics-explanation pages with the repository-profile taxonomy, primary-versus-trait semantics, canonical identifiers, selection/evidence summary, and the relationship to AMI and L0–L4; add relevant Web-page coverage and verify the Web build.
+
 ## Acceptance criteria
 
 - Reports with no AI instruction files use the neutral `unstarted` primary profile; every report returns exactly one primary, no more than one supporting trait, and no more than two structural traits.
@@ -45,5 +54,7 @@ Keep raw metrics, AMI, and the L0–L4 cascade unchanged while making the select
 - Profile evaluation uses only existing report metrics and leaves raw metrics, normalized metrics, dimensions, AMI, and L0–L4 results unchanged for identical scans.
 - The profile payload exposes language-independent canonical IDs, localized titles, matched rule IDs or metric facts, strengths rounded to two decimals, candidate headroom components, and candidate selection status; `meta.profileRuleVersion` is `v1` and the additive release retains `meta.algorithmVersion = "v1"`.
 - Terminal and Markdown expose localized profile labels beside the existing level and AMI; JSON exposes the versioned profile result, localized titles, evidence, and all eligible candidates.
+- PNG exposes localized profile labels beside the existing level and AMI without changing the report's redaction behavior.
+- The Chinese and English Web metrics-explanation pages explain profile labels, traits, selection evidence, and their additive relationship to AMI and L0–L4.
 - `npm run lint`, `npm run build`, and `npm test` pass with the evaluator, renderer, and CLI coverage described by [MAT-18](../test/maturity.md#mat-18) and [REP-18](../test/reporting.md#rep-18).
 - A checked-in or immutably referenced representative-corpus audit reports all rates, counterfactuals, and diagnostics mandated by DR-001 before the profile release is approved.

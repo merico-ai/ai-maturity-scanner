@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { evaluateRepositoryProfile } from "../src/metrics/profile.ts";
 import { emptyRawMetrics } from "../src/metrics/types.ts";
 import {
   IMAGE_REPORT_METRICS_SOURCE_URL,
@@ -14,6 +15,7 @@ import {
 } from "../src/report/image.ts";
 import { renderJson } from "../src/report/json.ts";
 import { renderMarkdown } from "../src/report/markdown.ts";
+import { localizeRepositoryProfile } from "../src/report/profile.ts";
 import { renderTerminal } from "../src/report/terminal.ts";
 import type { MaturityReport } from "../src/report/types.ts";
 import type { FileWithTags } from "../src/types.ts";
@@ -27,7 +29,7 @@ function stripAnsi(value: string): string {
 function sampleReport(over: Partial<MaturityReport> = {}): MaturityReport {
   return {
     repo: { root: "/repo", headSha: "abc1234567", scannedAt: "2026-07-14T00:00:00Z" },
-    meta: { algorithmVersion: "v1", lang: "en" },
+    meta: { algorithmVersion: "v1", profileRuleVersion: "v1", lang: "en" },
     level: "L3",
     levelTitle: "Proficient",
     ami: 67.5,
@@ -71,6 +73,47 @@ function sampleReport(over: Partial<MaturityReport> = {}): MaturityReport {
       subprojectCoverage: 1,
       agentTypeDistinct: 2,
     },
+    profile: localizeRepositoryProfile(
+      evaluateRepositoryProfile(
+        {
+          ...emptyRawMetrics(),
+          skillCount: 12,
+          skillLineCount: 4500,
+          advancedSkillCount: 5,
+          skillResourceCount: 6,
+          agentCount: 5,
+          agentLineCount: 600,
+          commandCount: 4,
+          commandLineCount: 400,
+          mcpCount: 1,
+          aiInstructionFiles: 2,
+          instructionMaxLineCount: 200,
+          specsFileCount: 12,
+          specsLineCount: 500,
+          subprojectCoverage: 1,
+          agentTypeDistinct: 2,
+        },
+        {
+          skill_count: 40,
+          skill_line_count: 30,
+          advanced_skill_count: 50,
+          skill_engineering_rate: 60,
+          skill_resource_count: 20,
+          agent_count: 50,
+          agent_line_count: 30,
+          command_count: 40,
+          command_line_count: 20,
+          mcp_count: 33,
+          ai_instruction_files: 100,
+          instruction_max_line_count: 100,
+          specs_file_count: 24,
+          specs_line_count: 10,
+          subproject_coverage: 20,
+        },
+        { configuration_depth: 75, context_richness: 60, integration_breadth: 40 },
+      ),
+      "en",
+    ),
     files: [] as FileWithTags[],
     ...over,
   };
@@ -89,6 +132,20 @@ describe("renderJson", () => {
     const parsed = JSON.parse(renderJson(sampleReport()));
     expect(parsed.meta.algorithmVersion).toBe("v1");
   });
+  it("surfaces the profile-rule version and localized profile contract", () => {
+    const parsed = JSON.parse(renderJson(sampleReport()));
+    expect(parsed.meta.profileRuleVersion).toBe("v1");
+    expect(parsed.profile.primary).toMatchObject({
+      id: "knowledge-library",
+      title: "Knowledge Library",
+    });
+    expect(parsed.profile.candidates[0]).toMatchObject({
+      id: "knowledge-library",
+      title: "Knowledge Library",
+      selected: true,
+      components: expect.any(Array),
+    });
+  });
   it("round-trips through parse without losing fields", () => {
     const r = sampleReport();
     const parsed = JSON.parse(renderJson(r)) as MaturityReport;
@@ -104,6 +161,7 @@ describe("renderMarkdown", () => {
     expect(md).toContain("# AI Maturity Report");
     expect(md).toContain("**Level:** L3");
     expect(md).toContain("**AMI:** 67.5 / 100");
+    expect(md).toContain("**Profile:** Knowledge Library · Engineered Skills");
     expect(md).toContain("Configuration depth");
     expect(md).toContain("| Configuration depth | 75 |");
   });
@@ -177,6 +235,7 @@ describe("renderTerminal", () => {
     expect(out).toContain("AI Maturity Report");
     expect(out).toContain("Level: L3");
     expect(out).toContain("AMI: 67.5");
+    expect(out).toContain("Profile: Knowledge Library · Engineered Skills");
     expect(out).toContain("Configuration depth");
   });
   it("emits a bar character for each dimension", () => {
@@ -298,7 +357,7 @@ describe("renderImage", () => {
 
   it("renders Chinese image copy", async () => {
     const svg = await renderImageSvg(
-      sampleReport({ meta: { algorithmVersion: "v1", lang: "zh" } }),
+      sampleReport({ meta: { algorithmVersion: "v1", profileRuleVersion: "v1", lang: "zh" } }),
     );
 
     expect(svg).toContain("代码库 AI 成熟度");
@@ -318,8 +377,36 @@ describe("renderImage", () => {
 });
 
 describe("i18n: zh output", () => {
+  it("localizes primary and trait labels in terminal and Markdown", () => {
+    const source = sampleReport();
+    const profile = localizeRepositoryProfile(
+      evaluateRepositoryProfile(
+        {
+          ...source.rawMetrics,
+          mcpCount: 2,
+          subprojectCoverage: 3,
+        },
+        source.normalizedMetrics,
+        source.dimensions,
+      ),
+      "zh",
+    );
+    const report = sampleReport({
+      meta: { algorithmVersion: "v1", profileRuleVersion: "v1", lang: "zh" },
+      profile,
+    });
+    expect(renderMarkdown(report)).toContain(
+      "**协作画像:** 上下文图书馆 · 能力工程化 · 工具深连 · 跨项目覆盖",
+    );
+    expect(stripAnsi(renderTerminal(report))).toContain(
+      "协作画像: 上下文图书馆 · 能力工程化 · 工具深连 · 跨项目覆盖",
+    );
+  });
+
   it("renderMarkdown emits Chinese labels", () => {
-    const md = renderMarkdown(sampleReport({ meta: { algorithmVersion: "v1", lang: "zh" } }));
+    const md = renderMarkdown(
+      sampleReport({ meta: { algorithmVersion: "v1", profileRuleVersion: "v1", lang: "zh" } }),
+    );
     expect(md).toContain("# AI 成熟度报告");
     expect(md).toContain("**仓库:**");
     expect(md).toContain("**等级:** L3");
@@ -334,7 +421,9 @@ describe("i18n: zh output", () => {
 
   it("renderTerminal emits Chinese labels", () => {
     const out = stripAnsi(
-      renderTerminal(sampleReport({ meta: { algorithmVersion: "v1", lang: "zh" } })),
+      renderTerminal(
+        sampleReport({ meta: { algorithmVersion: "v1", profileRuleVersion: "v1", lang: "zh" } }),
+      ),
     );
     expect(out).toContain("AI 成熟度报告");
     expect(out).toContain("等级: L3");
@@ -346,7 +435,9 @@ describe("i18n: zh output", () => {
 
   it("metric identifiers stay canonical in both languages", () => {
     const en = renderMarkdown(sampleReport());
-    const zh = renderMarkdown(sampleReport({ meta: { algorithmVersion: "v1", lang: "zh" } }));
+    const zh = renderMarkdown(
+      sampleReport({ meta: { algorithmVersion: "v1", profileRuleVersion: "v1", lang: "zh" } }),
+    );
     for (const name of ["skill_count", "agent_count", "mcp_count", "subproject_coverage"]) {
       expect(en).toContain(`| ${name} |`);
       expect(zh).toContain(`| ${name} |`);

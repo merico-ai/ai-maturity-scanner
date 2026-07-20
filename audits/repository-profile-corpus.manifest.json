@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "kind": "redacted-synthetic-pre-release-corpus",
+  "purpose": "Exercise every repository-profile primary, trait, and counterfactual without disclosing repository contents.",
+  "records": [
+    { "id": "unstarted", "rawMetrics": {} },
+    {
+      "id": "early-tool-cross",
+      "rawMetrics": {
+        "aiInstructionFiles": 1,
+        "mcpCount": 3,
+        "subprojectCoverage": 3
+      }
+    },
+    {
+      "id": "skill-tool-cross",
+      "rawMetrics": {
+        "aiInstructionFiles": 1,
+        "skillCount": 30,
+        "skillLineCount": 15000,
+        "advancedSkillCount": 5,
+        "skillResourceCount": 30,
+        "mcpCount": 3,
+        "subprojectCoverage": 3
+      }
+    },
+    {
+      "id": "agent-troupe",
+      "rawMetrics": {
+        "aiInstructionFiles": 1,
+        "agentCount": 3,
+        "agentLineCount": 2000,
+        "agentTypeDistinct": 3
+      }
+    },
+    {
+      "id": "command-center",
+      "rawMetrics": {
+        "aiInstructionFiles": 1,
+        "commandCount": 3,
+        "commandLineCount": 2000
+      }
+    },
+    {
+      "id": "knowledge-library",
+      "rawMetrics": {
+        "aiInstructionFiles": 1,
+        "instructionMaxLineCount": 50,
+        "specsFileCount": 10,
+        "specsLineCount": 5000
+      }
+    },
+    {
+      "id": "ai-operating-system-floor",
+      "rawMetrics": {
+        "aiInstructionFiles": 1,
+        "instructionMaxLineCount": 50,
+        "specsFileCount": 9,
+        "specsLineCount": 5000,
+        "subprojectCoverage": 3,
+        "skillCount": 30,
+        "skillLineCount": 15000,
+        "agentCount": 10,
+        "agentLineCount": 2000,
+        "agentTypeDistinct": 1,
+        "commandCount": 1,
+        "commandLineCount": 600,
+        "mcpCount": 3
+      }
+    }
+  ]
+}

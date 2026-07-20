@@ -166,6 +166,16 @@ function filesBlock(files: readonly FileWithTags[], t: ReportStrings): string {
   return lines.join("\n");
 }
 
+function profileLabels(report: MaturityReport): string {
+  return [
+    report.profile.primary.title,
+    report.profile.supportingTrait?.title,
+    ...report.profile.structuralTraits.map((trait) => trait.title),
+  ]
+    .filter((title): title is string => Boolean(title))
+    .join(" · ");
+}
+
 export function renderTerminal(report: MaturityReport): string {
   const t = stringsFor(report.meta.lang);
   const d = report.dimensions;
@@ -176,7 +186,7 @@ export function renderTerminal(report: MaturityReport): string {
     `  ${pc.dim(`${report.repo.root} @ ${shortSha(report.repo.headSha)}`)}`,
     `  ${pc.dim(`algorithm ${report.meta.algorithmVersion}`)}`,
     "",
-    `  ${t.levelLabel}: ${pc.bold(levelColor(report.level))} ${levelTitleBadge(report.level, t.levelTitles[report.level])}    AMI: ${pc.bold(fmt(report.ami))}${pc.dim("/100")}`,
+    `  ${t.levelLabel}: ${pc.bold(levelColor(report.level))} ${levelTitleBadge(report.level, t.levelTitles[report.level])}    AMI: ${pc.bold(fmt(report.ami))}${pc.dim("/100")}    ${t.profileLabel}: ${pc.bold(profileLabels(report))}`,
     "",
     `  ${t.configurationDepth.padEnd(dimPad)}${bar(d.configuration_depth)} ${fmt(d.configuration_depth).padStart(5)}`,
     `  ${t.contextRichness.padEnd(dimPad)}${bar(d.context_richness)} ${fmt(d.context_richness).padStart(5)}`,

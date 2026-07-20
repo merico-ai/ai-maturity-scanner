@@ -1,6 +1,7 @@
 import type { Lang } from "../i18n/index.ts";
 import type { MaturityRawMetrics } from "../metrics/types.ts";
 import type { FileWithTags } from "../types.ts";
+import type { LocalizedRepositoryProfile } from "./profile.ts";
 
 export type Level = "L0" | "L1" | "L2" | "L3" | "L4";
 
@@ -13,6 +14,7 @@ export interface MaturityReport {
   };
   meta: {
     algorithmVersion: string;
+    profileRuleVersion: string;
     lang: Lang;
   };
   level: Level;
@@ -25,6 +27,7 @@ export interface MaturityReport {
   };
   normalizedMetrics: Record<string, number>;
   rawMetrics: MaturityRawMetrics;
+  profile: LocalizedRepositoryProfile;
   files: FileWithTags[];
 }
 

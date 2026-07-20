@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "corpus": {
+    "kind": "redacted-synthetic-pre-release-corpus",
+    "total": 7,
+    "manifest": "audits/repository-profile-corpus.manifest.json"
+  },
+  "rates": {
+    "primaryEligibility": {
+      "ai-operating-system": {
+        "count": 1,
+        "rate": 14.29
+      },
+      "skill-workshop": {
+        "count": 1,
+        "rate": 14.29
+      },
+      "agent-troupe": {
+        "count": 1,
+        "rate": 14.29
+      },
+      "command-center": {
+        "count": 1,
+        "rate": 14.29
+      },
+      "knowledge-library": {
+        "count": 1,
+        "rate": 14.29
+      }
+    },
+    "primaryWinners": {
+      "unstarted": {
+        "count": 1,
+        "rate": 14.29
+      },
+      "early-collaboration": {
+        "count": 1,
+        "rate": 14.29
+      },
+      "ai-operating-system": {
+        "count": 1,
+        "rate": 14.29
+      },
+      "skill-workshop": {
+        "count": 1,
+        "rate": 14.29
+      },
+      "agent-troupe": {
+        "count": 1,
+        "rate": 14.29
+      },
+      "command-center": {
+        "count": 1,
+        "rate": 14.29
+      },
+      "knowledge-library": {
+        "count": 1,
+        "rate": 14.29
+      }
+    },
+    "traitCarriers": {
+      "engineered-skills": {
+        "count": 0,
+        "rate": 0
+      },
+      "multi-agent": {
+        "count": 0,
+        "rate": 0
+      },
+      "tool-connected": {
+        "count": 3,
+        "rate": 42.86
+      },
+      "structured-context": {
+        "count": 0,
+        "rate": 0
+      },
+      "cross-project": {
+        "count": 3,
+        "rate": 42.86
+      }
+    },
+    "aiOperatingSystem": {
+      "eligibility": {
+        "count": 1,
+        "rate": 14.29
+      },
+      "winner": {
+        "count": 1,
+        "rate": 14.29
+      },
+      "subprojectCoverageDistribution": {
+        "0": 4,
+        "3": 3
+      },
+      "zeroStrengthAtIntegrationFloor": 1
+    }
+  },
+  "counterfactual": {
+    "definition": {
+      "eligibility": {
+        "tool-connected": "mcpCount >= 2",
+        "cross-project": "subprojectCoverage >= 3"
+      },
+      "directStrength": "identity(existing normalized mcp_count or subproject_coverage), then round2",
+      "candidates": "eligible specialized primaries plus the corresponding hypothetical single-signal label",
+      "tieOrder": [
+        "ai-operating-system",
+        "skill-workshop",
+        "agent-troupe",
+        "command-center",
+        "knowledge-library",
+        "tool-connected",
+        "cross-project"
+      ]
+    },
+    "directWinnerCount": {
+      "tool-connected": 3,
+      "cross-project": 3
+    },
+    "actualPrimaryDistributionForEligible": {
+      "tool-connected": {
+        "early-collaboration": 1,
+        "skill-workshop": 1,
+        "ai-operating-system": 1
+      },
+      "cross-project": {
+        "early-collaboration": 1,
+        "skill-workshop": 1,
+        "ai-operating-system": 1
+      }
+    }
+  }
+}

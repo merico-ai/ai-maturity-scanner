@@ -29,3 +29,4 @@ The report shall carry a human-readable `levelTitle` — a short, localized titl
 ### REP-16
 
 When a report contains a repository profile, the terminal, Markdown, and JSON formats shall expose its localized primary label, selected supporting trait, and structural traits alongside the existing level and AMI, and the JSON format shall additionally expose the primary strength and eligible primary candidates needed to explain the selection.
+`profile.primary`, `profile.supportingTrait`, and `profile.structuralTraits` retain canonical language-independent identifiers and localized titles; JSON additionally retains evidence, rounded candidate strengths, headroom components, and selection status.
