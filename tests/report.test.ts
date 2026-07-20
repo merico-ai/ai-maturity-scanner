@@ -296,6 +296,17 @@ describe("renderImage", () => {
     expect(svg).not.toContain(".git");
     expect(svg).toContain("L3");
     expect(svg).toContain("67.5");
+    expect(svg).toContain(">Profile</text>");
+    expect(svg).toContain(">Knowledge Library</text>");
+    expect(svg).toContain(">Engineered Skills</text>");
+    expect(svg).toContain('data-slot="profile-identity-stack"');
+    expect(svg).toContain('data-slot="profile-avatar-placeholder"');
+    expect(svg).toContain('aria-label="Knowledge Library avatar placeholder"');
+    expect(svg).not.toContain('data-slot="profile-avatar-knowledge-library"');
+    expect(svg).not.toContain("data:image/jpeg;base64");
+    expect(svg).toContain('<circle cx="802" cy="435" r="50"');
+    expect(svg).toContain('<rect x="652" y="503" width="300" height="84"');
+    expect(svg).toContain('x="132" y="610"');
     expect(svg).toContain('role="img" aria-label="AI Maturity badge L3"');
     expect(svg).toContain("AI Maturity");
     expect(svg).toContain('fill="#4c1"');
@@ -353,17 +364,89 @@ describe("renderImage", () => {
     expect(svg).toContain("abc12345");
     expect(svg).toContain("67.5");
     expect(svg).toContain("L3");
+    expect(svg).toContain(">Knowledge Library</text>");
+    expect(svg).toContain(">Engineered Skills</text>");
   });
 
   it("renders Chinese image copy", async () => {
+    const source = sampleReport();
     const svg = await renderImageSvg(
-      sampleReport({ meta: { algorithmVersion: "v1", profileRuleVersion: "v1", lang: "zh" } }),
+      sampleReport({
+        meta: { algorithmVersion: "v1", profileRuleVersion: "v1", lang: "zh" },
+        profile: localizeRepositoryProfile(
+          evaluateRepositoryProfile(source.rawMetrics, source.normalizedMetrics, source.dimensions),
+          "zh",
+        ),
+      }),
     );
 
     expect(svg).toContain("代码库 AI 成熟度");
+    expect(svg).toContain(">协作画像</text>");
+    expect(svg).toContain(">上下文图书馆</text>");
+    expect(svg).toContain(">能力工程化</text>");
     expect(svg).toContain("扫码查看我的代码库AI成熟度");
     expect(svg).toContain("扫码查看指标来源");
     expect(svg).toContain("即将上线");
+  });
+
+  it("renders every eligible trait in the profile detail line", async () => {
+    const source = sampleReport();
+    const rawMetrics = { ...source.rawMetrics, mcpCount: 2, subprojectCoverage: 3 };
+    const report = sampleReport({
+      rawMetrics,
+      profile: localizeRepositoryProfile(
+        evaluateRepositoryProfile(rawMetrics, source.normalizedMetrics, source.dimensions),
+        "en",
+      ),
+    });
+    const svg = await renderImageSvg(report);
+
+    expect(svg).toContain(">Knowledge Library</text>");
+    expect(svg).toContain(">Engineered Skills · Deep Tool Connectivity</text>");
+    expect(svg).toContain(">Cross-Project Coverage</text>");
+  });
+
+  it("uses the effective image language for profile labels", async () => {
+    const svg = await renderImageSvg(sampleReport(), { lang: "zh" });
+
+    expect(svg).toContain(">协作画像</text>");
+    expect(svg).toContain(">上下文图书馆</text>");
+    expect(svg).toContain(">能力工程化</text>");
+    expect(svg).toContain('aria-label="上下文图书馆 头像占位"');
+    expect(svg).not.toContain(">Knowledge Library</text>");
+  });
+
+  it("keeps the semantic avatar placeholder for profiles without artwork", async () => {
+    const source = sampleReport();
+    const svg = await renderImageSvg(
+      sampleReport({
+        profile: {
+          ...source.profile,
+          primary: { ...source.profile.primary, id: "unstarted", title: "Awaiting Start" },
+        },
+      }),
+    );
+
+    expect(svg).toContain('data-slot="profile-avatar-placeholder"');
+    expect(svg).toContain('aria-label="Awaiting Start avatar placeholder"');
+  });
+
+  it("keeps every localized level title within the compact identity badge", async () => {
+    const levelTitles = {
+      en: ["Not Started", "Beginner", "Improving", "Proficient", "Expert"],
+      zh: ["一窍不通", "初学乍练", "渐入佳境", "驾轻就熟", "炉火纯青"],
+    } as const;
+
+    for (const [lang, titles] of Object.entries(levelTitles) as [
+      "en" | "zh",
+      readonly string[],
+    ][]) {
+      for (const [index, title] of titles.entries()) {
+        const svg = await renderImageSvg(sampleReport({ level: `L${index}` }), { lang });
+        expect(svg).toContain(`<rect x="652" y="503" width="300" height="84"`);
+        expect(svg).toContain(`>${title}</text>`);
+      }
+    }
   });
 
   it("renders a PNG buffer", async () => {
@@ -373,6 +456,24 @@ describe("renderImage", () => {
     expect(png.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
     expect(readPngTextChunk(png, PNG_FINGERPRINT_KEYWORD)).toBe(reportFingerprint(report));
     expect(readPngTextChunk(png, PNG_IMAGE_HASH_KEYWORD)).toBe(await imagePixelHash(png));
+  }, 15_000);
+
+  it("rasterizes profile labels into PNG output", async () => {
+    const source = sampleReport();
+    const withoutTraits = sampleReport({
+      profile: {
+        ...source.profile,
+        supportingTrait: undefined,
+        structuralTraits: [],
+      },
+    });
+
+    const [withTraitsPng, withoutTraitsPng] = await Promise.all([
+      renderImagePng(source),
+      renderImagePng(withoutTraits),
+    ]);
+
+    expect(await imagePixelHash(withTraitsPng)).not.toBe(await imagePixelHash(withoutTraitsPng));
   }, 15_000);
 });
 

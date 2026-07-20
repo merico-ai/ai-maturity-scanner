@@ -233,6 +233,7 @@ export const messages = {
         description:
           "这一节保留算法细节，方便核对实现和阈值。只想理解报告含义时，可以直接阅读 Metrics 页面。",
       },
+      profileGuideTitle: "协作画像说明",
       mcpSupport: {
         title: "MCP 支持边界",
         description:
@@ -685,6 +686,7 @@ export const messages = {
         description:
           "This section keeps the algorithm details available for implementation and threshold checks. For report interpretation, start with the Metrics page.",
       },
+      profileGuideTitle: "Repository profile guide",
       mcpSupport: {
         title: "MCP support boundary",
         description:

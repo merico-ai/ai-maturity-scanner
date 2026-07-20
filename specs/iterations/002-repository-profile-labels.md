@@ -45,7 +45,7 @@ The audit harness and a redacted synthetic calibration fixture are checked in, b
 
 11. Render the localized primary profile and eligible supporting and structural traits alongside the level and AMI in the PNG report; preserve fixed-layout readability in English and Chinese, retain redaction behavior, and add SVG/PNG renderer coverage.
 
-12. Update the Chinese and English Web metrics-explanation pages with the repository-profile taxonomy, primary-versus-trait semantics, canonical identifiers, selection/evidence summary, and the relationship to AMI and L0–L4; add relevant Web-page coverage and verify the Web build.
+12. Update the Chinese and English Web documentation pages with the repository-profile taxonomy, primary-versus-trait semantics, canonical identifiers, selection/evidence summary, and the relationship to AMI and L0–L4; retain the existing Web metrics explanations; add relevant Web-page coverage and verify the Web build.
 
 ## Acceptance criteria
 
@@ -55,6 +55,6 @@ The audit harness and a redacted synthetic calibration fixture are checked in, b
 - The profile payload exposes language-independent canonical IDs, localized titles, matched rule IDs or metric facts, strengths rounded to two decimals, candidate headroom components, and candidate selection status; `meta.profileRuleVersion` is `v1` and the additive release retains `meta.algorithmVersion = "v1"`.
 - Terminal and Markdown expose localized profile labels beside the existing level and AMI; JSON exposes the versioned profile result, localized titles, evidence, and all eligible candidates.
 - PNG exposes localized profile labels beside the existing level and AMI without changing the report's redaction behavior.
-- The Chinese and English Web metrics-explanation pages explain profile labels, traits, selection evidence, and their additive relationship to AMI and L0–L4.
+- The Chinese and English Web documentation pages explain profile labels, traits, selection evidence, and their additive relationship to AMI and L0–L4; the Web metrics pages retain their existing metric explanations.
 - `npm run lint`, `npm run build`, and `npm test` pass with the evaluator, renderer, and CLI coverage described by [MAT-18](../test/maturity.md#mat-18) and [REP-18](../test/reporting.md#rep-18).
 - A checked-in or immutably referenced representative-corpus audit reports all rates, counterfactuals, and diagnostics mandated by DR-001 before the profile release is approved.
