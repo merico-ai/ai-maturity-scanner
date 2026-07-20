@@ -3,7 +3,7 @@
   "corpus": {
     "kind": "redacted-synthetic-pre-release-corpus",
     "total": 7,
-    "manifest": "audits/repository-profile-corpus.manifest.json"
+    "manifest": "tests/fixtures/profile-corpus/repository-profile-corpus.manifest.json"
   },
   "rates": {
     "primaryEligibility": {

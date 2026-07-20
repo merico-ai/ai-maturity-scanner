@@ -65,7 +65,8 @@ function counterfactualWinner(
 }
 
 async function main(): Promise<void> {
-  const manifestRef = process.argv[2] ?? "audits/repository-profile-corpus.manifest.json";
+  const manifestRef =
+    process.argv[2] ?? "tests/fixtures/profile-corpus/repository-profile-corpus.manifest.json";
   const manifestPath = resolve(manifestRef);
   const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as CorpusManifest;
   const primaryEligibility: Record<string, number> = {};

@@ -46,7 +46,7 @@
       "rawMetrics": {
         "aiInstructionFiles": 1,
         "instructionMaxLineCount": 50,
-        "specsFileCount": 10,
+        "specsFileCount": 20,
         "specsLineCount": 5000
       }
     },
