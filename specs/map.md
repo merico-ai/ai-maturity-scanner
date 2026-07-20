@@ -39,6 +39,7 @@ meta.md     The spec of specs
 | --- | --- | --- |
 | IR-000 | [000-spdx-headers.md](iterations/000-spdx-headers.md) | Add SPDX headers to applicable files |
 | IR-001 | [001-high-priority-roadmap.md](iterations/001-high-priority-roadmap.md) | High-priority ROADMAP batch: version, i18n, npm rename, image research, web site |
+| IR-002 | [002-repository-profile-labels.md](iterations/002-repository-profile-labels.md) | Deliver explainable repository profile labels |
 
 ## Packages
 
