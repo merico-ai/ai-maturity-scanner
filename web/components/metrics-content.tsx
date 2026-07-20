@@ -2,7 +2,7 @@ import Link from "next/link";
 import { MetricCard } from "./metric-card";
 import type { Locale } from "../lib/i18n";
 import { localizePath, messages } from "../lib/i18n";
-import { sampleQrSvg } from "../lib/sample-qr";
+import { sampleMetricsSourceQrSvg, sampleQrSvg } from "../lib/sample-qr";
 import { renderImageSvg } from "../../src/report/image-svg";
 import type { ImageReportData } from "../../src/report/image-svg";
 
@@ -199,7 +199,11 @@ function ReportImageGuide({ locale }: MetricsContentProps) {
   const metrics = messages[locale].metrics;
   const previewSvg = renderImageSvg(
     { ...sampleReport, meta: { ...sampleReport.meta, lang: locale } },
-    { lang: locale, qrSvg: sampleQrSvg },
+    {
+      lang: locale,
+      qrSvg: sampleQrSvg,
+      metricsSourceSvg: sampleMetricsSourceQrSvg,
+    },
   ).replace(/^<\?xml[^>]*>\s*/, "");
 
   return (
