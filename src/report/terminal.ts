@@ -173,7 +173,7 @@ function profileLabels(report: MaturityReport): string {
     ...report.profile.structuralTraits.map((trait) => trait.title),
   ]
     .filter((title): title is string => Boolean(title))
-    .join(" · ");
+    .join(" / ");
 }
 
 export function renderTerminal(report: MaturityReport): string {

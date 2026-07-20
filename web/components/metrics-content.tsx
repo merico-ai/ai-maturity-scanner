@@ -112,19 +112,19 @@ const sampleReport: ImageReportData = {
     agent_line_count: 35,
     command_count: 10,
     command_line_count: 20,
-    mcp_count: 0,
+    mcp_count: 60,
     ai_instruction_files: 100,
     instruction_max_line_count: 100,
     specs_file_count: 100,
     specs_line_count: 80,
-    subproject_coverage: 20,
+    subproject_coverage: 60,
   },
   rawMetrics: {
     skillCount: 25,
     skillResourceCount: 12,
     agentCount: 3,
     commandCount: 1,
-    mcpCount: 0,
+    mcpCount: 2,
   },
   profile: {
     primary: {
@@ -145,7 +145,26 @@ const sampleReport: ImageReportData = {
         facts: { agent_count: 3, agent_type_distinct: 3 },
       },
     },
-    structuralTraits: [],
+    structuralTraits: [
+      {
+        id: "tool-connected",
+        title: "工具深连",
+        kind: "structural",
+        evidence: {
+          ruleId: "DR-001.trait.tool-connected",
+          facts: { mcp_count: 2, mcp_score: 60 },
+        },
+      },
+      {
+        id: "cross-project",
+        title: "跨项目覆盖",
+        kind: "structural",
+        evidence: {
+          ruleId: "DR-001.trait.cross-project",
+          facts: { subproject_coverage: 3 },
+        },
+      },
+    ],
     candidates: [],
   },
   files: Array.from({ length: 44 }),

@@ -15,7 +15,7 @@ The audit harness and a redacted synthetic calibration fixture are checked in, b
 
 ## Deliverables
 
-- [x] A localized profile contract with canonical IDs, rule/fact evidence, rounded strengths and candidates, and `meta.profileRuleVersion = "v1"` while `meta.algorithmVersion` remains `v1`
+- [x] A localized profile contract with canonical IDs, rule/fact evidence, rounded strengths and candidates, and `meta.profileRuleVersion = "v2"` while `meta.algorithmVersion` remains `v1`
 - [x] Deterministic primary selection and trait selection using only existing report metrics
 - [x] Terminal, Markdown, and JSON profile output
 - [x] Unit and acceptance coverage for profile rules and rendering
@@ -25,7 +25,7 @@ The audit harness and a redacted synthetic calibration fixture are checked in, b
 
 1. Clarify DR-001's prior direct-score counterfactual before implementing the audit: define, for `tool-connected` and `cross-project`, the eligibility predicate, normalized direct-score input and transform, rounding, and candidate/tie semantics, or record an explicit decision that replaces this comparison.
 
-2. Extend the REP development and acceptance contracts with the additive `profile` payload and `meta.profileRuleVersion`; pin its initial value to `v1` and state that the additive profile release retains `meta.algorithmVersion = "v1"`.
+2. Extend the REP development and acceptance contracts with the additive `profile` payload and `meta.profileRuleVersion`; pin its current value to `v2` and state that the additive profile release retains `meta.algorithmVersion = "v1"`.
 
 3. Define profile domain types, canonical identifiers, and English and Chinese titles in `src/metrics`, `src/report`, and `src/i18n`; include selected-primary and trait evidence plus candidate headroom components and selection status.
 
@@ -52,7 +52,7 @@ The audit harness and a redacted synthetic calibration fixture are checked in, b
 - Reports with no AI instruction files use the neutral `unstarted` primary profile; every report returns exactly one primary, no more than one supporting trait, and no more than two structural traits.
 - Eligible specialized primaries are compared on rounded two-decimal strengths, with DR-001 tie-breaking only for equal rounded values; MCP and cross-project never become primaries.
 - Profile evaluation uses only existing report metrics and leaves raw metrics, normalized metrics, dimensions, AMI, and L0–L4 results unchanged for identical scans.
-- The profile payload exposes language-independent canonical IDs, localized titles, matched rule IDs or metric facts, strengths rounded to two decimals, candidate headroom components, and candidate selection status; `meta.profileRuleVersion` is `v1` and the additive release retains `meta.algorithmVersion = "v1"`.
+- The profile payload exposes language-independent canonical IDs, localized titles, matched rule IDs or metric facts, strengths rounded to two decimals, candidate headroom components, and candidate selection status; `meta.profileRuleVersion` is `v2` and the additive release retains `meta.algorithmVersion = "v1"`.
 - Terminal and Markdown expose localized profile labels beside the existing level and AMI; JSON exposes the versioned profile result, localized titles, evidence, and all eligible candidates.
 - PNG exposes localized profile labels beside the existing level and AMI without changing the report's redaction behavior.
 - The Chinese and English Web documentation pages explain profile labels, traits, selection evidence, and their additive relationship to AMI and L0–L4; the Web metrics pages retain their existing metric explanations.

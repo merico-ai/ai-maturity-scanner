@@ -1,6 +1,13 @@
 import type { MaturityRawMetrics } from "./types.ts";
 
-export const PROFILE_RULE_VERSION = "v1" as const;
+export const PROFILE_RULE_VERSION = "v2" as const;
+
+const KNOWLEDGE_LIBRARY_MIN_SPECS_FILES = 20;
+const KNOWLEDGE_LIBRARY_MIN_CONTEXT_RICHNESS = 65;
+const KNOWLEDGE_LIBRARY_CONTEXT_HEADROOM_FLOOR = 60;
+const KNOWLEDGE_LIBRARY_MIN_INSTRUCTION_LINES = 50;
+const KNOWLEDGE_LIBRARY_INSTRUCTION_SCORE_FLOOR = 60;
+const KNOWLEDGE_LIBRARY_MIN_SPEC_LIBRARY_SCORE = 50;
 
 export const SPECIALIZED_PRIMARY_PROFILE_IDS = [
   "ai-operating-system",
@@ -225,10 +232,25 @@ export function evaluateRepositoryProfile(
       }),
     );
   }
-  if (hasAiInstructions && rawMetrics.specsFileCount >= 10 && dimensions.context_richness >= 50) {
+  if (
+    hasAiInstructions &&
+    rawMetrics.specsFileCount >= KNOWLEDGE_LIBRARY_MIN_SPECS_FILES &&
+    dimensions.context_richness >= KNOWLEDGE_LIBRARY_MIN_CONTEXT_RICHNESS &&
+    rawMetrics.instructionMaxLineCount >= KNOWLEDGE_LIBRARY_MIN_INSTRUCTION_LINES &&
+    specLibraryScore >= KNOWLEDGE_LIBRARY_MIN_SPEC_LIBRARY_SCORE
+  ) {
     const components = [
-      component("context_richness", dimensions.context_richness, 50),
-      component("spec_library_score", specLibraryScore, 10),
+      component(
+        "context_richness",
+        dimensions.context_richness,
+        KNOWLEDGE_LIBRARY_CONTEXT_HEADROOM_FLOOR,
+      ),
+      component(
+        "instruction_max_line_score",
+        metric(normalizedMetrics, "instruction_max_line_count"),
+        KNOWLEDGE_LIBRARY_INSTRUCTION_SCORE_FLOOR,
+      ),
+      component("spec_library_score", specLibraryScore, KNOWLEDGE_LIBRARY_MIN_SPEC_LIBRARY_SCORE),
     ];
     candidates.push(
       candidate("knowledge-library", components, mean(components.map((item) => item.headroom)), {
@@ -236,6 +258,7 @@ export function evaluateRepositoryProfile(
         facts: {
           specs_file_count: rawMetrics.specsFileCount,
           context_richness: dimensions.context_richness,
+          instruction_max_line_count: rawMetrics.instructionMaxLineCount,
           spec_library_score: specLibraryScore,
         },
       }),

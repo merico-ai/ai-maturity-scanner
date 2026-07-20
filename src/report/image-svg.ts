@@ -204,25 +204,38 @@ function levelBadge(level: string, title: string, x: number, y: number): string 
   `;
 }
 
-function profileTraitLines(profile: LocalizedRepositoryProfile, lang: Lang): readonly string[] {
+function profileTraitLines(profile: LocalizedRepositoryProfile, lang: Lang): readonly string[][] {
   const titles = stringsFor(lang).profileTitles;
   const traits = [profile.supportingTrait, ...profile.structuralTraits]
     .filter((trait): trait is NonNullable<typeof trait> => trait !== undefined)
     .map((trait) => titles[trait.id]);
-  const lines: string[] = [];
-  let line = "";
+  const lines: string[][] = [];
+  let line: string[] = [];
 
   for (const trait of traits) {
-    const candidate = line ? `${line} · ${trait}` : trait;
-    if (line && candidate.length > 46) {
+    const candidate = [...line, trait];
+    const candidateLength = candidate.join(" / ").length;
+    if (line.length > 0 && candidateLength > 46) {
       lines.push(line);
-      line = trait;
+      line = [trait];
     } else {
       line = candidate;
     }
   }
-  if (line) lines.push(line);
+  if (line.length > 0) lines.push(line);
   return lines;
+}
+
+function profileTraitText(traits: readonly string[], x: number, y: number): string {
+  const family =
+    "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
+  const body = traits
+    .map((trait, index) => {
+      if (index === 0) return `<tspan>${escapeXml(trait)}</tspan>`;
+      return `<tspan dx="6">/</tspan><tspan dx="6">${escapeXml(trait)}</tspan>`;
+    })
+    .join("");
+  return `<text x="${x}" y="${y}" font-family="${family}" font-size="14" font-weight="700" fill="#d9e4f3" text-anchor="start" opacity="1">${body}</text>`;
 }
 
 function avatar(profileTitle: string, lang: Lang, x: number, y: number): string {
@@ -341,7 +354,7 @@ export function renderImageSvg(report: ImageReportData, opts: ImageSvgOptions = 
   <rect x="132" y="394" width="42" height="6" rx="3" fill="#276ef1"/>
   ${svgText(profileStrings.profileLabel, 132, 384, { size: 21, weight: 750, fill: "#b9c7dc" })}
   ${svgText(profileTitle, 132, 452, { size: 44, weight: 900, fill: "#ffffff" })}
-  ${traitLines.map((line, index) => svgText(line, 132, 482 + index * 20, { size: 14, weight: 700, fill: "#d9e4f3" })).join("")}
+  ${traitLines.map((line, index) => profileTraitText(line, 132, 482 + index * 20)).join("")}
   ${svgText(t.amiScore, 132, 550, { size: 20, weight: 750, fill: "#b9c7dc" })}
   ${svgText(report.ami.toFixed(1), 132, 610, { size: 54, weight: 900, fill: "#ffffff" })}
   <g data-slot="profile-identity-stack">

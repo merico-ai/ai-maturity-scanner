@@ -27,7 +27,7 @@ The primary label is a descriptive repository archetype, rather than another mat
 Traits communicate additional notable signals without competing with the primary label.
 
 The report shall continue to display the existing level title and AMI beside the profile.
-For example: `L3 驾轻就熟 · 技能工坊 · 多代理协作 · 工具深连 · 跨项目覆盖`.
+For example: `L3 驾轻就熟 / 技能工坊 / 多代理协作 / 工具深连 / 跨项目覆盖`.
 
 Profile labels shall describe repository-visible AI collaboration assets only.
 They shall not claim code quality, developer proficiency, adoption frequency, model quality, or business impact.
@@ -72,11 +72,12 @@ The number of strength components shall reflect the label's independent evidence
 | 2 | `skill-workshop` | 技能工坊 | `skill_score >= 50` and `skill_engineering_rate >= 0.15` | `headroom(skill_score, 50)` | Reusable and engineered skills are the dominant visible asset. |
 | 3 | `agent-troupe` | 多代理剧团 | `agent_count >= 3` and `agent_type_distinct >= 3` | mean of `headroom(agent_score, 15)` and `headroom(agent_role_score, 60)` | Distinct agent roles are a defining collaboration pattern. |
 | 4 | `command-center` | 命令指挥台 | `command_score >= 40` and `command_count >= 3` | `headroom(command_score, 40)` | Reusable commands are a defining interaction surface. |
-| 5 | `knowledge-library` | 上下文图书馆 | `specs_file_count >= 10` and `context_richness >= 50` | mean of `headroom(context_richness, 50)` and `headroom(spec_library_score, 10)` | Specifications and written context are a defining asset. |
+| 5 | `knowledge-library` | 上下文图书馆 | `specs_file_count >= 20`, `context_richness >= 65`, `instruction_max_line_count >= 50`, and `spec_library_score >= 50` | mean of `headroom(context_richness, 60)`, `headroom(instruction_max_line_score, 60)`, and `headroom(spec_library_score, 50)` | Specifications and substantive written AI context are a defining asset. |
 
 `agent_role_score` is `min(100, agent_type_distinct / 5 * 100)`.
+`instruction_max_line_score` is the normalized `instruction_max_line_count`.
 `spec_library_score` is the mean of normalized `specs_file_count` and `specs_line_count`.
-The floors `15`, `60`, and `10` are the minimum corresponding scores implied by the raw eligibility thresholds.
+The floors `15`, `50`, and `60` keep candidate strengths comparable while preserving the rule that headroom floors do not exceed `60`.
 
 When no specialized label is eligible, the evaluator returns `early-collaboration` (`协作萌芽`).
 

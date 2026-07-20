@@ -66,11 +66,24 @@ describe("repository profiles", () => {
       evaluate({
         ...emptyRawMetrics(),
         aiInstructionFiles: 1,
-        instructionMaxLineCount: 50,
-        specsFileCount: 10,
+        instructionMaxLineCount: 120,
+        specsFileCount: 25,
         specsLineCount: 5000,
       }).primary.id,
     ).toBe("knowledge-library");
+  });
+
+  it("does not select knowledge-library from short instructions plus many docs alone", () => {
+    const profile = evaluate({
+      ...emptyRawMetrics(),
+      aiInstructionFiles: 1,
+      instructionMaxLineCount: 9,
+      specsFileCount: 23,
+      specsLineCount: 5000,
+    });
+
+    expect(profile.primary.id).toBe("early-collaboration");
+    expect(profile.candidates.map((candidate) => candidate.id)).not.toContain("knowledge-library");
   });
 
   it("can select ai-operating-system without a specialized class candidate", () => {

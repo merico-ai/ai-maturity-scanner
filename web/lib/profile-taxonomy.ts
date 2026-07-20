@@ -89,8 +89,9 @@ export const profileTaxonomy: Record<Locale, ProfileTaxonomy> = {
       {
         id: "knowledge-library",
         title: "上下文图书馆",
-        rule: "specs_file_count ≥ 10，且 context_richness ≥ 50",
-        description: "规格与书面上下文是最突出的协作资产。",
+        rule:
+          "specs_file_count ≥ 20，context_richness ≥ 65，instruction_max_line_count ≥ 50，且 spec_library_score ≥ 50",
+        description: "规格与实质性 AI 上下文共同构成最突出的协作资产。",
       },
     ],
     traits: [
@@ -192,8 +193,9 @@ export const profileTaxonomy: Record<Locale, ProfileTaxonomy> = {
       {
         id: "knowledge-library",
         title: "Knowledge Library",
-        rule: "specs_file_count ≥ 10 and context_richness ≥ 50",
-        description: "Specifications and written context are the dominant visible asset.",
+        rule:
+          "specs_file_count ≥ 20, context_richness ≥ 65, instruction_max_line_count ≥ 50, and spec_library_score ≥ 50",
+        description: "Specifications and substantive written AI context are the dominant visible asset.",
       },
     ],
     traits: [
