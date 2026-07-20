@@ -18,6 +18,7 @@ import { aggregateRawMetrics } from "./metrics/aggregate.ts";
 import { determineLevel, scoreAmi } from "./metrics/score.ts";
 import { ALGORITHM_VERSION } from "./metrics/types.ts";
 import {
+  IMAGE_REPORT_METRICS_SOURCE_URL,
   IMAGE_REPORT_QR_TARGET_URL,
   PNG_FINGERPRINT_KEYWORD,
   PNG_IMAGE_HASH_KEYWORD,
@@ -143,6 +144,7 @@ export async function run(
   const output = await renderImagePng(report, {
     lang: opts.lang,
     qrTargetUrl: IMAGE_REPORT_QR_TARGET_URL,
+    metricsSourceUrl: IMAGE_REPORT_METRICS_SOURCE_URL,
     redacted: opts.redacted,
   });
   await writeFile(outputPath, output);

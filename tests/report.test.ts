@@ -240,8 +240,8 @@ describe("renderImage", () => {
     expect(svg).toContain("AI Maturity");
     expect(svg).toContain('fill="#4c1"');
     expect(svg).toContain("QR unavailable");
-    expect(svg).toContain("Scan to view my");
-    expect(svg).toContain("repository AI maturity");
+    expect(svg).toContain("Coming soon");
+    expect(svg).toContain("Scan my repository AI maturity");
     expect(svg).not.toContain("Fingerprint");
     expect(svg).not.toContain(reportFingerprint(report));
     expect(svg).not.toContain("Full sharing variant");
@@ -256,7 +256,22 @@ describe("renderImage", () => {
     expect(svg).not.toContain("QR unavailable");
     expect(svg).toContain("<svg");
     expect(svg).toContain('width="150" height="150"');
-    expect(svg).toContain("Scan report");
+    expect(svg).toContain("Scan my repository AI maturity");
+    // metric-sources QR stays a placeholder until its URL is configured
+    expect(svg).toContain("Coming soon");
+  });
+
+  it("embeds a second QR code for metric sources when its URL is configured", async () => {
+    const svg = await renderImageSvg(sampleReport(), {
+      qrTargetUrl: IMAGE_REPORT_QR_TARGET_URL,
+      metricsSourceUrl: "https://example.com/metrics",
+    });
+
+    expect((svg.match(/width="150" height="150"/g) ?? []).length).toBe(2);
+    expect(svg).toContain("Scan my repository AI maturity");
+    expect(svg).toContain("Scan metric sources");
+    expect(svg).not.toContain("Coming soon");
+    expect(svg).not.toContain("QR unavailable");
   });
 
   it("generates a deterministic SHA-256 report fingerprint", () => {
@@ -283,8 +298,9 @@ describe("renderImage", () => {
     );
 
     expect(svg).toContain("代码库 AI 成熟度");
-    expect(svg).toContain("扫码查看我的");
-    expect(svg).toContain("代码库 AI 成熟度");
+    expect(svg).toContain("扫码查看我的代码库AI成熟度");
+    expect(svg).toContain("扫码查看指标来源");
+    expect(svg).toContain("即将上线");
   });
 
   it("renders a PNG buffer", async () => {

@@ -33,6 +33,7 @@ export interface ImageReportData {
 export interface ImageSvgOptions {
   lang?: Lang;
   qrSvg?: string;
+  metricsSourceSvg?: string;
   redacted?: boolean;
 }
 
@@ -50,11 +51,11 @@ const copy = {
       L3: "Proficient",
       L4: "Expert",
     },
-    scanReport: "Scan report",
-    scanCta: "Scan to view my",
-    scanCtaStrong: "repository AI maturity",
+    scanReportTip: "Scan my repository AI maturity",
     scanNote: "Shareable report card",
     qrUnavailable: "QR unavailable",
+    metricsSourceTitle: "Scan metric sources",
+    metricsSourceSoon: "Coming soon",
     amiScore: "AMI score",
     aiFiles: "AI files",
     abilityApplied: "Ability applied",
@@ -78,11 +79,11 @@ const copy = {
     title: "代码库 AI 成熟度",
     level: "等级",
     levelTitles: { L0: "一窍不通", L1: "初学乍练", L2: "渐入佳境", L3: "驾轻就熟", L4: "炉火纯青" },
-    scanReport: "扫码查看",
-    scanCta: "扫码查看我的",
-    scanCtaStrong: "代码库 AI 成熟度",
+    scanReportTip: "扫码查看我的代码库AI成熟度",
     scanNote: "分享报告卡片",
     qrUnavailable: "无二维码",
+    metricsSourceTitle: "扫码查看指标来源",
+    metricsSourceSoon: "即将上线",
     amiScore: "AMI 分数",
     aiFiles: "AI 文件",
     abilityApplied: "能力应用",
@@ -249,16 +250,23 @@ function qrPlaceholder(label: string, x: number, y: number, size: number): strin
   `;
 }
 
-function embedQr(qrSvg: string | undefined, t: (typeof copy)[Lang], x: number, y: number): string {
+function embedQr(
+  qrSvg: string | undefined,
+  caption: string,
+  fallbackLabel: string,
+  x: number,
+  y: number,
+): string {
   const size = 150;
-  if (!qrSvg) return qrPlaceholder(t.qrUnavailable, x, y, size);
-  const inner = qrSvg
-    .replace(/<\?xml[^>]*>/g, "")
-    .replace(/<!DOCTYPE[^>]*>/g, "")
-    .replace("<svg", `<svg x="${x}" y="${y}" width="${size}" height="${size}"`);
+  const body = !qrSvg
+    ? qrPlaceholder(fallbackLabel, x, y, size)
+    : qrSvg
+        .replace(/<\?xml[^>]*>/g, "")
+        .replace(/<!DOCTYPE[^>]*>/g, "")
+        .replace("<svg", `<svg x="${x}" y="${y}" width="${size}" height="${size}"`);
   return `
-    ${inner}
-    ${svgText(t.scanReport, x + size / 2, y + size + 36, { size: 21, weight: 750, fill: "#667085", anchor: "middle" })}
+    ${body}
+    ${svgText(caption, x + size / 2, y + size + 34, { size: 23, weight: 750, fill: "#667085", anchor: "middle" })}
   `;
 }
 
@@ -305,10 +313,8 @@ export function renderImageSvg(report: ImageReportData, opts: ImageSvgOptions = 
 
   ${metricPills(report, t.metrics)}
 
-  <rect x="88" y="1640" width="904" height="196" rx="30" fill="#f8fafc" stroke="#d8dee8"/>
-  ${embedQr(opts.qrSvg, t, 122, 1663)}
-  ${svgText(t.scanCta, 324, 1704, { size: 30, weight: 750, fill: "#44546a" })}
-  ${svgText(t.scanCtaStrong, 324, 1756, { size: 40, weight: 900, fill: "#111827" })}
-  ${svgText(t.scanNote, 324, 1800, { size: 23, weight: 650, fill: "#7a8797" })}
+  <rect x="88" y="1630" width="904" height="220" rx="30" fill="#f8fafc" stroke="#d8dee8"/>
+  ${embedQr(opts.qrSvg, t.scanReportTip, t.qrUnavailable, 235, 1654)}
+  ${embedQr(opts.metricsSourceSvg, t.metricsSourceTitle, t.metricsSourceSoon, 695, 1654)}
 </svg>`;
 }

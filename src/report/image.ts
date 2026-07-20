@@ -8,13 +8,15 @@ import type { MaturityReport } from "./types.ts";
 const PNG_SIGNATURE_LENGTH = 8;
 export const IMAGE_REPORT_QR_TARGET_URL =
   "https://merico-ai.github.io/ai-maturity-scanner/quick-start";
+export const IMAGE_REPORT_METRICS_SOURCE_URL = "";
 export const PNG_FINGERPRINT_KEYWORD = "AI-Maturity-Fingerprint";
 export const PNG_IMAGE_HASH_KEYWORD = "AI-Maturity-Image-Hash";
 
 export { repoDisplayName };
 
-export interface ImageReportOptions extends Omit<ImageSvgOptions, "qrSvg"> {
+export interface ImageReportOptions extends Omit<ImageSvgOptions, "qrSvg" | "metricsSourceSvg"> {
   qrTargetUrl?: string;
+  metricsSourceUrl?: string;
 }
 
 function stableJson(value: unknown): string {
@@ -135,6 +137,7 @@ export async function renderImageSvg(
   return renderSharedImageSvg(report, {
     lang: opts.lang,
     qrSvg: await qrSvgFor(opts.qrTargetUrl),
+    metricsSourceSvg: await qrSvgFor(opts.metricsSourceUrl),
     redacted: opts.redacted,
   });
 }

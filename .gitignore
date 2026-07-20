@@ -12,3 +12,5 @@ coverage/
 *.tsbuildinfo
 .vscode/
 .idea/
+docs/
+ai-maturity-report.png
