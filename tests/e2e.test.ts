@@ -10,6 +10,7 @@ import { score } from "../src/metrics/score.ts";
 import { collectFiles } from "../src/scan/collect.ts";
 
 const execFileAsync = promisify(execFile);
+const PNG_RENDER_TIMEOUT_MS = process.platform === "win32" ? 30_000 : 15_000;
 
 async function git(cwd: string, args: string[]): Promise<string> {
   const { stdout } = await execFileAsync("git", args, {
@@ -136,53 +137,63 @@ describe("e2e: full pipeline on a fixture git repo", () => {
     const report = await buildReport(repoDir, { lang: "en" });
     expect(report.level).toMatch(/^L[0-4]$/);
     expect(report.meta.algorithmVersion).toBe("v1");
+    expect(report.meta.profileRuleVersion).toBe("v2");
     expect(report.meta.lang).toBe("en");
+    expect(report.profile.primary.title).toBeTruthy();
 
     const json = renderReport(report, "json");
     const parsed = JSON.parse(json);
     expect(parsed.level).toBe(report.level);
     expect(parsed.repo.headSha).toBe(report.repo.headSha);
     expect(parsed.meta.algorithmVersion).toBe("v1");
+    expect(parsed.meta.profileRuleVersion).toBe("v2");
     expect(parsed.meta.lang).toBe("en");
+    expect(parsed.profile.primary.id).toBe(report.profile.primary.id);
     expect(Object.keys(parsed.normalizedMetrics)).toHaveLength(15);
 
     const md = renderReport(report, "md");
     expect(md).toContain("# AI Maturity Report");
     expect(md).toContain(`**Level:** ${report.level}`);
+    expect(md).toContain(`**Profile:** ${report.profile.primary.title}`);
 
     const term = renderReport(report, "terminal");
     expect(term).toContain("AI Maturity Report");
     expect(term).toContain(report.level);
   });
 
-  itOrSkip("verbose png output also prints terminal metrics to stdout", async () => {
-    const outputPath = join(repoDir, "verbose-report.png");
-    const writes: string[] = [];
-    const originalWrite = process.stdout.write;
-    process.stdout.write = ((chunk: string | Uint8Array) => {
-      writes.push(typeof chunk === "string" ? chunk : chunk.toString());
-      return true;
-    }) as typeof process.stdout.write;
+  // PNG rasterization uses native libvips and can exceed Vitest's default on a cold CI runner.
+  itOrSkip(
+    "verbose png output also prints terminal metrics to stdout",
+    async () => {
+      const outputPath = join(repoDir, "verbose-report.png");
+      const writes: string[] = [];
+      const originalWrite = process.stdout.write;
+      process.stdout.write = ((chunk: string | Uint8Array) => {
+        writes.push(typeof chunk === "string" ? chunk : chunk.toString());
+        return true;
+      }) as typeof process.stdout.write;
 
-    try {
-      await run(repoDir, {
-        format: "png",
-        out: outputPath,
-        lang: "en",
-        verbose: true,
-      });
-    } finally {
-      process.stdout.write = originalWrite;
-    }
+      try {
+        await run(repoDir, {
+          format: "png",
+          out: outputPath,
+          lang: "en",
+          verbose: true,
+        });
+      } finally {
+        process.stdout.write = originalWrite;
+      }
 
-    const stdout = writes.join("");
-    expect(stdout).toContain(`AI maturity report generated at: ${outputPath}`);
-    expect(stdout).toContain("AI Maturity Report");
-    expect(stdout).toContain("Level:");
-    expect(stdout).toContain("AMI:");
-    expect(stdout).toContain("Configuration depth");
-    expect(stdout).toContain("mcp_count");
-  });
+      const stdout = writes.join("");
+      expect(stdout).toContain(`AI maturity report generated at: ${outputPath}`);
+      expect(stdout).toContain("AI Maturity Report");
+      expect(stdout).toContain("Level:");
+      expect(stdout).toContain("AMI:");
+      expect(stdout).toContain("Configuration depth");
+      expect(stdout).toContain("mcp_count");
+    },
+    PNG_RENDER_TIMEOUT_MS,
+  );
 
   itOrSkip("collectFiles honors a custom spec glob over the default", async () => {
     // Add a committed spec under a non-default path.

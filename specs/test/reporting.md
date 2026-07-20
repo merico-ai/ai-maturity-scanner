@@ -28,3 +28,8 @@ When a representative report is rendered as `json`, the output shall parse as JS
 Verifies: [REP-6](../dev/reporting.md#rep-6), [REP-7](../dev/reporting.md#rep-7), [REP-8](../dev/reporting.md#rep-8)
 
 When terminal and Markdown reports are rendered with empty file lists, grouped file lists, and over-limit file lists in separate runs, the renderers shall emit the empty-state message for empty input, shall group files in the declared order with agent and skill annotations, and shall indicate truncation at their respective limits.
+
+### REP-18
+Verifies: [REP-16](../user/reporting.md#rep-16), [REP-17](../dev/reporting.md#rep-17)
+
+Where a report profile has one primary, multiple eligible supporting traits, and MCP and cross-project structural traits, when terminal, Markdown, and JSON reports are rendered, each renderer shall expose the primary and both structural traits, terminal and Markdown shall expose no more than one supporting trait, and JSON shall expose the selected profile strength and eligible primary candidates with their headroom components.

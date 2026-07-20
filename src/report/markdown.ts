@@ -150,6 +150,16 @@ function filesSection(files: readonly FileWithTags[], t: ReportStrings): string 
   return lines.join("\n");
 }
 
+function profileLabels(report: MaturityReport): string {
+  return [
+    report.profile.primary.title,
+    report.profile.supportingTrait?.title,
+    ...report.profile.structuralTraits.map((trait) => trait.title),
+  ]
+    .filter((title): title is string => Boolean(title))
+    .join(" / ");
+}
+
 export function renderMarkdown(report: MaturityReport): string {
   const t = stringsFor(report.meta.lang);
   const d = report.dimensions;
@@ -165,6 +175,7 @@ export function renderMarkdown(report: MaturityReport): string {
     "",
     `**${t.levelLabel}:** ${report.level} ${t.levelTitles[report.level]}  `,
     `**AMI:** ${fmt(report.ami)} / 100`,
+    `**${t.profileLabel}:** ${profileLabels(report)}`,
     "",
     `| ${t.dimensionHeader} | ${t.scoreHeader} |`,
     "| --- | ---: |",

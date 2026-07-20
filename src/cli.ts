@@ -15,6 +15,7 @@ import {
 import { DEFAULT_LANG, LANGS, isLang, stringsFor } from "./i18n/index.ts";
 import type { Lang } from "./i18n/index.ts";
 import { aggregateRawMetrics } from "./metrics/aggregate.ts";
+import { PROFILE_RULE_VERSION, evaluateRepositoryProfile } from "./metrics/profile.ts";
 import { determineLevel, scoreAmi } from "./metrics/score.ts";
 import { ALGORITHM_VERSION } from "./metrics/types.ts";
 import {
@@ -28,6 +29,7 @@ import {
 } from "./report/image.ts";
 import { renderJson } from "./report/json.ts";
 import { renderMarkdown } from "./report/markdown.ts";
+import { localizeRepositoryProfile } from "./report/profile.ts";
 import { renderTerminal } from "./report/terminal.ts";
 import type { MaturityReport } from "./report/types.ts";
 import { collectFiles } from "./scan/collect.ts";
@@ -79,10 +81,18 @@ export async function buildReport(
   const { ami, dimensions, normalizedMetrics } = scoreAmi(metrics);
   const level = determineLevel(metrics);
   const lang = opts.lang ?? DEFAULT_LANG;
+  const profile = localizeRepositoryProfile(
+    evaluateRepositoryProfile(metrics, normalizedMetrics, {
+      configuration_depth: dimensions.configurationDepth,
+      context_richness: dimensions.contextRichness,
+      integration_breadth: dimensions.integrationBreadth,
+    }),
+    lang,
+  );
 
   return {
     repo: { root: repoRoot, remoteUrl, headSha, scannedAt: new Date().toISOString() },
-    meta: { algorithmVersion: ALGORITHM_VERSION, lang },
+    meta: { algorithmVersion: ALGORITHM_VERSION, profileRuleVersion: PROFILE_RULE_VERSION, lang },
     level,
     levelTitle: stringsFor(lang).levelTitles[level],
     ami,
@@ -93,6 +103,7 @@ export async function buildReport(
     },
     normalizedMetrics,
     rawMetrics: metrics,
+    profile,
     files,
   };
 }

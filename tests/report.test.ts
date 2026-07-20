@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { evaluateRepositoryProfile } from "../src/metrics/profile.ts";
 import { emptyRawMetrics } from "../src/metrics/types.ts";
 import {
   IMAGE_REPORT_METRICS_SOURCE_URL,
@@ -14,11 +15,13 @@ import {
 } from "../src/report/image.ts";
 import { renderJson } from "../src/report/json.ts";
 import { renderMarkdown } from "../src/report/markdown.ts";
+import { localizeRepositoryProfile } from "../src/report/profile.ts";
 import { renderTerminal } from "../src/report/terminal.ts";
 import type { MaturityReport } from "../src/report/types.ts";
 import type { FileWithTags } from "../src/types.ts";
 
 const ANSI_ESCAPE_RE = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, "g");
+const PNG_RENDER_TIMEOUT_MS = process.platform === "win32" ? 30_000 : 15_000;
 
 function stripAnsi(value: string): string {
   return value.replace(ANSI_ESCAPE_RE, "");
@@ -27,13 +30,13 @@ function stripAnsi(value: string): string {
 function sampleReport(over: Partial<MaturityReport> = {}): MaturityReport {
   return {
     repo: { root: "/repo", headSha: "abc1234567", scannedAt: "2026-07-14T00:00:00Z" },
-    meta: { algorithmVersion: "v1", lang: "en" },
+    meta: { algorithmVersion: "v1", profileRuleVersion: "v2", lang: "en" },
     level: "L3",
     levelTitle: "Proficient",
     ami: 67.5,
     dimensions: {
       configuration_depth: 75,
-      context_richness: 60,
+      context_richness: 87.5,
       integration_breadth: 40,
     },
     normalizedMetrics: {
@@ -49,8 +52,8 @@ function sampleReport(over: Partial<MaturityReport> = {}): MaturityReport {
       mcp_count: 33,
       ai_instruction_files: 100,
       instruction_max_line_count: 100,
-      specs_file_count: 24,
-      specs_line_count: 10,
+      specs_file_count: 50,
+      specs_line_count: 100,
       subproject_coverage: 20,
     },
     rawMetrics: {
@@ -66,11 +69,52 @@ function sampleReport(over: Partial<MaturityReport> = {}): MaturityReport {
       mcpCount: 1,
       aiInstructionFiles: 2,
       instructionMaxLineCount: 200,
-      specsFileCount: 12,
-      specsLineCount: 500,
+      specsFileCount: 25,
+      specsLineCount: 5000,
       subprojectCoverage: 1,
       agentTypeDistinct: 2,
     },
+    profile: localizeRepositoryProfile(
+      evaluateRepositoryProfile(
+        {
+          ...emptyRawMetrics(),
+          skillCount: 12,
+          skillLineCount: 4500,
+          advancedSkillCount: 5,
+          skillResourceCount: 6,
+          agentCount: 5,
+          agentLineCount: 600,
+          commandCount: 4,
+          commandLineCount: 400,
+          mcpCount: 1,
+          aiInstructionFiles: 2,
+          instructionMaxLineCount: 200,
+          specsFileCount: 25,
+          specsLineCount: 5000,
+          subprojectCoverage: 1,
+          agentTypeDistinct: 2,
+        },
+        {
+          skill_count: 40,
+          skill_line_count: 30,
+          advanced_skill_count: 50,
+          skill_engineering_rate: 60,
+          skill_resource_count: 20,
+          agent_count: 50,
+          agent_line_count: 30,
+          command_count: 40,
+          command_line_count: 20,
+          mcp_count: 33,
+          ai_instruction_files: 100,
+          instruction_max_line_count: 100,
+          specs_file_count: 50,
+          specs_line_count: 100,
+          subproject_coverage: 20,
+        },
+        { configuration_depth: 75, context_richness: 87.5, integration_breadth: 40 },
+      ),
+      "en",
+    ),
     files: [] as FileWithTags[],
     ...over,
   };
@@ -89,6 +133,20 @@ describe("renderJson", () => {
     const parsed = JSON.parse(renderJson(sampleReport()));
     expect(parsed.meta.algorithmVersion).toBe("v1");
   });
+  it("surfaces the profile-rule version and localized profile contract", () => {
+    const parsed = JSON.parse(renderJson(sampleReport()));
+    expect(parsed.meta.profileRuleVersion).toBe("v2");
+    expect(parsed.profile.primary).toMatchObject({
+      id: "knowledge-library",
+      title: "Knowledge Library",
+    });
+    expect(parsed.profile.candidates[0]).toMatchObject({
+      id: "knowledge-library",
+      title: "Knowledge Library",
+      selected: true,
+      components: expect.any(Array),
+    });
+  });
   it("round-trips through parse without losing fields", () => {
     const r = sampleReport();
     const parsed = JSON.parse(renderJson(r)) as MaturityReport;
@@ -104,6 +162,7 @@ describe("renderMarkdown", () => {
     expect(md).toContain("# AI Maturity Report");
     expect(md).toContain("**Level:** L3");
     expect(md).toContain("**AMI:** 67.5 / 100");
+    expect(md).toContain("**Profile:** Knowledge Library / Engineered Skills");
     expect(md).toContain("Configuration depth");
     expect(md).toContain("| Configuration depth | 75 |");
   });
@@ -177,6 +236,7 @@ describe("renderTerminal", () => {
     expect(out).toContain("AI Maturity Report");
     expect(out).toContain("Level: L3");
     expect(out).toContain("AMI: 67.5");
+    expect(out).toContain("Profile: Knowledge Library / Engineered Skills");
     expect(out).toContain("Configuration depth");
   });
   it("emits a bar character for each dimension", () => {
@@ -237,6 +297,17 @@ describe("renderImage", () => {
     expect(svg).not.toContain(".git");
     expect(svg).toContain("L3");
     expect(svg).toContain("67.5");
+    expect(svg).toContain(">Profile</text>");
+    expect(svg).toContain(">Knowledge Library</text>");
+    expect(svg).toContain("<tspan>Engineered Skills</tspan>");
+    expect(svg).toContain('data-slot="profile-identity-stack"');
+    expect(svg).toContain('data-slot="profile-avatar-placeholder"');
+    expect(svg).toContain('aria-label="Knowledge Library avatar placeholder"');
+    expect(svg).not.toContain('data-slot="profile-avatar-knowledge-library"');
+    expect(svg).not.toContain("data:image/jpeg;base64");
+    expect(svg).toContain('<circle cx="802" cy="435" r="50"');
+    expect(svg).toContain('<rect x="652" y="503" width="300" height="84"');
+    expect(svg).toContain('x="132" y="610"');
     expect(svg).toContain('role="img" aria-label="AI Maturity badge L3"');
     expect(svg).toContain("AI Maturity");
     expect(svg).toContain('fill="#4c1"');
@@ -294,32 +365,159 @@ describe("renderImage", () => {
     expect(svg).toContain("abc12345");
     expect(svg).toContain("67.5");
     expect(svg).toContain("L3");
+    expect(svg).toContain(">Knowledge Library</text>");
+    expect(svg).toContain("<tspan>Engineered Skills</tspan>");
   });
 
   it("renders Chinese image copy", async () => {
+    const source = sampleReport();
     const svg = await renderImageSvg(
-      sampleReport({ meta: { algorithmVersion: "v1", lang: "zh" } }),
+      sampleReport({
+        meta: { algorithmVersion: "v1", profileRuleVersion: "v2", lang: "zh" },
+        profile: localizeRepositoryProfile(
+          evaluateRepositoryProfile(source.rawMetrics, source.normalizedMetrics, source.dimensions),
+          "zh",
+        ),
+      }),
     );
 
     expect(svg).toContain("代码库 AI 成熟度");
+    expect(svg).toContain(">协作画像</text>");
+    expect(svg).toContain(">上下文图书馆</text>");
+    expect(svg).toContain("<tspan>能力工程化</tspan>");
     expect(svg).toContain("扫码查看我的代码库AI成熟度");
     expect(svg).toContain("扫码查看指标来源");
     expect(svg).toContain("即将上线");
   });
 
-  it("renders a PNG buffer", async () => {
-    const report = sampleReport();
-    const png = await renderImagePng(report);
+  it("renders every eligible trait in the profile detail line", async () => {
+    const source = sampleReport();
+    const rawMetrics = { ...source.rawMetrics, mcpCount: 2, subprojectCoverage: 3 };
+    const report = sampleReport({
+      rawMetrics,
+      profile: localizeRepositoryProfile(
+        evaluateRepositoryProfile(rawMetrics, source.normalizedMetrics, source.dimensions),
+        "en",
+      ),
+    });
+    const svg = await renderImageSvg(report);
 
-    expect(png.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
-    expect(readPngTextChunk(png, PNG_FINGERPRINT_KEYWORD)).toBe(reportFingerprint(report));
-    expect(readPngTextChunk(png, PNG_IMAGE_HASH_KEYWORD)).toBe(await imagePixelHash(png));
-  }, 15_000);
+    expect(svg).toContain(">Knowledge Library</text>");
+    expect(svg).toContain("<tspan>Engineered Skills</tspan>");
+    expect(svg).toContain('<tspan dx="6">/</tspan><tspan dx="6">Deep Tool Connectivity</tspan>');
+    expect(svg).toContain("<tspan>Cross-Project Coverage</tspan>");
+  });
+
+  it("uses the effective image language for profile labels", async () => {
+    const svg = await renderImageSvg(sampleReport(), { lang: "zh" });
+
+    expect(svg).toContain(">协作画像</text>");
+    expect(svg).toContain(">上下文图书馆</text>");
+    expect(svg).toContain("<tspan>能力工程化</tspan>");
+    expect(svg).toContain('aria-label="上下文图书馆 头像占位"');
+    expect(svg).not.toContain(">Knowledge Library</text>");
+  });
+
+  it("keeps the semantic avatar placeholder for profiles without artwork", async () => {
+    const source = sampleReport();
+    const svg = await renderImageSvg(
+      sampleReport({
+        profile: {
+          ...source.profile,
+          primary: { ...source.profile.primary, id: "unstarted", title: "Awaiting Start" },
+        },
+      }),
+    );
+
+    expect(svg).toContain('data-slot="profile-avatar-placeholder"');
+    expect(svg).toContain('aria-label="Awaiting Start avatar placeholder"');
+  });
+
+  it("keeps every localized level title within the compact identity badge", async () => {
+    const levelTitles = {
+      en: ["Not Started", "Beginner", "Improving", "Proficient", "Expert"],
+      zh: ["一窍不通", "初学乍练", "渐入佳境", "驾轻就熟", "炉火纯青"],
+    } as const;
+
+    for (const [lang, titles] of Object.entries(levelTitles) as [
+      "en" | "zh",
+      readonly string[],
+    ][]) {
+      for (const [index, title] of titles.entries()) {
+        const svg = await renderImageSvg(sampleReport({ level: `L${index}` }), { lang });
+        expect(svg).toContain(`<rect x="652" y="503" width="300" height="84"`);
+        expect(svg).toContain(`>${title}</text>`);
+      }
+    }
+  });
+
+  it(
+    "renders a PNG buffer",
+    async () => {
+      const report = sampleReport();
+      const png = await renderImagePng(report);
+
+      expect(png.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
+      expect(readPngTextChunk(png, PNG_FINGERPRINT_KEYWORD)).toBe(reportFingerprint(report));
+      expect(readPngTextChunk(png, PNG_IMAGE_HASH_KEYWORD)).toBe(await imagePixelHash(png));
+    },
+    PNG_RENDER_TIMEOUT_MS,
+  );
+
+  it(
+    "rasterizes profile labels into PNG output",
+    async () => {
+      const source = sampleReport();
+      const withoutTraits = sampleReport({
+        profile: {
+          ...source.profile,
+          supportingTrait: undefined,
+          structuralTraits: [],
+        },
+      });
+
+      const [withTraitsPng, withoutTraitsPng] = await Promise.all([
+        renderImagePng(source),
+        renderImagePng(withoutTraits),
+      ]);
+
+      expect(await imagePixelHash(withTraitsPng)).not.toBe(await imagePixelHash(withoutTraitsPng));
+    },
+    PNG_RENDER_TIMEOUT_MS,
+  );
 });
 
 describe("i18n: zh output", () => {
+  it("localizes primary and trait labels in terminal and Markdown", () => {
+    const source = sampleReport();
+    const profile = localizeRepositoryProfile(
+      evaluateRepositoryProfile(
+        {
+          ...source.rawMetrics,
+          mcpCount: 2,
+          subprojectCoverage: 3,
+        },
+        source.normalizedMetrics,
+        source.dimensions,
+      ),
+      "zh",
+    );
+    const report = sampleReport({
+      meta: { algorithmVersion: "v1", profileRuleVersion: "v2", lang: "zh" },
+      profile,
+    });
+    expect(renderMarkdown(report)).toContain(
+      "**协作画像:** 上下文图书馆 / 能力工程化 / 工具深连 / 跨项目覆盖",
+    );
+    expect(stripAnsi(renderTerminal(report))).toContain(
+      "协作画像: 上下文图书馆 / 能力工程化 / 工具深连 / 跨项目覆盖",
+    );
+  });
+
   it("renderMarkdown emits Chinese labels", () => {
-    const md = renderMarkdown(sampleReport({ meta: { algorithmVersion: "v1", lang: "zh" } }));
+    const md = renderMarkdown(
+      sampleReport({ meta: { algorithmVersion: "v1", profileRuleVersion: "v2", lang: "zh" } }),
+    );
     expect(md).toContain("# AI 成熟度报告");
     expect(md).toContain("**仓库:**");
     expect(md).toContain("**等级:** L3");
@@ -334,7 +532,9 @@ describe("i18n: zh output", () => {
 
   it("renderTerminal emits Chinese labels", () => {
     const out = stripAnsi(
-      renderTerminal(sampleReport({ meta: { algorithmVersion: "v1", lang: "zh" } })),
+      renderTerminal(
+        sampleReport({ meta: { algorithmVersion: "v1", profileRuleVersion: "v2", lang: "zh" } }),
+      ),
     );
     expect(out).toContain("AI 成熟度报告");
     expect(out).toContain("等级: L3");
@@ -346,7 +546,9 @@ describe("i18n: zh output", () => {
 
   it("metric identifiers stay canonical in both languages", () => {
     const en = renderMarkdown(sampleReport());
-    const zh = renderMarkdown(sampleReport({ meta: { algorithmVersion: "v1", lang: "zh" } }));
+    const zh = renderMarkdown(
+      sampleReport({ meta: { algorithmVersion: "v1", profileRuleVersion: "v2", lang: "zh" } }),
+    );
     for (const name of ["skill_count", "agent_count", "mcp_count", "subproject_coverage"]) {
       expect(en).toContain(`| ${name} |`);
       expect(zh).toContain(`| ${name} |`);

@@ -16,6 +16,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "audit:profiles": "node --experimental-strip-types scripts/audit-profiles.ts",
     "demo:image": "npm run build && node scripts/render-image-demo.mjs",
     "dev": "tsup --watch",
     "test": "vitest run",

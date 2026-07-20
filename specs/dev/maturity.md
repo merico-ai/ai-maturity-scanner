@@ -40,3 +40,11 @@ When normalizing `skill_engineering_rate`, the scanner shall compute `advanced_s
 ### MAT-10
 
 When scoring AMI, the scanner shall average normalized skill metrics into a skill subscore, average normalized agent metrics into an agent subscore, average normalized command metrics into a command subscore, average normalized MCP metrics into an MCP subscore, average those four subscores into `configuration depth`, average normalized instruction and specs metrics into `context richness`, use normalized `subproject_coverage` as `integration breadth`, and round the final weighted AMI to two decimal places.
+
+### MAT-16
+
+When deriving a repository profile from an existing maturity report, the scanner shall apply the primary and trait eligibility rules, headroom transform, candidate-strength selection, trait classes, and canonical identifiers defined by [DR-001](../decisions/001-repository-profile-labels.md), shall not change any raw metric, normalized metric, AMI, or L0–L4 level, and shall return `unstarted` when `ai_instruction_files` is `0`.
+
+### MAT-17
+
+When more than one specialized primary profile is eligible, the scanner shall select the candidate with the highest strength rounded to two decimal places, shall use the DR-001 tie-break order only when those rounded strengths are equal, shall return MCP and cross-project results only as structural traits, and shall include the selected and non-selected eligible candidates with their strength components in the profile evaluation result.

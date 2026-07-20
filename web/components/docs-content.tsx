@@ -1,11 +1,12 @@
-import { Fragment } from "react";
 import Link from "next/link";
+import { Fragment } from "react";
 
-import { CodeBlock } from "./code-block";
-import { DocsToc, type TocItem } from "./docs-toc";
-import { SectionHeading } from "./section-heading";
 import type { Locale } from "../lib/i18n";
 import { codeActions, localizePath, messages } from "../lib/i18n";
+import { CodeBlock } from "./code-block";
+import { DocsToc, type TocItem } from "./docs-toc";
+import { ProfileTaxonomyGuide } from "./profile-taxonomy-guide";
+import { SectionHeading } from "./section-heading";
 
 type DocsContentProps = {
   locale: Locale;
@@ -34,6 +35,7 @@ export function DocsContent({ locale }: DocsContentProps) {
     { id: "spec-config", label: docs.config.title },
     { id: "mcp", label: docs.mcpSupport.title },
     { id: "scoring-reference", label: docs.scoringReference.title },
+    { id: "repository-profile", label: docs.profileGuideTitle },
     { id: "flags", label: docs.table.title },
   ];
 
@@ -293,6 +295,8 @@ export function DocsContent({ locale }: DocsContentProps) {
                 </ReferenceDetails>
               </div>
             </article>
+
+            <ProfileTaxonomyGuide locale={locale} />
           </section>
 
           <section

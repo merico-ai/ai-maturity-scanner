@@ -134,10 +134,14 @@ export async function renderImageSvg(
   report: MaturityReport,
   opts: ImageReportOptions = {},
 ): Promise<string> {
+  const [qrSvg, metricsSourceSvg] = await Promise.all([
+    qrSvgFor(opts.qrTargetUrl),
+    qrSvgFor(opts.metricsSourceUrl),
+  ]);
   return renderSharedImageSvg(report, {
     lang: opts.lang,
-    qrSvg: await qrSvgFor(opts.qrTargetUrl),
-    metricsSourceSvg: await qrSvgFor(opts.metricsSourceUrl),
+    qrSvg,
+    metricsSourceSvg,
     redacted: opts.redacted,
   });
 }

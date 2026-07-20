@@ -1,5 +1,6 @@
 import { basename } from "node:path";
-import type { Lang } from "../i18n/index.ts";
+import { type Lang, stringsFor } from "../i18n/index.ts";
+import type { LocalizedRepositoryProfile } from "./profile.ts";
 
 export interface ImageReportData {
   repo: {
@@ -27,6 +28,7 @@ export interface ImageReportData {
     commandCount: number;
     mcpCount: number;
   };
+  profile: LocalizedRepositoryProfile;
   files: readonly unknown[];
 }
 
@@ -186,18 +188,65 @@ function levelBadgeColor(level: string): string {
 function levelBadge(level: string, title: string, x: number, y: number): string {
   const label = "AI Maturity";
   const width = 300;
-  const height = 104;
-  const radius = 24;
+  const height = 84;
+  const radius = 22;
   const color = levelBadgeColor(level);
 
   return `
     <g role="img" aria-label="${escapeXml(`${label} badge ${level}`)}">
       <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${radius}" fill="#223049" stroke="#31425f"/>
-      <rect x="${x + 22}" y="${y + 22}" width="6" height="60" rx="3" fill="${color}"/>
-      ${svgText(label, x + 44, y + 42, { size: 19, weight: 760, fill: "#b9c7dc" })}
-      <rect x="${x + width - 88}" y="${y + 20}" width="66" height="38" rx="19" fill="${color}"/>
-      ${svgText(level, x + width - 55, y + 47, { size: 24, weight: 900, fill: "#ffffff", anchor: "middle" })}
-      ${svgText(title, x + 44, y + 78, { size: 28, weight: 850, fill: "#ffffff" })}
+      <rect x="${x + 20}" y="${y + 18}" width="5" height="48" rx="2.5" fill="${color}"/>
+      ${svgText(label, x + 40, y + 34, { size: 17, weight: 760, fill: "#b9c7dc" })}
+      <rect x="${x + width - 76}" y="${y + 16}" width="54" height="32" rx="16" fill="${color}"/>
+      ${svgText(level, x + width - 49, y + 39, { size: 20, weight: 900, fill: "#ffffff", anchor: "middle" })}
+      ${svgText(title, x + 40, y + 64, { size: 24, weight: 850, fill: "#ffffff" })}
+    </g>
+  `;
+}
+
+function profileTraitLines(profile: LocalizedRepositoryProfile, lang: Lang): readonly string[][] {
+  const titles = stringsFor(lang).profileTitles;
+  const traits = [profile.supportingTrait, ...profile.structuralTraits]
+    .filter((trait): trait is NonNullable<typeof trait> => trait !== undefined)
+    .map((trait) => titles[trait.id]);
+  const lines: string[][] = [];
+  let line: string[] = [];
+
+  for (const trait of traits) {
+    const candidate = [...line, trait];
+    const candidateLength = candidate.join(" / ").length;
+    if (line.length > 0 && candidateLength > 46) {
+      lines.push(line);
+      line = [trait];
+    } else {
+      line = candidate;
+    }
+  }
+  if (line.length > 0) lines.push(line);
+  return lines;
+}
+
+function profileTraitText(traits: readonly string[], x: number, y: number): string {
+  const family =
+    "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
+  const body = traits
+    .map((trait, index) => {
+      if (index === 0) return `<tspan>${escapeXml(trait)}</tspan>`;
+      return `<tspan dx="6">/</tspan><tspan dx="6">${escapeXml(trait)}</tspan>`;
+    })
+    .join("");
+  return `<text x="${x}" y="${y}" font-family="${family}" font-size="14" font-weight="700" fill="#d9e4f3" text-anchor="start" opacity="1">${body}</text>`;
+}
+
+function avatar(profileTitle: string, lang: Lang, x: number, y: number): string {
+  const label = lang === "zh" ? `${profileTitle} 头像占位` : `${profileTitle} avatar placeholder`;
+  return `
+    <g role="img" aria-label="${escapeXml(label)}" data-slot="profile-avatar-placeholder">
+      <circle cx="${x}" cy="${y}" r="50" fill="#223049" stroke="#496080" stroke-width="2"/>
+      <circle cx="${x}" cy="${y}" r="38" fill="#2b3b56"/>
+      <circle cx="${x}" cy="${y - 12}" r="11" fill="#b9c7dc"/>
+      <path d="M ${x - 23} ${y + 25}c4-17 16-25 23-25s19 8 23 25" fill="none" stroke="#b9c7dc" stroke-width="9" stroke-linecap="round"/>
+      <path d="M ${x + 24} ${y - 32}v13m-6.5-6.5h13" stroke="#276ef1" stroke-width="4" stroke-linecap="round"/>
     </g>
   `;
 }
@@ -276,6 +325,9 @@ export function renderImageSvg(report: ImageReportData, opts: ImageSvgOptions = 
   const name = opts.redacted ? t.repositoryHidden : repoDisplayName(report);
   const repo = truncate(name, 34);
   const raw = report.rawMetrics;
+  const profileStrings = stringsFor(lang);
+  const profileTitle = profileStrings.profileTitles[report.profile.primary.id];
+  const traitLines = profileTraitLines(report.profile, lang);
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}">
@@ -299,9 +351,16 @@ export function renderImageSvg(report: ImageReportData, opts: ImageSvgOptions = 
   ${svgText(`${t.algorithm} ${report.meta.algorithmVersion} · ${formatDate(report.repo.scannedAt)} · ${shortSha(report.repo.headSha)}`, 88, 266, { size: 25, weight: 650, fill: "#7a8797" })}
 
   <rect x="88" y="334" width="904" height="304" rx="34" fill="#182133"/>
-  ${svgText(t.amiScore, 132, 414, { size: 30, weight: 750, fill: "#b9c7dc" })}
-  ${svgText(report.ami.toFixed(1), 132, 550, { size: 112, weight: 900, fill: "#ffffff" })}
-  ${levelBadge(report.level, levelTitleFor(lang, report.level), 660, 452)}
+  <rect x="132" y="394" width="42" height="6" rx="3" fill="#276ef1"/>
+  ${svgText(profileStrings.profileLabel, 132, 384, { size: 21, weight: 750, fill: "#b9c7dc" })}
+  ${svgText(profileTitle, 132, 452, { size: 44, weight: 900, fill: "#ffffff" })}
+  ${traitLines.map((line, index) => profileTraitText(line, 132, 482 + index * 20)).join("")}
+  ${svgText(t.amiScore, 132, 550, { size: 20, weight: 750, fill: "#b9c7dc" })}
+  ${svgText(report.ami.toFixed(1), 132, 610, { size: 54, weight: 900, fill: "#ffffff" })}
+  <g data-slot="profile-identity-stack">
+    ${avatar(profileTitle, lang, 802, 435)}
+    ${levelBadge(report.level, levelTitleFor(lang, report.level), 652, 503)}
+  </g>
 
   ${statCard(t.aiFiles, String(report.files.length), 88, 704)}
   ${statCard(t.abilityApplied, String(raw.skillCount + raw.skillResourceCount + raw.agentCount + raw.commandCount + raw.mcpCount), 397, 704)}
