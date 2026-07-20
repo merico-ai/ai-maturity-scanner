@@ -21,6 +21,7 @@ import type { MaturityReport } from "../src/report/types.ts";
 import type { FileWithTags } from "../src/types.ts";
 
 const ANSI_ESCAPE_RE = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, "g");
+const PNG_RENDER_TIMEOUT_MS = process.platform === "win32" ? 30_000 : 15_000;
 
 function stripAnsi(value: string): string {
   return value.replace(ANSI_ESCAPE_RE, "");
@@ -450,32 +451,40 @@ describe("renderImage", () => {
     }
   });
 
-  it("renders a PNG buffer", async () => {
-    const report = sampleReport();
-    const png = await renderImagePng(report);
+  it(
+    "renders a PNG buffer",
+    async () => {
+      const report = sampleReport();
+      const png = await renderImagePng(report);
 
-    expect(png.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
-    expect(readPngTextChunk(png, PNG_FINGERPRINT_KEYWORD)).toBe(reportFingerprint(report));
-    expect(readPngTextChunk(png, PNG_IMAGE_HASH_KEYWORD)).toBe(await imagePixelHash(png));
-  }, 15_000);
+      expect(png.subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
+      expect(readPngTextChunk(png, PNG_FINGERPRINT_KEYWORD)).toBe(reportFingerprint(report));
+      expect(readPngTextChunk(png, PNG_IMAGE_HASH_KEYWORD)).toBe(await imagePixelHash(png));
+    },
+    PNG_RENDER_TIMEOUT_MS,
+  );
 
-  it("rasterizes profile labels into PNG output", async () => {
-    const source = sampleReport();
-    const withoutTraits = sampleReport({
-      profile: {
-        ...source.profile,
-        supportingTrait: undefined,
-        structuralTraits: [],
-      },
-    });
+  it(
+    "rasterizes profile labels into PNG output",
+    async () => {
+      const source = sampleReport();
+      const withoutTraits = sampleReport({
+        profile: {
+          ...source.profile,
+          supportingTrait: undefined,
+          structuralTraits: [],
+        },
+      });
 
-    const [withTraitsPng, withoutTraitsPng] = await Promise.all([
-      renderImagePng(source),
-      renderImagePng(withoutTraits),
-    ]);
+      const [withTraitsPng, withoutTraitsPng] = await Promise.all([
+        renderImagePng(source),
+        renderImagePng(withoutTraits),
+      ]);
 
-    expect(await imagePixelHash(withTraitsPng)).not.toBe(await imagePixelHash(withoutTraitsPng));
-  }, 15_000);
+      expect(await imagePixelHash(withTraitsPng)).not.toBe(await imagePixelHash(withoutTraitsPng));
+    },
+    PNG_RENDER_TIMEOUT_MS,
+  );
 });
 
 describe("i18n: zh output", () => {

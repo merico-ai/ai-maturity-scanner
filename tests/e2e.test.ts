@@ -10,6 +10,7 @@ import { score } from "../src/metrics/score.ts";
 import { collectFiles } from "../src/scan/collect.ts";
 
 const execFileAsync = promisify(execFile);
+const PNG_RENDER_TIMEOUT_MS = process.platform === "win32" ? 30_000 : 15_000;
 
 async function git(cwd: string, args: string[]): Promise<string> {
   const { stdout } = await execFileAsync("git", args, {
@@ -160,7 +161,7 @@ describe("e2e: full pipeline on a fixture git repo", () => {
     expect(term).toContain(report.level);
   });
 
-  // PNG rasterization uses native libvips and can exceed Vitest's 5s default on a cold CI runner.
+  // PNG rasterization uses native libvips and can exceed Vitest's default on a cold CI runner.
   itOrSkip(
     "verbose png output also prints terminal metrics to stdout",
     async () => {
@@ -191,7 +192,7 @@ describe("e2e: full pipeline on a fixture git repo", () => {
       expect(stdout).toContain("Configuration depth");
       expect(stdout).toContain("mcp_count");
     },
-    15_000,
+    PNG_RENDER_TIMEOUT_MS,
   );
 
   itOrSkip("collectFiles honors a custom spec glob over the default", async () => {
