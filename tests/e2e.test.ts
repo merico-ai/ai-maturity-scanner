@@ -155,34 +155,39 @@ describe("e2e: full pipeline on a fixture git repo", () => {
     expect(term).toContain(report.level);
   });
 
-  itOrSkip("verbose png output also prints terminal metrics to stdout", async () => {
-    const outputPath = join(repoDir, "verbose-report.png");
-    const writes: string[] = [];
-    const originalWrite = process.stdout.write;
-    process.stdout.write = ((chunk: string | Uint8Array) => {
-      writes.push(typeof chunk === "string" ? chunk : chunk.toString());
-      return true;
-    }) as typeof process.stdout.write;
+  // PNG rasterization uses native libvips and can exceed Vitest's 5s default on a cold CI runner.
+  itOrSkip(
+    "verbose png output also prints terminal metrics to stdout",
+    async () => {
+      const outputPath = join(repoDir, "verbose-report.png");
+      const writes: string[] = [];
+      const originalWrite = process.stdout.write;
+      process.stdout.write = ((chunk: string | Uint8Array) => {
+        writes.push(typeof chunk === "string" ? chunk : chunk.toString());
+        return true;
+      }) as typeof process.stdout.write;
 
-    try {
-      await run(repoDir, {
-        format: "png",
-        out: outputPath,
-        lang: "en",
-        verbose: true,
-      });
-    } finally {
-      process.stdout.write = originalWrite;
-    }
+      try {
+        await run(repoDir, {
+          format: "png",
+          out: outputPath,
+          lang: "en",
+          verbose: true,
+        });
+      } finally {
+        process.stdout.write = originalWrite;
+      }
 
-    const stdout = writes.join("");
-    expect(stdout).toContain(`AI maturity report generated at: ${outputPath}`);
-    expect(stdout).toContain("AI Maturity Report");
-    expect(stdout).toContain("Level:");
-    expect(stdout).toContain("AMI:");
-    expect(stdout).toContain("Configuration depth");
-    expect(stdout).toContain("mcp_count");
-  });
+      const stdout = writes.join("");
+      expect(stdout).toContain(`AI maturity report generated at: ${outputPath}`);
+      expect(stdout).toContain("AI Maturity Report");
+      expect(stdout).toContain("Level:");
+      expect(stdout).toContain("AMI:");
+      expect(stdout).toContain("Configuration depth");
+      expect(stdout).toContain("mcp_count");
+    },
+    15_000,
+  );
 
   itOrSkip("collectFiles honors a custom spec glob over the default", async () => {
     // Add a committed spec under a non-default path.
