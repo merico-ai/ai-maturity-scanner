@@ -9,7 +9,7 @@ Accepted
 
 ## Context
 
-The scanner already reports a stable maturity ladder: `L0` through `L4`, with the Chinese stage titles `一窍不通`, `初学乍练`, `渐入佳境`, `驾轻就熟`, and `炉火纯青`.
+The scanner already reports a stable maturity ladder: `L0` through `L4`, with the Chinese stage titles `不得其门`, `初出茅庐`, `渐入佳境`, `驾轻就熟`, and `炉火纯青`.
 That ladder and the AMI score answer how much AI collaboration infrastructure a repository has accumulated.
 
 They do not explain the repository's dominant collaboration shape.

@@ -81,7 +81,7 @@ const copy = {
   zh: {
     title: "代码库 AI 成熟度",
     level: "等级",
-    levelTitles: { L0: "一窍不通", L1: "初学乍练", L2: "渐入佳境", L3: "驾轻就熟", L4: "炉火纯青" },
+    levelTitles: { L0: "不得其门", L1: "初出茅庐", L2: "渐入佳境", L3: "驾轻就熟", L4: "炉火纯青" },
     scanReportTip: "扫码查看我的代码库AI成熟度",
     scanNote: "分享报告卡片",
     qrUnavailable: "无二维码",

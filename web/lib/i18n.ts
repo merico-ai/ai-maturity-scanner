@@ -147,8 +147,8 @@ export const messages = {
       imageScoreLabel: "图片分数",
       metricFormulaTitle: "15 个指标",
       levels: [
-        { level: "L0", title: "一窍不通", description: "没有 AI instruction file。" },
-        { level: "L1", title: "初学乍练", description: "默认起点，仓库已经出现基础 AI 协作信号。" },
+        { level: "L0", title: "不得其门", description: "没有 AI instruction file。" },
+        { level: "L1", title: "初出茅庐", description: "默认起点，仓库已经出现基础 AI 协作信号。" },
         {
           level: "L2",
           title: "渐入佳境",

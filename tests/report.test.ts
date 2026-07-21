@@ -443,7 +443,7 @@ describe("renderImage", () => {
   it("keeps every localized level title within the compact identity badge", async () => {
     const levelTitles = {
       en: ["Not Started", "Beginner", "Improving", "Proficient", "Expert"],
-      zh: ["一窍不通", "初学乍练", "渐入佳境", "驾轻就熟", "炉火纯青"],
+      zh: ["不得其门", "初出茅庐", "渐入佳境", "驾轻就熟", "炉火纯青"],
     } as const;
 
     for (const [lang, titles] of Object.entries(levelTitles) as [
