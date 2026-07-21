@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { evaluateRepositoryProfile, profileHeadroom } from "../src/metrics/profile.ts";
+import { evaluateRepositoryProfile, profileHeadroom, tierOf } from "../src/metrics/profile.ts";
 import { scoreAmi } from "../src/metrics/score.ts";
 import { emptyRawMetrics } from "../src/metrics/types.ts";
 
@@ -13,7 +13,7 @@ function evaluate(raw = emptyRawMetrics()) {
 }
 
 describe("repository profiles", () => {
-  it("uses neutral unstarted state, keeps structural traits, and skips candidates", () => {
+  it("uses neutral unstarted state, returns three ranked traits, and skips candidates", () => {
     const profile = evaluate({
       ...emptyRawMetrics(),
       skillCount: 30,
@@ -22,10 +22,31 @@ describe("repository profiles", () => {
     });
     expect(profile.primary.id).toBe("unstarted");
     expect(profile.candidates).toEqual([]);
-    expect(profile.structuralTraits.map((trait) => trait.id)).toEqual([
+    expect(profile.traits).toHaveLength(3);
+    expect(profile.traits.map((trait) => trait.id)).toEqual([
       "tool-connected",
       "cross-project",
+      "structured-context",
     ]);
+    expect(profile.traits[0]).toMatchObject({ id: "tool-connected", degree: 100, tier: "high" });
+    expect(profile.traits[1]).toMatchObject({ id: "cross-project", degree: 60, tier: "medium" });
+  });
+
+  it("maps degrees to tiers on the uniform 40/70 scale and computes trait degrees", () => {
+    expect(tierOf(0)).toBe("low");
+    expect(tierOf(39.99)).toBe("low");
+    expect(tierOf(40)).toBe("medium");
+    expect(tierOf(69.99)).toBe("medium");
+    expect(tierOf(70)).toBe("high");
+    expect(tierOf(100)).toBe("high");
+    const profile = evaluate({
+      ...emptyRawMetrics(),
+      mcpCount: 3,
+      subprojectCoverage: 3,
+    });
+    const byId = Object.fromEntries(profile.traits.map((trait) => [trait.id, trait]));
+    expect(byId["tool-connected"]).toMatchObject({ degree: 100, tier: "high" });
+    expect(byId["cross-project"]).toMatchObject({ degree: 60, tier: "medium" });
   });
 
   it("uses early-collaboration when no specialized primary is eligible", () => {
@@ -140,7 +161,7 @@ describe("repository profiles", () => {
     expect(profile.candidates.filter((candidate) => candidate.selected)).toHaveLength(1);
   });
 
-  it("returns the ordered single supporting trait and all structural traits, with suppression", () => {
+  it("returns the three highest-degree traits and suppresses the trait matching the primary", () => {
     const profile = evaluate({
       ...emptyRawMetrics(),
       aiInstructionFiles: 1,
@@ -154,11 +175,19 @@ describe("repository profiles", () => {
       mcpCount: 2,
       subprojectCoverage: 3,
     });
-    expect(profile.supportingTrait?.id).toBe("engineered-skills");
-    expect(profile.structuralTraits.map((trait) => trait.id)).toEqual([
+    expect(profile.primary.id).toBe("agent-troupe");
+    expect(profile.traits).toHaveLength(3);
+    expect(profile.traits.map((trait) => trait.id)).toEqual([
       "tool-connected",
+      "structured-context",
       "cross-project",
     ]);
+    expect(profile.traits.map((trait) => trait.id)).not.toContain("multi-agent");
+    expect(profile.traits[0]).toMatchObject({
+      id: "tool-connected",
+      degree: 66.67,
+      tier: "medium",
+    });
 
     const skillProfile = evaluate({
       ...emptyRawMetrics(),
@@ -169,7 +198,7 @@ describe("repository profiles", () => {
       skillResourceCount: 30,
     });
     expect(skillProfile.primary.id).toBe("skill-workshop");
-    expect(skillProfile.supportingTrait).toBeUndefined();
+    expect(skillProfile.traits.map((trait) => trait.id)).not.toContain("engineered-skills");
   });
 
   it("keeps the specified headroom scale and rounded candidate components", () => {

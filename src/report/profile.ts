@@ -12,6 +12,7 @@ export interface LocalizedProfilePrimary extends ProfilePrimary {
 
 export interface LocalizedProfileTrait extends ProfileTrait {
   title: string;
+  tierTitle: string;
 }
 
 export interface LocalizedProfileCandidate extends ProfileCandidate {
@@ -20,8 +21,7 @@ export interface LocalizedProfileCandidate extends ProfileCandidate {
 
 export interface LocalizedRepositoryProfile {
   primary: LocalizedProfilePrimary;
-  supportingTrait?: LocalizedProfileTrait;
-  structuralTraits: LocalizedProfileTrait[];
+  traits: LocalizedProfileTrait[];
   candidates: LocalizedProfileCandidate[];
 }
 
@@ -30,7 +30,12 @@ function localizePrimary(primary: ProfilePrimary, lang: Lang): LocalizedProfileP
 }
 
 function localizeTrait(trait: ProfileTrait, lang: Lang): LocalizedProfileTrait {
-  return { ...trait, title: stringsFor(lang).profileTitles[trait.id] };
+  const strings = stringsFor(lang);
+  return {
+    ...trait,
+    title: strings.profileTitles[trait.id],
+    tierTitle: strings.profileTiers[trait.tier],
+  };
 }
 
 export function localizeRepositoryProfile(
@@ -39,10 +44,7 @@ export function localizeRepositoryProfile(
 ): LocalizedRepositoryProfile {
   return {
     primary: localizePrimary(evaluation.primary, lang),
-    supportingTrait: evaluation.supportingTrait
-      ? localizeTrait(evaluation.supportingTrait, lang)
-      : undefined,
-    structuralTraits: evaluation.structuralTraits.map((item) => localizeTrait(item, lang)),
+    traits: evaluation.traits.map((item) => localizeTrait(item, lang)),
     candidates: evaluation.candidates.map((item) => ({
       ...item,
       title: stringsFor(lang).profileTitles[item.id],

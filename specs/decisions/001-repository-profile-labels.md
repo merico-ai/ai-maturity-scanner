@@ -22,12 +22,12 @@ Adding a repository profile must not alter the collected-file set, raw metrics, 
 
 ### Profile model
 
-Each report receives exactly one localized primary profile label, zero to one localized supporting trait label, and zero to two localized structural trait labels.
+Each report receives exactly one localized primary profile label and up to three localized trait labels.
 The primary label is a descriptive repository archetype, rather than another maturity grade.
-Traits communicate additional notable signals without competing with the primary label.
+Traits communicate additional notable signals, each labeled by a high, medium, or low degree tier, without competing with the primary label.
 
 The report shall continue to display the existing level title and AMI beside the profile.
-For example: `L3 驾轻就熟 / 技能工坊 / 多代理协作 / 工具深连 / 跨项目覆盖`.
+For example: `L3 驾轻就熟 / 技能工坊 / 多代理协作·高 / 工具深连·中 / 跨项目覆盖·低`.
 
 Profile labels shall describe repository-visible AI collaboration assets only.
 They shall not claim code quality, developer proficiency, adoption frequency, model quality, or business impact.
@@ -83,33 +83,38 @@ When no specialized label is eligible, the evaluator returns `early-collaboratio
 
 ### Trait labels
 
-After selecting a primary label, the evaluator adds each eligible trait below, except a trait whose meaning is already expressed by the primary label.
-It returns the first eligible supporting trait in table order and every eligible structural trait.
-This guarantees that the MCP and cross-project signals remain visible after their promotion to trait-only status.
+After selecting a primary label, the evaluator computes a 0–100 degree for every trait below from existing normalized metrics, maps each degree to one of three tiers, and returns the three highest-degree traits not already expressed by the primary label.
+A trait is always assigned a tier; a repository with no relevant assets for a trait receives the `low` tier, so every report surfaces three trait labels rather than an empty trait set.
+The uniform tier bars apply the same thresholds to every trait so that tiers stay comparable across traits: `low` for degree below `40`, `medium` for degree in the inclusive range `40..69`, and `high` for degree `70` or above.
 
-| Order | Type | ID | Chinese label | Eligibility rule | Suppress when primary label is |
-| ---: | --- | --- | --- | --- | --- |
-| 1 | Supporting | `engineered-skills` | 能力工程化 | `advanced_skill_count >= 2` and `skill_engineering_rate >= 0.15` | `skill-workshop` |
-| 2 | Supporting | `multi-agent` | 多代理协作 | `agent_count >= 3` and `agent_type_distinct >= 3` | `agent-troupe` |
-| 3 | Structural | `tool-connected` | 工具深连 | `mcp_count >= 2` | — |
-| 4 | Supporting | `structured-context` | 上下文成册 | `instruction_max_line_count` is in the inclusive range `50..400` and `specs_file_count >= 10` | `knowledge-library` |
-| 5 | Structural | `cross-project` | 跨项目覆盖 | `subproject_coverage >= 3` | — |
+| ID | Chinese label | Degree | Suppress when primary label is |
+| --- | --- | --- | --- |
+| `engineered-skills` | 能力工程化 | mean of `advanced_skill_count` and `skill_engineering_rate` | `skill-workshop` |
+| `multi-agent` | 多代理协作 | mean of `agent_count` and `agent_role_score` | `agent-troupe` |
+| `tool-connected` | 工具深连 | `mcp_count` | — |
+| `structured-context` | 上下文成册 | mean of `instruction_max_line_count` and `specs_file_count` | `knowledge-library` |
+| `cross-project` | 跨项目覆盖 | `subproject_coverage` | — |
+
+`agent_role_score` is defined under Primary labels; every other degree input is an existing normalized metric.
+The evaluator ranks the non-suppressed traits by degree descending, breaks ties by the canonical trait order in the table above, and returns the top three.
+This guarantees that the MCP and cross-project signals remain visible after their promotion to trait-only status whenever their degree places them in the top three.
 
 The primary and trait identifiers are canonical, stable, and language-independent.
 Localized display labels may change independently of their identifiers.
 
 ### Delivery and compatibility
 
-A future implementation should expose a `profile` report field containing the primary identifier, localized title, strength rounded to two decimal places, trait identifiers, trait titles, and the matched rule IDs or metric facts needed to explain the result.
+A future implementation should expose a `profile` report field containing the primary identifier, localized title, strength rounded to two decimal places, the ranked trait identifiers with each trait's degree rounded to two decimal places and tier, trait titles, and the matched rule IDs or metric facts needed to explain the result.
 It should also expose every eligible primary candidate with its strength rounded to two decimal places, headroom components, and selection result, so users can compare the winner with close alternatives.
 The profile field is additive to the existing report contract in [REP-4](../dev/reporting.md#rep-4).
 
 Profile rules shall be versioned separately from AMI scoring rules.
 An additive profile implementation may retain the AMI algorithm version, while introducing a dedicated profile-rule version in report metadata.
+Replacing binary trait eligibility with continuous trait degrees, tier bucketing, and top-three ranking changes the profile contract and moves `meta.profileRuleVersion` from `v2` to `v3`.
 
-The first release shall use the fixed thresholds and headroom transform above.
-Before release, a representative corpus of scans shall be used to audit eligibility, winner, and trait rates for every profile.
-That audit shall explicitly report, for `tool-connected` and `cross-project`, the number of repositories that would have selected the corresponding single-signal primary label under the prior direct-score approach, the number of repositories carrying the trait, and the primary labels those repositories actually receive.
+The primary labels shall use the fixed thresholds and headroom transform above; traits shall use the degree functions and uniform tier bars above.
+Before release, a representative corpus of scans shall be used to audit eligibility, winner, and trait tier distributions for every profile.
+That audit shall explicitly report, for `tool-connected` and `cross-project`, the number of repositories that would have selected the corresponding single-signal primary label under the prior direct-score approach, the tier distribution of that trait, and the primary labels those repositories actually receive.
 This "swallow rate" identifies whether a single-signal label would otherwise systematically hide stronger multi-evidence profiles.
 For `ai-operating-system`, the audit shall report eligibility rate, winner rate, the distribution of `subproject_coverage`, and the count of eligible candidates whose zero strength is caused by `integration_breadth` at its eligibility floor.
 Threshold or calibration changes may be made from those observations, but must preserve deterministic rules, comparable candidate scales, and explainability.

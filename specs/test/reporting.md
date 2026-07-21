@@ -32,4 +32,4 @@ When terminal and Markdown reports are rendered with empty file lists, grouped f
 ### REP-18
 Verifies: [REP-16](../user/reporting.md#rep-16), [REP-17](../dev/reporting.md#rep-17)
 
-Where a report profile has one primary, multiple eligible supporting traits, and MCP and cross-project structural traits, when terminal, Markdown, and JSON reports are rendered, each renderer shall expose the primary and both structural traits, terminal and Markdown shall expose no more than one supporting trait, and JSON shall expose the selected profile strength and eligible primary candidates with their headroom components.
+Where a report profile has one primary and traits of differing degree, when terminal, Markdown, and JSON reports are rendered, each renderer shall expose the primary and the three highest-degree traits with their tiers, and JSON shall expose each trait's degree and tier plus the selected profile strength and eligible primary candidates with their headroom components.

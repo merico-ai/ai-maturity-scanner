@@ -29,12 +29,12 @@ Verifies: [CLI-5](../user/cli.md#cli-5), [CLI-6](../user/cli.md#cli-6), [CLI-7](
 
 When the CLI is exercised across successful execution, invalid arguments, a non-repository target, and an environment without `git` on `PATH`, the process shall return exit codes `0`, `1`, `2`, and `3` respectively.
 
-### CLI-21
+### CLI-25
 Verifies: [CLI-18](../user/cli.md#cli-18), [CLI-20](../dev/cli.md#cli-20)
 
 When the CLI is executed with `verify-image` against a generated PNG report, it shall recompute the image hash, print `Fingerprint verified.`, and fail when the metadata is absent or the image hash differs.
 
-### CLI-24
+### CLI-26
 Verifies: [CLI-24](../user/cli.md#cli-24)
 
 When the CLI is executed with `--version`, it shall print the current package version and exit successfully without requiring a git repository.

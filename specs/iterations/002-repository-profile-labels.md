@@ -12,6 +12,7 @@ Keep raw metrics, AMI, and the L0–L4 cascade unchanged while making the select
 
 Tasks 1–7 are complete: the evaluator, localized report contract, terminal, Markdown, JSON, and automated coverage are implemented.
 The audit harness and a redacted synthetic calibration fixture are checked in under `tests/fixtures/profile-corpus/`, with calibration disposition recorded in [IR-002 profile calibration](002-profile-calibration.md), but Tasks 8–10 remain open until a representative pre-release corpus or immutable external-corpus fingerprint is supplied.
+The binary `v2` trait contract delivered here is superseded by the degree-tiered `v3` traits in [IR-003](003-profile-trait-degrees.md); the primary-label rules and AMI independence delivered here remain in force.
 
 ## Deliverables
 

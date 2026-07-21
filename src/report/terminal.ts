@@ -167,13 +167,16 @@ function filesBlock(files: readonly FileWithTags[], t: ReportStrings): string {
 }
 
 function profileLabels(report: MaturityReport): string {
-  return [
-    report.profile.primary.title,
-    report.profile.supportingTrait?.title,
-    ...report.profile.structuralTraits.map((trait) => trait.title),
-  ]
-    .filter((title): title is string => Boolean(title))
-    .join(" / ");
+  const traitLabels = report.profile.traits.map((trait) => {
+    const tier =
+      trait.tier === "high"
+        ? pc.green(trait.tierTitle)
+        : trait.tier === "medium"
+          ? pc.yellow(trait.tierTitle)
+          : pc.dim(trait.tierTitle);
+    return `${trait.title}·${tier}`;
+  });
+  return [report.profile.primary.title, ...traitLabels].join(" / ");
 }
 
 export function renderTerminal(report: MaturityReport): string {

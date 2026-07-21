@@ -44,15 +44,15 @@ test("the profile guide documents primary-versus-trait and selection semantics",
 
     assert.equal(taxonomy.selectionSteps.length, 4);
     assert.match(taxonomy.primaryDescription, /一个|exactly one/);
-    assert.match(taxonomy.traitDescription, /最多|at most/);
+    assert.match(taxonomy.traitDescription, /三|three|tier|degree|级别|程度/i);
     assert.match(taxonomy.evidenceDescription, /AMI/);
     assert.match(taxonomy.evidenceDescription, /L0/);
   }
 
-  const structuralIds = profileTaxonomy.en.traits
-    .filter((item) => item.kind === "structural")
-    .map((item) => item.id);
-  assert.deepEqual(structuralIds, ["tool-connected", "cross-project"]);
+  assert.ok(
+    profileTaxonomy.en.traits.every((item) => /degree =/.test(item.rule)),
+    "every trait rule is expressed as a degree function",
+  );
 });
 
 test("both locale docs pages render the shared profile guide", async () => {

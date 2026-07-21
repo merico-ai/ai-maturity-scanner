@@ -30,7 +30,7 @@ function stripAnsi(value: string): string {
 function sampleReport(over: Partial<MaturityReport> = {}): MaturityReport {
   return {
     repo: { root: "/repo", headSha: "abc1234567", scannedAt: "2026-07-14T00:00:00Z" },
-    meta: { algorithmVersion: "v1", profileRuleVersion: "v2", lang: "en" },
+    meta: { algorithmVersion: "v1", profileRuleVersion: "v3", lang: "en" },
     level: "L3",
     levelTitle: "Proficient",
     ami: 67.5,
@@ -135,7 +135,7 @@ describe("renderJson", () => {
   });
   it("surfaces the profile-rule version and localized profile contract", () => {
     const parsed = JSON.parse(renderJson(sampleReport()));
-    expect(parsed.meta.profileRuleVersion).toBe("v2");
+    expect(parsed.meta.profileRuleVersion).toBe("v3");
     expect(parsed.profile.primary).toMatchObject({
       id: "knowledge-library",
       title: "Knowledge Library",
@@ -162,7 +162,9 @@ describe("renderMarkdown", () => {
     expect(md).toContain("# AI Maturity Report");
     expect(md).toContain("**Level:** L3");
     expect(md).toContain("**AMI:** 67.5 / 100");
-    expect(md).toContain("**Profile:** Knowledge Library / Engineered Skills");
+    expect(md).toContain(
+      "**Profile:** Knowledge Library / Engineered Skills·Medium / Multi-Agent Collaboration·Medium / Deep Tool Connectivity·Low",
+    );
     expect(md).toContain("Configuration depth");
     expect(md).toContain("| Configuration depth | 75 |");
   });
@@ -236,7 +238,9 @@ describe("renderTerminal", () => {
     expect(out).toContain("AI Maturity Report");
     expect(out).toContain("Level: L3");
     expect(out).toContain("AMI: 67.5");
-    expect(out).toContain("Profile: Knowledge Library / Engineered Skills");
+    expect(out).toContain(
+      "Profile: Knowledge Library / Engineered Skills·Medium / Multi-Agent Collaboration·Medium / Deep Tool Connectivity·Low",
+    );
     expect(out).toContain("Configuration depth");
   });
   it("emits a bar character for each dimension", () => {
@@ -373,7 +377,7 @@ describe("renderImage", () => {
     const source = sampleReport();
     const svg = await renderImageSvg(
       sampleReport({
-        meta: { algorithmVersion: "v1", profileRuleVersion: "v2", lang: "zh" },
+        meta: { algorithmVersion: "v1", profileRuleVersion: "v3", lang: "zh" },
         profile: localizeRepositoryProfile(
           evaluateRepositoryProfile(source.rawMetrics, source.normalizedMetrics, source.dimensions),
           "zh",
@@ -404,8 +408,11 @@ describe("renderImage", () => {
 
     expect(svg).toContain(">Knowledge Library</text>");
     expect(svg).toContain("<tspan>Engineered Skills</tspan>");
-    expect(svg).toContain('<tspan dx="6">/</tspan><tspan dx="6">Deep Tool Connectivity</tspan>');
-    expect(svg).toContain("<tspan>Cross-Project Coverage</tspan>");
+    expect(svg).toContain("<tspan>Multi-Agent Collaboration</tspan>");
+    expect(svg).toContain("<tspan>Deep Tool Connectivity</tspan>");
+    expect(svg).toContain('<tspan fill="#dfb317">·Medium</tspan>');
+    expect(svg).toContain('<tspan fill="#7a8797">·Low</tspan>');
+    expect(svg).not.toContain("Cross-Project Coverage");
   });
 
   it("uses the effective image language for profile labels", async () => {
@@ -471,8 +478,7 @@ describe("renderImage", () => {
       const withoutTraits = sampleReport({
         profile: {
           ...source.profile,
-          supportingTrait: undefined,
-          structuralTraits: [],
+          traits: [],
         },
       });
 
@@ -503,20 +509,20 @@ describe("i18n: zh output", () => {
       "zh",
     );
     const report = sampleReport({
-      meta: { algorithmVersion: "v1", profileRuleVersion: "v2", lang: "zh" },
+      meta: { algorithmVersion: "v1", profileRuleVersion: "v3", lang: "zh" },
       profile,
     });
     expect(renderMarkdown(report)).toContain(
-      "**协作画像:** 上下文图书馆 / 能力工程化 / 工具深连 / 跨项目覆盖",
+      "**协作画像:** 上下文图书馆 / 能力工程化·中 / 多代理协作·中 / 工具深连·低",
     );
     expect(stripAnsi(renderTerminal(report))).toContain(
-      "协作画像: 上下文图书馆 / 能力工程化 / 工具深连 / 跨项目覆盖",
+      "协作画像: 上下文图书馆 / 能力工程化·中 / 多代理协作·中 / 工具深连·低",
     );
   });
 
   it("renderMarkdown emits Chinese labels", () => {
     const md = renderMarkdown(
-      sampleReport({ meta: { algorithmVersion: "v1", profileRuleVersion: "v2", lang: "zh" } }),
+      sampleReport({ meta: { algorithmVersion: "v1", profileRuleVersion: "v3", lang: "zh" } }),
     );
     expect(md).toContain("# AI 成熟度报告");
     expect(md).toContain("**仓库:**");
@@ -533,7 +539,7 @@ describe("i18n: zh output", () => {
   it("renderTerminal emits Chinese labels", () => {
     const out = stripAnsi(
       renderTerminal(
-        sampleReport({ meta: { algorithmVersion: "v1", profileRuleVersion: "v2", lang: "zh" } }),
+        sampleReport({ meta: { algorithmVersion: "v1", profileRuleVersion: "v3", lang: "zh" } }),
       ),
     );
     expect(out).toContain("AI 成熟度报告");
@@ -547,7 +553,7 @@ describe("i18n: zh output", () => {
   it("metric identifiers stay canonical in both languages", () => {
     const en = renderMarkdown(sampleReport());
     const zh = renderMarkdown(
-      sampleReport({ meta: { algorithmVersion: "v1", profileRuleVersion: "v2", lang: "zh" } }),
+      sampleReport({ meta: { algorithmVersion: "v1", profileRuleVersion: "v3", lang: "zh" } }),
     );
     for (const name of ["skill_count", "agent_count", "mcp_count", "subproject_coverage"]) {
       expect(en).toContain(`| ${name} |`);

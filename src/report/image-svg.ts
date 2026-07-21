@@ -1,5 +1,6 @@
 import { basename } from "node:path";
 import { type Lang, stringsFor } from "../i18n/index.ts";
+import type { ProfileTier } from "../metrics/profile.ts";
 import type { LocalizedRepositoryProfile } from "./profile.ts";
 
 export interface ImageReportData {
@@ -204,20 +205,40 @@ function levelBadge(level: string, title: string, x: number, y: number): string 
   `;
 }
 
-function profileTraitLines(profile: LocalizedRepositoryProfile, lang: Lang): readonly string[][] {
-  const titles = stringsFor(lang).profileTitles;
-  const traits = [profile.supportingTrait, ...profile.structuralTraits]
-    .filter((trait): trait is NonNullable<typeof trait> => trait !== undefined)
-    .map((trait) => titles[trait.id]);
-  const lines: string[][] = [];
-  let line: string[] = [];
+interface ProfileTraitSegment {
+  title: string;
+  tierTitle: string;
+  tier: ProfileTier;
+}
 
-  for (const trait of traits) {
-    const candidate = [...line, trait];
-    const candidateLength = candidate.join(" / ").length;
+/** Tier suffix colors on the dark profile band, mirroring the terminal palette. */
+const TRAIT_TIER_COLOR: Record<ProfileTier, string> = {
+  high: "#4c1",
+  medium: "#dfb317",
+  low: "#7a8797",
+};
+
+function profileTraitLines(
+  profile: LocalizedRepositoryProfile,
+  lang: Lang,
+): readonly ProfileTraitSegment[][] {
+  const strings = stringsFor(lang);
+  const segments: ProfileTraitSegment[] = profile.traits.map((trait) => ({
+    title: strings.profileTitles[trait.id],
+    tierTitle: strings.profileTiers[trait.tier],
+    tier: trait.tier,
+  }));
+  const lines: ProfileTraitSegment[][] = [];
+  let line: ProfileTraitSegment[] = [];
+
+  for (const segment of segments) {
+    const candidate = [...line, segment];
+    const candidateLength = candidate
+      .map((item) => `${item.title}·${item.tierTitle}`)
+      .join(" / ").length;
     if (line.length > 0 && candidateLength > 46) {
       lines.push(line);
-      line = [trait];
+      line = [segment];
     } else {
       line = candidate;
     }
@@ -226,13 +247,17 @@ function profileTraitLines(profile: LocalizedRepositoryProfile, lang: Lang): rea
   return lines;
 }
 
-function profileTraitText(traits: readonly string[], x: number, y: number): string {
+function profileTraitText(segments: readonly ProfileTraitSegment[], x: number, y: number): string {
   const family =
     "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
-  const body = traits
-    .map((trait, index) => {
-      if (index === 0) return `<tspan>${escapeXml(trait)}</tspan>`;
-      return `<tspan dx="6">/</tspan><tspan dx="6">${escapeXml(trait)}</tspan>`;
+  const body = segments
+    .map((segment, index) => {
+      const head =
+        index === 0
+          ? `<tspan>${escapeXml(segment.title)}</tspan>`
+          : `<tspan dx="6">/</tspan><tspan dx="6">${escapeXml(segment.title)}</tspan>`;
+      const color = TRAIT_TIER_COLOR[segment.tier];
+      return `${head}<tspan fill="${color}">·${escapeXml(segment.tierTitle)}</tspan>`;
     })
     .join("");
   return `<text x="${x}" y="${y}" font-family="${family}" font-size="14" font-weight="700" fill="#d9e4f3" text-anchor="start" opacity="1">${body}</text>`;
