@@ -151,13 +151,8 @@ function filesSection(files: readonly FileWithTags[], t: ReportStrings): string 
 }
 
 function profileLabels(report: MaturityReport): string {
-  return [
-    report.profile.primary.title,
-    report.profile.supportingTrait?.title,
-    ...report.profile.structuralTraits.map((trait) => trait.title),
-  ]
-    .filter((title): title is string => Boolean(title))
-    .join(" / ");
+  const traitLabels = report.profile.traits.map((trait) => `${trait.title}·${trait.tierTitle}`);
+  return [report.profile.primary.title, ...traitLabels].join(" / ");
 }
 
 export function renderMarkdown(report: MaturityReport): string {

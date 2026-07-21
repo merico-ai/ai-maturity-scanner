@@ -18,7 +18,7 @@ When the repository has an `origin` remote URL, the report object shall include 
 ### REP-13
 
 When a report is built, the report object shall contain `meta.algorithmVersion` set to the algorithm version constant declared in `src/metrics/types.ts` (currently `v1`), so that older reports remain interpretable after future scoring changes.
-The additive profile release retains `meta.algorithmVersion = "v1"` and adds `meta.profileRuleVersion = "v2"`, independently versioning profile rules.
+The additive profile release retains `meta.algorithmVersion = "v1"` and adds `meta.profileRuleVersion = "v3"`, independently versioning profile rules.
 
 ### REP-14
 
@@ -43,4 +43,4 @@ When the collected file list exceeds the renderer limit, the terminal renderer s
 
 ### REP-17
 
-When a report contains a repository profile, the report object shall include canonical primary and trait identifiers, localized titles, primary strength rounded to two decimal places, matched rule identifiers or metric facts, and every eligible primary candidate's identifier, strength rounded to two decimal places, headroom components, and selected status; terminal, Markdown, and PNG renderers shall render one primary, at most one supporting trait, and every structural trait, using ` / ` between multiple displayed labels.
+When a report contains a repository profile, the report object shall include canonical primary and trait identifiers, localized titles, primary strength rounded to two decimal places, each trait's degree rounded to two decimal places and tier, matched rule identifiers or metric facts, and every eligible primary candidate's identifier, strength rounded to two decimal places, headroom components, and selected status; the profile shall carry a `traits` array of the three highest-degree traits ranked by degree then canonical trait order, and terminal, Markdown, and PNG renderers shall render the primary and those three ranked traits with their tiers, using ` / ` between multiple displayed labels.

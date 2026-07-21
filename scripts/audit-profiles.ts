@@ -1,13 +1,15 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import {
-  evaluateRepositoryProfile,
   PROFILE_TRAIT_IDS,
-  SPECIALIZED_PRIMARY_PROFILE_IDS,
   type ProfileLabelId,
+  SPECIALIZED_PRIMARY_PROFILE_IDS,
+  evaluateRepositoryProfile,
+  tierOf,
+  traitDegree,
 } from "../src/metrics/profile.ts";
 import { scoreAmi } from "../src/metrics/score.ts";
-import { emptyRawMetrics, type MaturityRawMetrics } from "../src/metrics/types.ts";
+import { type MaturityRawMetrics, emptyRawMetrics } from "../src/metrics/types.ts";
 
 interface CorpusRecord {
   id: string;
@@ -71,7 +73,8 @@ async function main(): Promise<void> {
   const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as CorpusManifest;
   const primaryEligibility: Record<string, number> = {};
   const primaryWinners: Record<string, number> = {};
-  const traitCarriers: Record<string, number> = {};
+  const traitTiers: Record<string, { high: number; medium: number; low: number }> = {};
+  for (const id of PROFILE_TRAIT_IDS) traitTiers[id] = { high: 0, medium: 0, low: 0 };
   const coverageDistribution: Record<string, number> = {};
   const directWinners: Record<string, number> = {};
   const actualForDirectEligible: Record<string, Record<string, number>> = {
@@ -92,20 +95,38 @@ async function main(): Promise<void> {
     increment(coverageDistribution, String(raw.subprojectCoverage));
     for (const candidate of profile.candidates) {
       increment(primaryEligibility, candidate.id);
-      if (candidate.id === "ai-operating-system" && candidate.strength === 0 && candidate.components.some((component) => component.id === "integration_breadth" && component.headroom === 0)) {
+      if (
+        candidate.id === "ai-operating-system" &&
+        candidate.strength === 0 &&
+        candidate.components.some(
+          (component) => component.id === "integration_breadth" && component.headroom === 0,
+        )
+      ) {
         aiOperatingSystemZeroIntegrationFloor += 1;
       }
     }
-    for (const item of [profile.supportingTrait, ...profile.structuralTraits]) {
-      if (item) increment(traitCarriers, item.id);
+    for (const id of PROFILE_TRAIT_IDS) {
+      const { degree } = traitDegree(id, raw, score.normalizedMetrics);
+      traitTiers[id][tierOf(degree)] += 1;
     }
     for (const direct of [
-      { id: "tool-connected" as const, eligible: raw.mcpCount >= 2, strength: round2(score.normalizedMetrics.mcp_count ?? 0) },
-      { id: "cross-project" as const, eligible: raw.subprojectCoverage >= 3, strength: round2(score.normalizedMetrics.subproject_coverage ?? 0) },
+      {
+        id: "tool-connected" as const,
+        eligible: raw.mcpCount >= 2,
+        strength: round2(score.normalizedMetrics.mcp_count ?? 0),
+      },
+      {
+        id: "cross-project" as const,
+        eligible: raw.subprojectCoverage >= 3,
+        strength: round2(score.normalizedMetrics.subproject_coverage ?? 0),
+      },
     ]) {
       if (!direct.eligible) continue;
       const hypotheticalWinner = counterfactualWinner([
-        ...profile.candidates.map((candidate) => ({ id: candidate.id, strength: candidate.strength })),
+        ...profile.candidates.map((candidate) => ({
+          id: candidate.id,
+          strength: candidate.strength,
+        })),
         { id: direct.id, strength: direct.strength },
       ]);
       if (hypotheticalWinner === direct.id) increment(directWinners, direct.id);
@@ -124,9 +145,11 @@ async function main(): Promise<void> {
         primaryWinners,
         total,
       ),
-      traitCarriers: rateMap(PROFILE_TRAIT_IDS, traitCarriers, total),
+      traitTiers,
       aiOperatingSystem: {
-        eligibility: rateMap(["ai-operating-system"], primaryEligibility, total)["ai-operating-system"],
+        eligibility: rateMap(["ai-operating-system"], primaryEligibility, total)[
+          "ai-operating-system"
+        ],
         winner: rateMap(["ai-operating-system"], primaryWinners, total)["ai-operating-system"],
         subprojectCoverageDistribution: coverageDistribution,
         zeroStrengthAtIntegrationFloor: aiOperatingSystemZeroIntegrationFloor,
@@ -134,11 +157,23 @@ async function main(): Promise<void> {
     },
     counterfactual: {
       definition: {
-        eligibility: { "tool-connected": "mcpCount >= 2", "cross-project": "subprojectCoverage >= 3" },
+        eligibility: {
+          "tool-connected": "mcpCount >= 2",
+          "cross-project": "subprojectCoverage >= 3",
+        },
         directStrength:
           "identity(existing normalized mcp_count or subproject_coverage), then round2",
-        candidates: "eligible specialized primaries plus the corresponding hypothetical single-signal label",
-        tieOrder: ["ai-operating-system", "skill-workshop", "agent-troupe", "command-center", "knowledge-library", "tool-connected", "cross-project"],
+        candidates:
+          "eligible specialized primaries plus the corresponding hypothetical single-signal label",
+        tieOrder: [
+          "ai-operating-system",
+          "skill-workshop",
+          "agent-troupe",
+          "command-center",
+          "knowledge-library",
+          "tool-connected",
+          "cross-project",
+        ],
       },
       directWinnerCount: directWinners,
       actualPrimaryDistributionForEligible: actualForDirectEligible,

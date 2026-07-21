@@ -41,6 +41,7 @@ meta.md     The spec of specs
 | IR-001 | [001-high-priority-roadmap.md](iterations/001-high-priority-roadmap.md) | High-priority ROADMAP batch: version, i18n, npm rename, image research, web site |
 | IR-002 | [002-repository-profile-labels.md](iterations/002-repository-profile-labels.md) | Deliver explainable repository profile labels |
 | IR-002 calibration | [002-profile-calibration.md](iterations/002-profile-calibration.md) | Repository-profile calibration fixture and disposition |
+| IR-003 | [003-profile-trait-degrees.md](iterations/003-profile-trait-degrees.md) | Replace binary trait thresholds with degree tiers and top-three ranking |
 
 ## Packages
 

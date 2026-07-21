@@ -7,6 +7,7 @@
 
 This spec defines the raw metrics, normalization rules, and score composition used to compute repository maturity.
 It does not cover command-line invocation, path tagging rules, or renderer-specific output formatting.
+Repository-profile derivation and taxonomy follow [DR-001](../decisions/001-repository-profile-labels.md).
 
 ## Raw Metrics
 
@@ -43,8 +44,8 @@ When scoring AMI, the scanner shall average normalized skill metrics into a skil
 
 ### MAT-16
 
-When deriving a repository profile from an existing maturity report, the scanner shall apply the primary and trait eligibility rules, headroom transform, candidate-strength selection, trait classes, and canonical identifiers defined by [DR-001](../decisions/001-repository-profile-labels.md), shall not change any raw metric, normalized metric, AMI, or L0–L4 level, and shall return `unstarted` when `ai_instruction_files` is `0`.
+When deriving a repository profile from an existing maturity report, the scanner shall apply the primary eligibility rules and headroom transform, candidate-strength selection, trait degree functions, uniform tier bucketing, top-three trait ranking, and canonical identifiers defined by DR-001, shall not change any raw metric, normalized metric, AMI, or L0–L4 level, and shall return `unstarted` when `ai_instruction_files` is `0`.
 
 ### MAT-17
 
-When more than one specialized primary profile is eligible, the scanner shall select the candidate with the highest strength rounded to two decimal places, shall use the DR-001 tie-break order only when those rounded strengths are equal, shall return MCP and cross-project results only as structural traits, and shall include the selected and non-selected eligible candidates with their strength components in the profile evaluation result.
+When more than one specialized primary profile is eligible, the scanner shall select the candidate with the highest strength rounded to two decimal places, shall use the DR-001 tie-break order only when those rounded strengths are equal, shall compute every trait's degree and tier, rank the non-suppressed traits by degree descending with canonical-order tie-breaking, and return the top three, and shall include the selected and non-selected eligible candidates with their strength components in the profile evaluation result.

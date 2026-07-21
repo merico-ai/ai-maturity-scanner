@@ -1,6 +1,6 @@
 import type { MaturityRawMetrics } from "./types.ts";
 
-export const PROFILE_RULE_VERSION = "v2" as const;
+export const PROFILE_RULE_VERSION = "v3" as const;
 
 const KNOWLEDGE_LIBRARY_MIN_SPECS_FILES = 20;
 const KNOWLEDGE_LIBRARY_MIN_CONTEXT_RICHNESS = 65;
@@ -30,7 +30,7 @@ export const PROFILE_TRAIT_IDS = [
 
 export type ProfileTraitId = (typeof PROFILE_TRAIT_IDS)[number];
 export type ProfileLabelId = PrimaryProfileId | ProfileTraitId;
-export type ProfileTraitKind = "supporting" | "structural";
+export type ProfileTier = "high" | "medium" | "low";
 
 export interface ProfileDimensions {
   configuration_depth: number;
@@ -66,14 +66,14 @@ export interface ProfilePrimary {
 
 export interface ProfileTrait {
   id: ProfileTraitId;
-  kind: ProfileTraitKind;
+  degree: number;
+  tier: ProfileTier;
   evidence: ProfileEvidence;
 }
 
 export interface RepositoryProfileEvaluation {
   primary: ProfilePrimary;
-  supportingTrait?: ProfileTrait;
-  structuralTraits: ProfileTrait[];
+  traits: ProfileTrait[];
   candidates: ProfileCandidate[];
 }
 
@@ -116,13 +116,81 @@ function candidate(
   return { id, strength: round2(strength), components, evidence, selected: false };
 }
 
+/** Uniform tier bars shared by every trait so tiers stay comparable across traits. */
+export const TRAIT_DEGREE_HIGH = 70;
+export const TRAIT_DEGREE_MEDIUM = 40;
+
+/** Trait suppressed (its meaning already expressed) when this primary is selected. */
+export const SUPPRESSED_TRAIT_BY_PRIMARY: Partial<Record<PrimaryProfileId, ProfileTraitId>> = {
+  "skill-workshop": "engineered-skills",
+  "agent-troupe": "multi-agent",
+  "knowledge-library": "structured-context",
+};
+
+export function tierOf(degree: number): ProfileTier {
+  if (degree >= TRAIT_DEGREE_HIGH) return "high";
+  if (degree >= TRAIT_DEGREE_MEDIUM) return "medium";
+  return "low";
+}
+
+/**
+ * Continuous 0–100 degree for a trait, derived only from existing v1 normalized
+ * metrics plus the inline `agent_role_score`. Never participates in AMI.
+ */
+export function traitDegree(
+  id: ProfileTraitId,
+  rawMetrics: MaturityRawMetrics,
+  normalizedMetrics: Record<string, number>,
+): { degree: number; facts: Record<string, number> } {
+  const agentRoleScore = Math.min(100, (rawMetrics.agentTypeDistinct / 5) * 100);
+  switch (id) {
+    case "engineered-skills": {
+      const advancedSkillCount = metric(normalizedMetrics, "advanced_skill_count");
+      const skillEngineeringRate = metric(normalizedMetrics, "skill_engineering_rate");
+      return {
+        degree: mean([advancedSkillCount, skillEngineeringRate]),
+        facts: {
+          advanced_skill_count: advancedSkillCount,
+          skill_engineering_rate: skillEngineeringRate,
+        },
+      };
+    }
+    case "multi-agent": {
+      const agentCount = metric(normalizedMetrics, "agent_count");
+      return {
+        degree: mean([agentCount, agentRoleScore]),
+        facts: { agent_count: agentCount, agent_role_score: agentRoleScore },
+      };
+    }
+    case "tool-connected": {
+      const mcpCount = metric(normalizedMetrics, "mcp_count");
+      return { degree: mcpCount, facts: { mcp_count: mcpCount } };
+    }
+    case "structured-context": {
+      const instructionMaxLineCount = metric(normalizedMetrics, "instruction_max_line_count");
+      const specsFileCount = metric(normalizedMetrics, "specs_file_count");
+      return {
+        degree: mean([instructionMaxLineCount, specsFileCount]),
+        facts: {
+          instruction_max_line_count: instructionMaxLineCount,
+          specs_file_count: specsFileCount,
+        },
+      };
+    }
+    case "cross-project": {
+      const subprojectCoverage = metric(normalizedMetrics, "subproject_coverage");
+      return { degree: subprojectCoverage, facts: { subproject_coverage: subprojectCoverage } };
+    }
+  }
+}
+
 function trait(
   id: ProfileTraitId,
-  kind: ProfileTraitKind,
-  ruleId: string,
+  degree: number,
+  tier: ProfileTier,
   facts: Record<string, number>,
 ): ProfileTrait {
-  return { id, kind, evidence: { ruleId, facts } };
+  return { id, degree, tier, evidence: { ruleId: `DR-001.trait.${id}`, facts } };
 }
 
 /**
@@ -151,8 +219,6 @@ export function evaluateRepositoryProfile(
     metric(normalizedMetrics, "command_count"),
     metric(normalizedMetrics, "command_line_count"),
   ]);
-  // Kept as an explicit derived signal even though MCP remains trait-only.
-  const mcpScore = metric(normalizedMetrics, "mcp_count");
   const agentRoleScore = Math.min(100, (rawMetrics.agentTypeDistinct / 5) * 100);
   const specLibraryScore = mean([
     metric(normalizedMetrics, "specs_file_count"),
@@ -275,50 +341,10 @@ export function evaluateRepositoryProfile(
     if (selected) selected.selected = true;
   }
 
-  const eligibleTraits: ProfileTrait[] = [];
-  if (rawMetrics.advancedSkillCount >= 2 && engineeringRate >= 0.15) {
-    eligibleTraits.push(
-      trait("engineered-skills", "supporting", "DR-001.trait.engineered-skills", {
-        advanced_skill_count: rawMetrics.advancedSkillCount,
-        skill_engineering_rate: engineeringRate,
-      }),
-    );
-  }
-  if (rawMetrics.agentCount >= 3 && rawMetrics.agentTypeDistinct >= 3) {
-    eligibleTraits.push(
-      trait("multi-agent", "supporting", "DR-001.trait.multi-agent", {
-        agent_count: rawMetrics.agentCount,
-        agent_type_distinct: rawMetrics.agentTypeDistinct,
-      }),
-    );
-  }
-  if (rawMetrics.mcpCount >= 2) {
-    eligibleTraits.push(
-      trait("tool-connected", "structural", "DR-001.trait.tool-connected", {
-        mcp_count: rawMetrics.mcpCount,
-        mcp_score: mcpScore,
-      }),
-    );
-  }
-  if (
-    rawMetrics.instructionMaxLineCount >= 50 &&
-    rawMetrics.instructionMaxLineCount <= 400 &&
-    rawMetrics.specsFileCount >= 10
-  ) {
-    eligibleTraits.push(
-      trait("structured-context", "supporting", "DR-001.trait.structured-context", {
-        instruction_max_line_count: rawMetrics.instructionMaxLineCount,
-        specs_file_count: rawMetrics.specsFileCount,
-      }),
-    );
-  }
-  if (rawMetrics.subprojectCoverage >= 3) {
-    eligibleTraits.push(
-      trait("cross-project", "structural", "DR-001.trait.cross-project", {
-        subproject_coverage: rawMetrics.subprojectCoverage,
-      }),
-    );
-  }
+  const rankedTraits: ProfileTrait[] = PROFILE_TRAIT_IDS.map((id) => {
+    const { degree, facts } = traitDegree(id, rawMetrics, normalizedMetrics);
+    return trait(id, round2(degree), tierOf(degree), facts);
+  });
 
   const primaryId: PrimaryProfileId = hasAiInstructions
     ? (winner?.id ?? "early-collaboration")
@@ -334,16 +360,19 @@ export function evaluateRepositoryProfile(
             facts: { ai_instruction_files: rawMetrics.aiInstructionFiles },
           },
         };
-  const suppressed = new Set<ProfileTraitId>();
-  if (primary.id === "skill-workshop") suppressed.add("engineered-skills");
-  if (primary.id === "agent-troupe") suppressed.add("multi-agent");
-  if (primary.id === "knowledge-library") suppressed.add("structured-context");
-  const traits = eligibleTraits.filter((item) => !suppressed.has(item.id));
+  const suppressedId = SUPPRESSED_TRAIT_BY_PRIMARY[primary.id];
+  const traits = rankedTraits
+    .filter((item) => item.id !== suppressedId)
+    .sort(
+      (left, right) =>
+        right.degree - left.degree ||
+        PROFILE_TRAIT_IDS.indexOf(left.id) - PROFILE_TRAIT_IDS.indexOf(right.id),
+    )
+    .slice(0, 3);
 
   return {
     primary,
-    supportingTrait: traits.find((item) => item.kind === "supporting"),
-    structuralTraits: traits.filter((item) => item.kind === "structural"),
+    traits,
     candidates,
   };
 }

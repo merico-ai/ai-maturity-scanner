@@ -24,4 +24,4 @@ When the scanner reports AMI, the score shall be a weighted average of `configur
 
 ### MAT-15
 
-When the scanner reports repository maturity, the report shall also include one repository profile that describes the strongest visible AI collaboration pattern and may carry supporting and structural traits, shall retain the L0–L4 level and AMI unchanged, and shall not represent the profile as a further maturity grade.
+When the scanner reports repository maturity, the report shall also include one repository profile that describes the strongest visible AI collaboration pattern and carries up to three ranked traits, each labeled by a high, medium, or low degree tier, shall retain the L0–L4 level and AMI unchanged, and shall not represent the profile as a further maturity grade.

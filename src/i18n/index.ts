@@ -4,7 +4,7 @@
 // rule names, and tag values (e.g. `file_type=instruction`) stay in their
 // canonical form regardless of language.
 
-import type { ProfileLabelId } from "../metrics/profile.ts";
+import type { ProfileLabelId, ProfileTier } from "../metrics/profile.ts";
 
 export type Lang = "zh" | "en";
 
@@ -27,6 +27,7 @@ export interface ReportStrings {
   levelTitles: Record<"L0" | "L1" | "L2" | "L3" | "L4", string>;
   profileLabel: string;
   profileTitles: Record<ProfileLabelId, string>;
+  profileTiers: Record<ProfileTier, string>;
   dimensionHeader: string;
   scoreHeader: string;
   configurationDepth: string;
@@ -77,6 +78,7 @@ const en: ReportStrings = {
     "structured-context": "Structured Context",
     "cross-project": "Cross-Project Coverage",
   },
+  profileTiers: { high: "High", medium: "Medium", low: "Low" },
   dimensionHeader: "Dimension",
   scoreHeader: "Score",
   configurationDepth: "Configuration depth",
@@ -106,8 +108,8 @@ const zh: ReportStrings = {
   overallSection: "总览",
   levelLabel: "等级",
   levelTitles: {
-    L0: "一窍不通",
-    L1: "初学乍练",
+    L0: "不得其门",
+    L1: "初出茅庐",
     L2: "渐入佳境",
     L3: "驾轻就熟",
     L4: "炉火纯青",
@@ -127,6 +129,7 @@ const zh: ReportStrings = {
     "structured-context": "上下文成册",
     "cross-project": "跨项目覆盖",
   },
+  profileTiers: { high: "高", medium: "中", low: "低" },
   dimensionHeader: "维度",
   scoreHeader: "分数",
   configurationDepth: "配置深度",

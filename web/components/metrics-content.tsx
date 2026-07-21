@@ -136,32 +136,38 @@ const sampleReport: ImageReportData = {
         facts: { skill_score: 76.25, skill_engineering_rate: 0.3 },
       },
     },
-    supportingTrait: {
-      id: "multi-agent",
-      title: "多代理协作",
-      kind: "supporting",
-      evidence: {
-        ruleId: "DR-001.trait.multi-agent",
-        facts: { agent_count: 3, agent_type_distinct: 3 },
+    traits: [
+      {
+        id: "structured-context",
+        title: "上下文成册",
+        degree: 100,
+        tier: "high",
+        tierTitle: "高",
+        evidence: {
+          ruleId: "DR-001.trait.structured-context",
+          facts: { instruction_max_line_count: 100, specs_file_count: 100 },
+        },
       },
-    },
-    structuralTraits: [
       {
         id: "tool-connected",
         title: "工具深连",
-        kind: "structural",
+        degree: 60,
+        tier: "medium",
+        tierTitle: "中",
         evidence: {
           ruleId: "DR-001.trait.tool-connected",
-          facts: { mcp_count: 2, mcp_score: 60 },
+          facts: { mcp_count: 60 },
         },
       },
       {
         id: "cross-project",
         title: "跨项目覆盖",
-        kind: "structural",
+        degree: 60,
+        tier: "medium",
+        tierTitle: "中",
         evidence: {
           ruleId: "DR-001.trait.cross-project",
-          facts: { subproject_coverage: 3 },
+          facts: { subproject_coverage: 60 },
         },
       },
     ],

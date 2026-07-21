@@ -26,6 +26,9 @@ The fixture deliberately carries only aggregate raw metrics and scenario IDs.
 It contains no repository paths, source text, or file inventories. It covers
 every primary label, the two structural traits, and the AI-operating-system
 integration-floor diagnostic.
+Under [IR-003](003-profile-trait-degrees.md) the trait coverage is re-expressed
+as a per-trait tier distribution, but the primary counterfactual and
+integration-floor diagnostics above remain the calibration focus.
 
 ## Counterfactual definition
 

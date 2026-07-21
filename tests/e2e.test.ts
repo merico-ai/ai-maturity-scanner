@@ -137,7 +137,7 @@ describe("e2e: full pipeline on a fixture git repo", () => {
     const report = await buildReport(repoDir, { lang: "en" });
     expect(report.level).toMatch(/^L[0-4]$/);
     expect(report.meta.algorithmVersion).toBe("v1");
-    expect(report.meta.profileRuleVersion).toBe("v2");
+    expect(report.meta.profileRuleVersion).toBe("v3");
     expect(report.meta.lang).toBe("en");
     expect(report.profile.primary.title).toBeTruthy();
 
@@ -146,7 +146,7 @@ describe("e2e: full pipeline on a fixture git repo", () => {
     expect(parsed.level).toBe(report.level);
     expect(parsed.repo.headSha).toBe(report.repo.headSha);
     expect(parsed.meta.algorithmVersion).toBe("v1");
-    expect(parsed.meta.profileRuleVersion).toBe("v2");
+    expect(parsed.meta.profileRuleVersion).toBe("v3");
     expect(parsed.meta.lang).toBe("en");
     expect(parsed.profile.primary.id).toBe(report.profile.primary.id);
     expect(Object.keys(parsed.normalizedMetrics)).toHaveLength(15);

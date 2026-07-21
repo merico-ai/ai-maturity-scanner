@@ -5,7 +5,6 @@ type ProfileTaxonomyItem = {
   title: string;
   rule: string;
   description: string;
-  kind?: "supporting" | "structural";
 };
 
 type ProfileTaxonomy = {
@@ -38,12 +37,12 @@ export const profileTaxonomy: Record<Locale, ProfileTaxonomy> = {
     primaryDescription: "每份报告恰好有一个主画像；它是当前最强、最能代表仓库的协作形态。",
     traitTitle: "Traits（特征）",
     traitDescription:
-      "特征补充主画像未涵盖的显著信号：最多一个 supporting trait，并保留所有 structural traits（最多两个）。",
+      "每个特征按程度（0–100）计算 degree，再用统一的 40/70 门槛划分为 高/中/低 三档；报告展示 degree 最高的三个特征，与主画像语义重复的特征会被抑制。完全没有相关资产的特征记为「低」。",
     selectionTitle: "如何选择并解释画像",
     selectionSteps: [
       "仅复用报告已有的 raw metrics、normalized metrics 和三个维度；不会采集或推断新的行为数据。",
       "没有 AI instruction file 时，主画像固定为 unstarted；其余仓库先判断各 specialized primary 是否满足资格条件。",
-      "合格候选按超出资格门槛后的 strength 比较，强度四舍五入到两位小数；相同强度才按固定顺序决胜。",
+      "合格主画像候选按超出资格门槛后的 strength 比较，强度四舍五入到两位小数，相同强度才按固定顺序决胜；每个特征按 degree 排序取前三展示，degree 用统一 40/70 门槛分为 高/中/低。",
       "报告会保留匹配 rule ID、metric facts、候选的 headroom components、rounded strength 与 selected 状态，便于比较主画像和备选项。",
     ],
     evidenceTitle: "和 AMI、L0–L4 的关系",
@@ -98,37 +97,32 @@ export const profileTaxonomy: Record<Locale, ProfileTaxonomy> = {
       {
         id: "engineered-skills",
         title: "能力工程化",
-        rule: "advanced_skill_count ≥ 2，且 skill_engineering_rate ≥ 0.15",
+        rule: "degree = mean(advanced_skill_count, skill_engineering_rate)",
         description: "若主画像为 skill-workshop 则不重复显示。",
-        kind: "supporting",
       },
       {
         id: "multi-agent",
         title: "多代理协作",
-        rule: "agent_count ≥ 3，且 agent_type_distinct ≥ 3",
+        rule: "degree = mean(agent_count, agent_role_score)",
         description: "若主画像为 agent-troupe 则不重复显示。",
-        kind: "supporting",
       },
       {
         id: "tool-connected",
         title: "工具深连",
-        rule: "mcp_count ≥ 2",
-        description: "Structural trait：MCP 信号始终作为特征，不会成为主画像。",
-        kind: "structural",
+        rule: "degree = mcp_count",
+        description: "MCP 信号始终作为特征，不会成为主画像。",
       },
       {
         id: "structured-context",
         title: "上下文成册",
-        rule: "instruction_max_line_count 为 50–400，且 specs_file_count ≥ 10",
+        rule: "degree = mean(instruction_max_line_count, specs_file_count)",
         description: "若主画像为 knowledge-library 则不重复显示。",
-        kind: "supporting",
       },
       {
         id: "cross-project",
         title: "跨项目覆盖",
-        rule: "subproject_coverage ≥ 3",
-        description: "Structural trait：跨子项目覆盖始终作为特征，不会成为主画像。",
-        kind: "structural",
+        rule: "degree = subproject_coverage",
+        description: "跨子项目覆盖始终作为特征，不会成为主画像。",
       },
     ],
   },
@@ -142,12 +136,12 @@ export const profileTaxonomy: Record<Locale, ProfileTaxonomy> = {
       "Every report has exactly one primary profile: the strongest collaboration pattern visible in the repository.",
     traitTitle: "Traits",
     traitDescription:
-      "Traits add notable signals that the primary does not already express: at most one supporting trait, plus every structural trait (at most two).",
+      "Each trait gets a 0–100 degree from existing normalized metrics, bucketed into high, medium, or low by uniform 40/70 bars; the report shows the three highest-degree traits, suppressing any trait already expressed by the primary. A trait with no relevant assets is rated low.",
     selectionTitle: "How profiles are selected and explained",
     selectionSteps: [
       "The evaluator reuses only the report's existing raw metrics, normalized metrics, and three dimensions; it collects or infers no new behavioral data.",
       "With no AI instruction file, the primary is unstarted. Otherwise, each specialized primary is checked for eligibility.",
-      "Eligible candidates are compared by strength beyond their eligibility floors, rounded to two decimals; a fixed order breaks only equal rounded strengths.",
+      "Eligible primary candidates are compared by strength beyond their eligibility floors, rounded to two decimals, with a fixed order breaking only equal rounded strengths; each trait's degree ranks the top three, bucketed into high, medium, or low by the uniform 40/70 bars.",
       "The report retains the matched rule ID and metric facts, each candidate's headroom components and rounded strength, and its selected status so the winner can be compared with alternatives.",
     ],
     evidenceTitle: "Relationship to AMI and L0–L4",
@@ -202,37 +196,32 @@ export const profileTaxonomy: Record<Locale, ProfileTaxonomy> = {
       {
         id: "engineered-skills",
         title: "Engineered Skills",
-        rule: "advanced_skill_count ≥ 2 and skill_engineering_rate ≥ 0.15",
+        rule: "degree = mean(advanced_skill_count, skill_engineering_rate)",
         description: "Suppressed when skill-workshop is already the primary.",
-        kind: "supporting",
       },
       {
         id: "multi-agent",
         title: "Multi-Agent Collaboration",
-        rule: "agent_count ≥ 3 and agent_type_distinct ≥ 3",
+        rule: "degree = mean(agent_count, agent_role_score)",
         description: "Suppressed when agent-troupe is already the primary.",
-        kind: "supporting",
       },
       {
         id: "tool-connected",
         title: "Deep Tool Connectivity",
-        rule: "mcp_count ≥ 2",
-        description: "Structural trait: MCP remains a trait and never becomes a primary.",
-        kind: "structural",
+        rule: "degree = mcp_count",
+        description: "MCP remains a trait and never becomes a primary.",
       },
       {
         id: "structured-context",
         title: "Structured Context",
-        rule: "instruction_max_line_count is 50–400 and specs_file_count ≥ 10",
+        rule: "degree = mean(instruction_max_line_count, specs_file_count)",
         description: "Suppressed when knowledge-library is already the primary.",
-        kind: "supporting",
       },
       {
         id: "cross-project",
         title: "Cross-Project Coverage",
-        rule: "subproject_coverage ≥ 3",
-        description: "Structural trait: cross-project coverage remains a trait and never becomes a primary.",
-        kind: "structural",
+        rule: "degree = subproject_coverage",
+        description: "Cross-project coverage remains a trait and never becomes a primary.",
       },
     ],
   },
